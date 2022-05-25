@@ -1,8 +1,12 @@
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http/http.dart' as http;
+import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiRepo {
   static final homeRepo = ApiRepo._();
+  String? marketName;
+  String? marketCode;
 
   http.Client client = InterceptedClient.build(interceptors: [
     LoggingInterceptor(),
@@ -11,6 +15,12 @@ class ApiRepo {
 
   factory ApiRepo() {
     return homeRepo;
+  }
+
+  getListValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
+    marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
   }
 
   Future<http.Response> getHomePgae(market) async {
@@ -40,11 +50,11 @@ class ApiRepo {
   }
 
   Future<http.Response> getTop20DetailPage() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    await getListValuesSF();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=top20&market=in_nse&countryID=91&lang=000'),
+          'https://www.investtech.com/mobile/api.php?page=top20&market=$marketCode&countryID=91&lang=000'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -53,11 +63,11 @@ class ApiRepo {
   }
 
   Future<http.Response> getMCDetailPage() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    await getListValuesSF();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=marketCommentary&CompanyID=91100930&market=in_nse&countryID=91&lang=000'),
+          'https://www.investtech.com/mobile/api.php?page=marketCommentary&market=$marketCode&countryID=91&lang=000'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -66,11 +76,11 @@ class ApiRepo {
   }
 
   Future<http.Response> getIndicesEvalDetailPage() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    await getListValuesSF();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=indicesEvaluations&CompanyID=91100930&market=in_nse&countryID=91&lang=000'),
+          'https://www.investtech.com/mobile/api.php?page=indicesEvaluations&market=$marketCode&countryID=91&lang=000'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -79,11 +89,11 @@ class ApiRepo {
   }
 
   Future<http.Response> getIndicesAnalysesDetailPage() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    await getListValuesSF();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=indicesAnalyses&market=in_nse&countryID=91&lang=000'),
+          'https://www.investtech.com/mobile/api.php?page=indicesAnalyses&market=$marketCode&countryID=91&lang=000'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -92,11 +102,11 @@ class ApiRepo {
   }
 
   Future<http.Response> getTodaysSignalDetailPage() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    await getListValuesSF();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=in_nse&countryID=91&lang=000'),
+          'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=000'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -120,7 +130,6 @@ class ApiRepo {
   Future<http.Response> getCompanyData(chartId, companyId) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     chartId = chartId.toString();
-    print(chartId);
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(

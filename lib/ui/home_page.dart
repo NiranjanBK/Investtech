@@ -12,6 +12,7 @@ import 'package:investtech_app/ui/reorder_page.dart';
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
 import 'package:investtech_app/widgets/barometer.dart';
+import 'package:investtech_app/widgets/pref_keys.dart';
 import 'package:investtech_app/widgets/web_tv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/todays_signals.dart';
@@ -32,19 +33,25 @@ class HomeOverview extends StatefulWidget {
 
 class _HomeOverviewState extends State<HomeOverview> {
   late String reorderString;
-  String marketCode = 'in_bse';
-  String marketName = 'National S.E';
+  String? marketCode;
+  String? marketName;
 
   Map teaser = {};
 
-  Future<Home> fetchData() async {
-    http.Response response = await ApiRepo().getHomePgae(marketCode);
+  @override
+  void initState() {
+    super.initState();
+    //getListValuesSF();
+  }
 
+  Future<Home> fetchData() async {
+    await getListValuesSF();
+    http.Response response = await ApiRepo().getHomePgae(marketCode);
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response.body);
-      reorderString = await getListValuesSF();
+      //reorderString = await getListValuesSF();
       return Home.fromJson(jsonDecode(response.body));
     } else {
       // If the server did not return a 200 OK response,
@@ -53,12 +60,30 @@ class _HomeOverviewState extends State<HomeOverview> {
     }
   }
 
-  Future<String> getListValuesSF() async {
+  void awaitReturnValueFromSecondScreen(BuildContext context) async {
+    // start the SecondScreen and wait for it to finish with a result
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarketSelection(),
+        ));
+
+    // after the SecondScreen result comes back update the Text widget with it
+    setState(() {
+      marketCode = result['marketCode'];
+      marketName = result['marketName'];
+    });
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    setState(() {});
+  }
+
+  getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //Return bool
-    //prefs.clear();
-    String prefList = prefs.getString('items') ?? '';
-    return prefList;
+    reorderString = prefs.getString('items') ?? '';
+    marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
+    marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
   }
 
   @override
@@ -67,149 +92,134 @@ class _HomeOverviewState extends State<HomeOverview> {
     Teaser favourites = Teaser(
         '7', 'favourites', 'Favourites', {'message': 'no favourites added'});
 
-    void awaitReturnValueFromSecondScreen(BuildContext context) async {
-      // start the SecondScreen and wait for it to finish with a result
-      final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MarketSelection(),
-          ));
-
-      // after the SecondScreen result comes back update the Text widget with it
-      setState(() {
-        marketCode = result['marketCode'];
-        marketName = result['market'];
-      });
-    }
-
-    FutureOr onGoBack(dynamic value) {
-      setState(() {});
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: InkWell(
-          onTap: () {
-            awaitReturnValueFromSecondScreen(context);
-          },
-          child: Row(
-            children: [
-              Text(marketName),
-              Transform.rotate(
-                angle: 33, //set the angel
-                child: Icon(
-                  Icons.play_arrow,
-                  color: Colors.orange[800],
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return BlocProvider(
-                      create: (BuildContext context) => SearchBloc(ApiRepo()),
-                      child: SearchItemPage(context),
-                    );
+    return Container(
+      padding: const EdgeInsets.only(top: 5),
+      child: FutureBuilder<Home>(
+        future: fetchData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            teaserList = snapshot.data!.teaser;
+            teaserList.add(favourites);
+            List reoderList =
+                reorderString == '' ? [] : reorderString.split(',');
+            return Scaffold(
+              appBar: AppBar(
+                title: InkWell(
+                  onTap: () {
+                    awaitReturnValueFromSecondScreen(context);
                   },
-                ));
-              },
-              icon: const Icon(Icons.search)),
-          //const Icon(Icons.search),
-          PopupMenuButton(
-              onSelected: (value) {
-                switch (value) {
-                  case 'Reorder':
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ReorderPage(teaserList, reorderString),
-                        )).then(onGoBack);
-                    break;
-                  case 'Settings':
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SettingsPage(),
+                  child: Row(
+                    children: [
+                      Text(marketName ?? 'National S.E'),
+                      Transform.rotate(
+                        angle: 33, //set the angel
+                        child: Icon(
+                          Icons.play_arrow,
+                          color: Colors.orange[800],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return BlocProvider(
+                              create: (BuildContext context) =>
+                                  SearchBloc(ApiRepo()),
+                              child: SearchItemPage(context),
+                            );
+                          },
                         ));
-                    break;
-                }
-              },
-              itemBuilder: (ctx) => [
-                    PopupMenuItem(
-                      height: 30,
-                      value: 'Reorder',
-                      child: const Text(
-                        'Reorder',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      onTap: () {},
-                    ),
-                    const PopupMenuItem(
-                      height: 30,
-                      value: 'Settings',
-                      child: Text(
-                        'Settings',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ])
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.only(top: 5),
-        child: FutureBuilder<Home>(
-          future: fetchData(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              teaserList = snapshot.data!.teaser;
-              teaserList.add(favourites);
-              List reoderList =
-                  reorderString == '' ? [] : reorderString.split(',');
-              // reoderList.map((prodId) {
-              //   snapshot.data!.teaser.map((product) {
-              //     if (prodId == product.id) {
-              //       teaserList.add(product);
-              //     }
-              //   }).toList();
-              // }).toList();
-
-              return ListView(
+                      },
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.orange[800],
+                      )),
+                  PopupMenuButton(
+                      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                      color: Theme.of(context).appBarTheme.backgroundColor,
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'Reorder':
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReorderPage(teaserList, reorderString),
+                                )).then(onGoBack);
+                            break;
+                          case 'Settings':
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SettingsPage(),
+                                ));
+                            break;
+                        }
+                      },
+                      itemBuilder: (ctx) => [
+                            PopupMenuItem(
+                              height: 30,
+                              value: 'Reorder',
+                              child: Text(
+                                'Reorder',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .color),
+                              ),
+                              onTap: () {},
+                            ),
+                            PopupMenuItem(
+                              height: 30,
+                              value: 'Settings',
+                              child: Text(
+                                'Settings',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .color),
+                              ),
+                            ),
+                          ])
+                ],
+              ),
+              body: ListView(
+                primary: true,
+                shrinkWrap: true,
                 children: [
                   Container(
-                    height: 60,
+                    //height: 40,
                     width: double.infinity,
-                    padding: const EdgeInsets.only(left: 10),
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom:
-                                BorderSide(color: Colors.black12, width: 0.1))),
+                    padding: const EdgeInsets.only(left: 10, top: 5),
+                    color: Theme.of(context).primaryColorDark,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Analysis: ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(int.parse(snapshot.data!.analysesDate) * 1000))}',
-                          style:
-                              TextStyle(fontSize: 10, color: Colors.grey[700]),
+                          style: Theme.of(context).textTheme.bodyText2,
                         ),
                         const SizedBox(
                           height: 5,
                         ),
                         Text(
                           'Last Updated : Just Now',
-                          style:
-                              TextStyle(fontSize: 10, color: Colors.grey[700]),
+                          style: Theme.of(context).textTheme.bodyText2,
                         ),
                       ],
                     ),
                   ),
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: ScrollPhysics(),
+                    physics: const ScrollPhysics(),
                     itemCount: reoderList.length == 0
                         ? snapshot.data!.teaser.length
                         : reoderList.length,
@@ -227,15 +237,18 @@ class _HomeOverviewState extends State<HomeOverview> {
                         children: [
                           Container(
                             width: double.infinity,
-                            margin: const EdgeInsets.only(bottom: 1),
+                            margin: const EdgeInsets.only(
+                              bottom: 1,
+                            ),
                             //padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                                color: Colors.grey[50],
+                                color: Theme.of(context).primaryColor,
                                 boxShadow: const [
                                   BoxShadow(
                                     color: Colors.grey,
-                                    offset: Offset(0.0, 1.0),
+                                    offset: Offset(0.0, 2.0),
                                     blurRadius: 1.5,
+                                    spreadRadius: 0,
                                   ),
                                 ],
                                 border: const Border(
@@ -307,15 +320,15 @@ class _HomeOverviewState extends State<HomeOverview> {
                     },
                   ),
                 ],
-              );
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
-            }
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
 
-            // By default, show a loading spinner.
-            return const Center(child: CircularProgressIndicator());
-          },
-        ),
+          // By default, show a loading spinner.
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }

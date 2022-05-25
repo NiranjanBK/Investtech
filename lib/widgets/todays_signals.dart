@@ -69,7 +69,7 @@ class TodaysSignals extends StatelessWidget {
                           ),
                           Text(
                             _signals[index]['data'],
-                            style: const TextStyle(fontSize: 12),
+                            style: Theme.of(context).textTheme.bodyText2,
                           )
                         ],
                       ),

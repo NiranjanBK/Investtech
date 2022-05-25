@@ -48,6 +48,10 @@ class BarometerGraphState extends State<BarometerGraph> {
         padding: const EdgeInsets.only(top: 5),
         child: Column(
           children: [
+            ProductHeader('', 0),
+            SizedBox(
+              height: 10,
+            ),
             Text(_barometer.stockBarometer.market),
             SizedBox(
               height: 200,

@@ -1,15 +1,25 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+//import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
 import 'package:investtech_app/ui/web_login_page.dart';
+import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:investtech_app/widgets/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './UI/home_page.dart';
+
+String? prefTheme;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
 
@@ -39,9 +49,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: _title,
-      home: MyStatefulWidget(),
+    AppTheme loadTheme =
+        prefTheme == 'Dark' ? AppTheme.darkTheme : AppTheme.lightTheme;
+    return BlocProvider(
+      create: (context) => ThemeBloc(loadTheme),
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (BuildContext context, ThemeState themeState) {
+          return MaterialApp(
+            title: _title,
+            //theme: _light ? _lightTheme : _darkTheme,
+            theme: themeState.themeData,
+            localizationsDelegates: const [
+              //AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''), // English, no country code
+              Locale('es', ''), // Spanish, no country code
+            ],
+            home: MyStatefulWidget(),
+          );
+        },
+      ),
     );
   }
 }
@@ -91,7 +122,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           ),
         ],
         currentIndex: selectedIndex,
-        selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
       ),
     );

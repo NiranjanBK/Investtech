@@ -3,6 +3,7 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:investtech_app/network/models/home.dart';
 import 'package:investtech_app/ui/home_page.dart';
+import 'package:investtech_app/widgets/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReorderPage extends StatefulWidget {
@@ -53,7 +54,6 @@ class _ReorderPageState extends State<ReorderPage> {
 
   addListToSF(key, value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
     prefs.setString(key, value);
   }
 
