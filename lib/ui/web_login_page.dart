@@ -13,7 +13,7 @@ import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
 import 'package:investtech_app/ui/web_view_page.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:investtech_app/const/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WebLoginPage extends StatefulWidget {

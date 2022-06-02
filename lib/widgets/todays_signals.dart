@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/todays_signals_detail_page.dart';
 import 'package:investtech_app/widgets/indices.dart';
@@ -50,26 +51,25 @@ class TodaysSignals extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CompanyPage(_signals[index]['companyId'], 4),
+                              builder: (context) => CompanyPage(
+                                _signals[index]['companyId'],
+                                4,
+                                ticker: _signals[index]['ticker'],
+                                companyName: _signals[index]['companyName'],
+                              ),
                             ));
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            _signals[index]['ticker'],
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
+                          Text(_signals[index]['ticker'],
+                              style: getBoldTextStyle()),
                           const SizedBox(
                             height: 3,
                           ),
                           Text(
                             _signals[index]['data'],
-                            style: Theme.of(context).textTheme.bodyText2,
+                            style: getDescriptionTextStyle(),
                           )
                         ],
                       ),

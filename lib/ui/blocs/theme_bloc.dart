@@ -1,33 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:investtech_app/widgets/theme.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:meta/meta.dart';
 
-class ThemeEvent {
-  final AppTheme? appTheme;
-  ThemeEvent({this.appTheme});
-}
+enum ThemeBlocEvents { themeChamged, localeChanged, clearState }
 
-class ThemeState {
-  final ThemeData? themeData;
-  ThemeState({this.themeData});
-}
-
-class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
-  AppTheme loadTheme;
-  ThemeBloc(this.loadTheme)
-      : super(
-          ThemeState(
-            themeData: AppThemes.appThemeData[loadTheme],
-          ),
-        );
+abstract class ThemeBlocState extends Equatable {
   @override
-  Stream<ThemeState> mapEventToState(ThemeEvent event) async* {
-    if (event is ThemeEvent) {
-      yield ThemeState(
-        themeData: AppThemes.appThemeData[event.appTheme],
-      );
+  List<Object> get props => [];
+}
+
+class ReloadThemeState extends ThemeBlocState {}
+
+class InitialState extends ThemeBlocState {}
+
+class ThemeLoadedState extends ThemeBlocState {
+  final ThemeData? themeData;
+
+  ThemeLoadedState(this.themeData);
+}
+
+class ThemeClearState extends ThemeBlocState {
+  ThemeClearState();
+}
+
+class LocaleChangedState extends ThemeBlocState {
+  final Locale? locale;
+  LocaleChangedState(this.locale);
+}
+
+class ThemeErrorState extends ThemeBlocState {
+  String error;
+
+  ThemeErrorState(this.error);
+}
+
+class ThemeBloc extends Bloc<ThemeBlocEvents, ThemeBlocState> {
+  AppTheme loadTheme;
+  Locale locale;
+  ThemeBloc(this.loadTheme, this.locale) : super(InitialState());
+
+  @override
+  Stream<ThemeBlocState> mapEventToState(ThemeBlocEvents event) async* {
+    switch (event) {
+      case ThemeBlocEvents.themeChamged:
+        yield ThemeLoadedState(AppThemes.appThemeData[loadTheme]);
+        break;
+
+      case ThemeBlocEvents.localeChanged:
+        yield LocaleChangedState(locale);
+        break;
+      case ThemeBlocEvents.clearState:
+        yield ThemeClearState();
+        break;
     }
   }
 }

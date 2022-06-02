@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/country.dart';
 import 'package:investtech_app/network/models/market.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:investtech_app/const/pref_keys.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/ui/indices_detail_page.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import '../network/models/company.dart';
@@ -52,9 +53,7 @@ class Indices extends StatelessWidget {
                     'https://www.investtech.com/main/img.php?CompanyID=91294651&chartId=4&indicators=80,81,82,83,84,85,87,88&w=451&h=198'),
                 Text(
                   companyObj.commentary.toString(),
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
+                  style: getDescriptionTextStyle(),
                 ),
               ],
             ),

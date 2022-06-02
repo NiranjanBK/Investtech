@@ -2,24 +2,23 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-//import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
 import 'package:investtech_app/ui/web_login_page.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
-import 'package:investtech_app/widgets/theme.dart';
+import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './UI/home_page.dart';
-
-String? prefTheme;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
+  String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
+  String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
 
@@ -39,35 +38,56 @@ void main() async {
       );
     }
   }
-  runApp(const MyApp());
+  runApp(MyApp(prefTheme, locale));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final String? prefTheme;
+  final String locale;
+  ThemeData? themeData;
+  Locale? newLocale;
+  MyApp(this.prefTheme, this.locale, {Key? key}) : super(key: key);
 
   static const String _title = 'Flutter Code Sample';
 
   @override
   Widget build(BuildContext context) {
+    newLocale = Locale(locale);
+
     AppTheme loadTheme =
         prefTheme == 'Dark' ? AppTheme.darkTheme : AppTheme.lightTheme;
     return BlocProvider(
-      create: (context) => ThemeBloc(loadTheme),
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (BuildContext context, ThemeState themeState) {
+      create: (context) => ThemeBloc(
+        loadTheme,
+        Locale(locale),
+      )..add(ThemeBlocEvents.themeChamged),
+      child: BlocBuilder<ThemeBloc, ThemeBlocState>(
+        builder: (BuildContext context, ThemeBlocState themeState) {
+          if (themeState is ThemeLoadedState) {
+            themeData = themeState.themeData;
+            BlocProvider.of<ThemeBloc>(context).add(ThemeBlocEvents.clearState);
+          }
+          if (themeState is LocaleChangedState) {
+            newLocale = themeState.locale;
+            BlocProvider.of<ThemeBloc>(context).add(ThemeBlocEvents.clearState);
+          }
           return MaterialApp(
             title: _title,
             //theme: _light ? _lightTheme : _darkTheme,
-            theme: themeState.themeData,
+            theme: themeData,
+            locale: newLocale,
             localizationsDelegates: const [
-              //AppLocalizations.delegate,
+              AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [
               Locale('en', ''), // English, no country code
-              Locale('es', ''), // Spanish, no country code
+              Locale('no', ''), // Norweign, no country code
+              Locale('sv', ''), // Norweign, no country code
+              Locale('da', ''), // Norweign, no country code
+              Locale('de', ''), // Norweign, no country code
             ],
             home: MyStatefulWidget(),
           );

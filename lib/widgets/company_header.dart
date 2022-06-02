@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/text_style.dart';
 
 class CompanyHeader extends StatelessWidget {
   final String ticker, companyName, close, changePct, changeValue, evaluation;
@@ -37,17 +38,13 @@ class CompanyHeader extends StatelessWidget {
       children: [
         Text(
           '${companyName} (${ticker})',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
-            fontSize: 12,
-          ),
+          style: getNameAndTickerTextStyle(),
         ),
         Row(
           children: [
             Text(
               '${double.parse(close)}',
-              style: TextStyle(color: Colors.grey[700], fontSize: 10),
+              style: getSmallBoldTextStyle(),
             ),
             Text(
               ' (${double.parse(changePct)}%)',
@@ -55,11 +52,14 @@ class CompanyHeader extends StatelessWidget {
                   color: double.parse(changePct) > 0.0
                       ? Colors.green[900]
                       : Colors.red[900],
-                  fontSize: 10),
+                  fontSize: 12),
             ),
             Text(showDate == null ? '' : ', ${date.toString()} ',
-                style: TextStyle(color: Colors.grey[700], fontSize: 10)),
+                style: getSmallTextStyle()),
           ],
+        ),
+        const SizedBox(
+          height: 4,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -70,15 +70,15 @@ class CompanyHeader extends StatelessWidget {
               children: [
                 Text(
                   'Advanced Technical Analysis',
-                  style: TextStyle(color: Colors.grey[700], fontSize: 10),
+                  style: getSmallestTextStyle(),
                 ),
                 Text(
                   term.toString(),
-                  style: TextStyle(color: Colors.grey[700], fontSize: 10),
+                  style: getSmallestTextStyle(),
                 ),
                 Text(
                   'Recommendaton one to six months',
-                  style: TextStyle(color: Colors.grey[700], fontSize: 10),
+                  style: getSmallestTextStyle(),
                 ),
               ],
             ),
@@ -94,10 +94,7 @@ class CompanyHeader extends StatelessWidget {
               )),
               child: Text(
                 evaluation.toString(),
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
-                    fontSize: 16),
+                style: getEvaluationTextStyle(),
               ),
             )
           ],

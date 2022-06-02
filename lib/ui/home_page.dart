@@ -3,8 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:investtech_app/const/text_style.dart';
 
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/market_selection_page.dart';
@@ -12,7 +14,7 @@ import 'package:investtech_app/ui/reorder_page.dart';
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
 import 'package:investtech_app/widgets/barometer.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/widgets/web_tv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/todays_signals.dart';
@@ -152,11 +154,14 @@ class _HomeOverviewState extends State<HomeOverview> {
                                 )).then(onGoBack);
                             break;
                           case 'Settings':
-                            Navigator.push(
+                            var result = Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => SettingsPage(),
-                                ));
+                                )).then((value) {
+                              setState(() {});
+                            });
+
                             break;
                         }
                       },
@@ -199,20 +204,32 @@ class _HomeOverviewState extends State<HomeOverview> {
                     //height: 40,
                     width: double.infinity,
                     padding: const EdgeInsets.only(left: 10, top: 5),
-                    color: Theme.of(context).primaryColorDark,
+                    //color: Theme.of(context).primaryColorDark,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Analysis: ${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(int.parse(snapshot.data!.analysesDate) * 1000))}',
-                          style: Theme.of(context).textTheme.bodyText2,
+                          AppLocalizations.of(context)!
+                              .analysis_home_header_template(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      int.parse(snapshot.data!.analysesDate) *
+                                          1000)),
+                          style: getSmallestTextStyle(),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
-                        Text(
-                          'Last Updated : Just Now',
-                          style: Theme.of(context).textTheme.bodyText2,
+                        Row(
+                          children: [
+                            Text(
+                              'Last Updated : ',
+                              style: getSmallestTextStyle(),
+                            ),
+                            Text(
+                              'just Now',
+                              style: getSmallestTextStyle(),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -243,14 +260,6 @@ class _HomeOverviewState extends State<HomeOverview> {
                             //padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.grey,
-                                    offset: Offset(0.0, 2.0),
-                                    blurRadius: 1.5,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
                                 border: const Border(
                                     bottom: BorderSide(
                                   width: 0.8,

@@ -11,7 +11,7 @@ import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
 import 'package:investtech_app/ui/web_login_page.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:investtech_app/const/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WebViewPage extends StatefulWidget {

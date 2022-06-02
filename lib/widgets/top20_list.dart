@@ -30,18 +30,22 @@ class Top20List extends StatelessWidget {
             children: [
               Text(
                 '${index + 1}.',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     top20Obj[index].ticker,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     top20Obj[index].companyName,
-                    style: TextStyle(fontSize: 12),
+                    style: TextStyle(),
                   ),
                 ],
               ),
@@ -51,7 +55,9 @@ class Top20List extends StatelessWidget {
                 children: [
                   Text(
                     double.parse((top20Obj[index].price)).toStringAsFixed(2),
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     '${double.parse((top20Obj[index].changeVal))}(${double.parse((top20Obj[index].changePct)).toStringAsFixed(2)}%)',

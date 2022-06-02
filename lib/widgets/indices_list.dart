@@ -45,13 +45,15 @@ class IndicesList extends StatelessWidget {
               if (page == 'detail') ...{
                 Text(
                   _indicesEvaluation[index].ticker,
-                  style: const TextStyle(fontSize: 11),
+                  style: const TextStyle(
+                      fontSize: 11, fontWeight: FontWeight.w200),
                 ),
                 Text(
                   double.parse(
                     _indicesEvaluation[index].close,
                   ).toStringAsFixed(2),
-                  style: const TextStyle(fontSize: 11),
+                  style: const TextStyle(
+                      fontSize: 11, fontWeight: FontWeight.w200),
                 ),
                 Text(
                   double.parse(_indicesEvaluation[index].change)

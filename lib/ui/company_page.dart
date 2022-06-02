@@ -40,7 +40,6 @@ class CompanyPage extends StatelessWidget {
                       actionsPadding: EdgeInsets.zero,
                       title: Text(
                         '$companyName ($ticker)',
-                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                       ),
                       content: SingleChildScrollView(
                         child: Column(

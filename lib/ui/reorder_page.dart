@@ -3,7 +3,7 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:investtech_app/network/models/home.dart';
 import 'package:investtech_app/ui/home_page.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
+import 'package:investtech_app/const/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReorderPage extends StatefulWidget {
@@ -111,7 +111,7 @@ class _ReorderPageState extends State<ReorderPage> {
               addListToSF('items', prodId);
               Navigator.pop(context, true);
             },
-            child: Icon(Icons.save),
+            child: const Icon(Icons.check),
           )
         ],
       ),
@@ -169,7 +169,10 @@ class _ReorderPageState extends State<ReorderPage> {
                                   ),
                                 ),
                               ),
-                              Text(item.title),
+                              Text(
+                                item.title,
+                                style: const TextStyle(fontSize: 15),
+                              ),
                             ],
                           ),
                           trailing: const DragHandle(
@@ -276,7 +279,10 @@ class _ReorderPageState extends State<ReorderPage> {
                             ),
                           ),
                         ),
-                        Text(widget.excludedProducts[index].title.toString()),
+                        Text(
+                          widget.excludedProducts[index].title.toString(),
+                          style: const TextStyle(fontSize: 15),
+                        ),
                       ],
                     ),
                   ),

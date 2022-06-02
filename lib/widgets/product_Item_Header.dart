@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/text_style.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProductHeader extends StatelessWidget {
   final String? title;
@@ -18,11 +20,11 @@ class ProductHeader extends StatelessWidget {
         children: [
           Text(
             title ?? '',
-            style: Theme.of(context).textTheme.bodyText1,
+            style: getHomePageHeadingTextStyle(),
           ),
           Text(
-            seeAll == 1 ? 'See all' : '',
-            style: const TextStyle(color: Color(0xFFFF6600)),
+            seeAll == 1 ? AppLocalizations.of(context)!.see_all : '',
+            style: getHomePageSeeAllTextStyle(),
           ),
         ],
       ),

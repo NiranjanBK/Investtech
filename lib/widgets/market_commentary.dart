@@ -92,13 +92,13 @@ class MarketCommentaries extends StatelessWidget {
                                   commentaryObj[index].market,
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                const SizedBox(height: 5),
+                                const SizedBox(height: 2),
                                 Text(
                                   double.parse((commentaryObj[index].close))
                                       .toStringAsFixed(2),
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                const SizedBox(height: 5),
+                                const SizedBox(height:2),
                                 Text(
                                   '${double.parse((commentaryObj[index].changePct)).toStringAsFixed(2)}%',
                                   style: TextStyle(
@@ -108,12 +108,12 @@ class MarketCommentaries extends StatelessWidget {
                                           ? Colors.green[900]
                                           : Colors.red[900]),
                                 ),
-                                const SizedBox(height: 5),
+                                const SizedBox(height: 2),
                                 Text(
                                   commentaryObj[index].title,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                 
                                   ),
                                 ),
                               ],

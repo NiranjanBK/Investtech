@@ -22,33 +22,55 @@ class IndicesEvalTableHead extends StatelessWidget {
             if (page == 'detail') ...{
               Text(
                 _indicesEvaluation.title.index,
-                style: const TextStyle(fontSize: 10),
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.close,
-                style: const TextStyle(fontSize: 10),
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.change,
-                style: const TextStyle(fontSize: 10),
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.short,
-                style: const TextStyle(fontSize: 10),
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.medium,
-                style: const TextStyle(fontSize: 10),
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.long,
-                style: const TextStyle(fontSize: 10),
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
             } else ...{
-              Text(_indicesEvaluation.title.index),
-              Text(_indicesEvaluation.title.short),
-              Text(_indicesEvaluation.title.medium),
-              Text(_indicesEvaluation.title.long),
+              Text(
+                _indicesEvaluation.title.index,
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                _indicesEvaluation.title.short,
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                _indicesEvaluation.title.medium,
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                _indicesEvaluation.title.long,
+                style:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              ),
             }
           ])
         ],

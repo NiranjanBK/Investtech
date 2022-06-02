@@ -1,22 +1,34 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/disclaimer_page.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
 import 'package:investtech_app/ui/web_view_privacy_page.dart';
-import 'package:investtech_app/widgets/pref_keys.dart';
-import 'package:investtech_app/widgets/theme.dart';
+import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:open_store/open_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
-  List<String>? language = [
-    'English',
-    'Norweign',
-    'Swedish',
-    'Danish',
-    'German'
+  List<Map<String, String>>? language = [
+    {'language': 'English', 'code': 'en'},
+    {'language': 'Norweign', 'code': 'no'},
+    {'language': 'Swedish', 'code': 'sv'},
+    {'language': 'Danish', 'code': 'da'},
+    {'language': 'German', 'code': 'de'},
   ];
+
+  Map<String, String>? languageCodeMap = {
+    'en': 'English',
+    'no': 'Norweign',
+    'sv': 'Swedish',
+    'da': 'Danish',
+    'de': 'German'
+  };
+
   List<String>? themes = ['Light', 'Dark'];
   String? _groupValLang = 'English';
   late String _groupValTheme;
@@ -55,7 +67,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<String> getUserTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(PrefKeys.SELECTED_THEME) ?? 'Light';
+    String selectedTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? 'Light';
+    String selectedLang = prefs.getString(PrefKeys.selectedLang) ?? 'en';
+    return jsonEncode(
+        {'selectedTheme': selectedTheme, 'selectedLang': selectedLang});
   }
 
   void getAppInfo() async {
@@ -66,375 +81,301 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: FutureBuilder(
-        future: getUserTheme(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Text(''),
-                    title: Text(
-                      'Account Settings',
-                      style: TextStyle(color: Colors.orange[800], fontSize: 12),
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.of(context).pop(true);
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.settings),
+        ),
+        body: FutureBuilder(
+          future: getUserTheme(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              print(
+                  'debug: ${jsonDecode(snapshot.data.toString())['selectedLang']}');
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Text(''),
+                      title: Text(
+                        AppLocalizations.of(context)!.account_settings,
+                        style:
+                            TextStyle(color: Colors.orange[800], fontSize: 12),
+                      ),
                     ),
-                  ),
-                  ListTile(
-                    leading: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.mail,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      'Newsletter Subscription',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    subtitle: Text(
-                      'Free daily newsletter every morning!',
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    trailing: Switch(
-                      inactiveTrackColor: Theme.of(context).iconTheme.color,
-                      onChanged: toggleSwitch,
-                      value: isNewsLetterSwitched,
-                      activeColor: Colors.orange[700],
-                      //activeTrackColor: Colors.yellow,
-                      //inactiveThumbColor: Colors.redAccent,
-                      //inactiveTrackColor: Colors.orange,
-                    ),
-                  ),
-                  ListTile(
-                    leading: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.language,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      'Language',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    subtitle: Text(
-                      widget._groupValLang.toString(),
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    onTap: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 0),
-                        title: const Text('Language'),
-                        content: SizedBox(
-                          height: 250,
-                          child: Column(
-                            children: [
-                              ...widget.language!.map((lang) {
-                                return ListTile(
-                                  dense: true,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0.0, horizontal: 0.0),
-                                  title: Text(
-                                    lang,
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  leading: Radio(
-                                    activeColor: const Color(0XFF008080),
-                                    value: lang,
-                                    groupValue: widget._groupValLang,
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        widget._groupValLang = value;
-                                      });
-                                      Navigator.pop(context, 'Cancel');
-                                    },
-                                  ),
-                                );
-                              })
-                            ],
+                    ListTile(
+                      leading: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.mail,
+                            color: Theme.of(context).iconTheme.color,
                           ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(color: Color(0xFFFF6600)),
+                        ],
+                      ),
+                      title: Text(
+                        AppLocalizations.of(context)!.news_letter_subscription,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      subtitle: Text(
+                        AppLocalizations.of(context)!.news_letter_summary,
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      trailing: Switch(
+                        inactiveTrackColor: Theme.of(context).iconTheme.color,
+                        onChanged: toggleSwitch,
+                        value: isNewsLetterSwitched,
+                        activeColor: Colors.orange[700],
+                        //activeTrackColor: Colors.yellow,
+                        //inactiveThumbColor: Colors.redAccent,
+                        //inactiveTrackColor: Colors.orange,
+                      ),
+                    ),
+                    ListTile(
+                      leading: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.language,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                        ],
+                      ),
+                      title: Text(
+                        AppLocalizations.of(context)!.language,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      subtitle: Text(
+                        widget.languageCodeMap![
+                                '${jsonDecode(snapshot.data.toString())['selectedLang']}']
+                            .toString(),
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      onTap: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 0),
+                          title: const Text('Language'),
+                          content: SizedBox(
+                            height: 250,
+                            child: Column(
+                              children: [
+                                ...widget.language!.map((lang) {
+                                  return ListTile(
+                                    dense: true,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 0.0, horizontal: 0.0),
+                                    title: Text(
+                                      lang['language'].toString(),
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                    leading: Radio(
+                                      activeColor: const Color(0XFF008080),
+                                      value: lang['language'].toString(),
+                                      groupValue: widget.languageCodeMap![
+                                              jsonDecode(snapshot.data
+                                                  .toString())['selectedLang']]
+                                          .toString(),
+                                      onChanged: (String? value) async {
+                                        print(lang['code'].toString());
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        prefs.setString(PrefKeys.selectedLang,
+                                            lang['code'].toString());
+                                        // setState(() {
+                                        //   widget._groupValTheme = value;
+                                        // });
+                                        Locale selectedLocale =
+                                            Locale(lang['code'].toString());
+                                        BlocProvider.of<ThemeBloc>(context)
+                                          ..add(ThemeBlocEvents.localeChanged)
+                                          ..locale = selectedLocale;
+                                        Navigator.pop(context, 'Cancel');
+                                      },
+                                    ),
+                                  );
+                                })
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.color_lens,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                      ],
-                    ),
-                    title: Text(
-                      'Theme',
-                      style: Theme.of(context).textTheme.caption,
-                    ),
-                    subtitle: Text(
-                      snapshot.data.toString(),
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
-                    onTap: () => showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 0),
-                        title: const Text(
-                          'Theme',
-                          style: TextStyle(),
-                        ),
-                        content: SizedBox(
-                          height: 100,
-                          child: Column(
-                            children: [
-                              ...widget.themes!.map((theme) {
-                                return ListTile(
-                                  dense: true,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 0.0, horizontal: 0.0),
-                                  title: Text(
-                                    theme,
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  leading: Radio(
-                                    activeColor: const Color(0XFF008080),
-                                    value: theme,
-                                    groupValue: snapshot.data.toString(),
-                                    onChanged: (String? value) async {
-                                      SharedPreferences prefs =
-                                          await SharedPreferences.getInstance();
-                                      prefs.setString(
-                                          PrefKeys.SELECTED_THEME, value!);
-                                      // setState(() {
-                                      //   widget._groupValTheme = value;
-                                      // });
-                                      AppTheme selectedTheme = value == 'Dark'
-                                          ? AppTheme.darkTheme
-                                          : AppTheme.lightTheme;
-                                      BlocProvider.of<ThemeBloc>(context).add(
-                                          ThemeEvent(appTheme: selectedTheme));
-                                      Navigator.pop(context, 'Cancel');
-                                    },
-                                  ),
-                                );
-                              })
-                            ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                            child: const Text('Cancel',
-                                style: TextStyle(color: Color(0xFFFF6600))),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                    //indent: 20,
-                    // endIndent: 0,
-                    color: Colors.grey[300],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        leading: const Text(''),
-                        title: Text(
-                          'Sharing',
-                          style: TextStyle(
-                              color: Colors.orange[800], fontSize: 12),
-                        ),
-                      ),
-                      ListTile(
-                        leading: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.share,
-                              color: Theme.of(context).iconTheme.color,
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: Text(
+                                AppLocalizations.of(context)!.cancel,
+                                style: TextStyle(color: Color(0xFFFF6600)),
+                              ),
                             ),
                           ],
                         ),
-                        title: Text(
-                          'Include notes',
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                        subtitle: Text(
-                          'include personal notes associated with a stock while sharing',
-                          style: Theme.of(context).textTheme.subtitle1,
-                        ),
-                        trailing: Switch(
-                          inactiveTrackColor: Theme.of(context).iconTheme.color,
-                          onChanged: (_) {
-                            if (isNotesSwitched == false) {
-                              setState(() {
-                                isNotesSwitched = true;
-                                //textValue = 'Switch Button is ON';
-                              });
-                            } else {
-                              setState(() {
-                                isNotesSwitched = false;
-                                //textValue = 'Switch Button is OFF';
-                              });
-                            }
-                          },
-                          value: isNotesSwitched,
-                          activeColor: Colors.orange[700],
-                          //activeTrackColor: Colors.yellow,
-                          //inactiveThumbColor: Colors.redAccent,
-                          //inactiveTrackColor: Colors.orange,
-                        ),
                       ),
-                      const SizedBox(
-                        height: 10,
+                    ),
+                    ListTile(
+                      leading: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.color_lens,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                        ],
                       ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        //indent: 20,
-                        // endIndent: 0,
-                        color: Colors.grey[300],
+                      title: Text(
+                        AppLocalizations.of(context)!.theme,
+                        style: Theme.of(context).textTheme.caption,
                       ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        leading: const Text(''),
-                        title: Text(
-                          'About',
-                          style: TextStyle(
-                              color: Colors.orange[800], fontSize: 12),
-                        ),
+                      subtitle: Text(
+                        jsonDecode(snapshot.data.toString())['selectedTheme'],
+                        style: Theme.of(context).textTheme.subtitle1,
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Disclaimer()),
-                          );
-                        },
-                        child: ListTile(
-                          leading: Text(''),
+                      onTap: () => showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 0),
                           title: Text(
-                            'Disclaimer',
-                            style: Theme.of(context).textTheme.caption,
+                            AppLocalizations.of(context)!.theme,
+                            style: const TextStyle(),
                           ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => WebViewPrivacyPage(
-                                    'Privacy Policy',
-                                    'https://www.investtech.com/main/market.php?MarketID=1&product=0')),
-                          );
-                        },
-                        child: ListTile(
-                          leading: Text(''),
-                          title: Text(
-                            'Privacy Policy',
-                            style: Theme.of(context).textTheme.caption,
+                          content: SizedBox(
+                            height: 100,
+                            child: Column(
+                              children: [
+                                ...widget.themes!.map((theme) {
+                                  return ListTile(
+                                    dense: true,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 0.0, horizontal: 0.0),
+                                    title: Text(
+                                      theme,
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                    leading: Radio(
+                                      activeColor: const Color(0XFF008080),
+                                      value: theme,
+                                      groupValue:
+                                          jsonDecode(snapshot.data.toString())[
+                                                  'selectedTheme']
+                                              .toString(),
+                                      onChanged: (String? value) async {
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        prefs.setString(
+                                            PrefKeys.SELECTED_THEME, value!);
+                                        // setState(() {
+                                        //   widget._groupValTheme = value;
+                                        // });
+                                        AppTheme selectedTheme = value == 'Dark'
+                                            ? AppTheme.darkTheme
+                                            : AppTheme.lightTheme;
+                                        BlocProvider.of<ThemeBloc>(context)
+                                          ..add(ThemeBlocEvents.themeChamged)
+                                          ..loadTheme = selectedTheme;
+                                        Navigator.pop(context, 'Cancel');
+                                      },
+                                    ),
+                                  );
+                                })
+                              ],
+                            ),
                           ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: Text(AppLocalizations.of(context)!.cancel,
+                                  style: const TextStyle(
+                                      color: Color(0xFFFF6600))),
+                            ),
+                          ],
                         ),
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => WebViewPrivacyPage(
-                                    'Terms & Conditions',
-                                    'https://www.investtech.com/main/market.php?MarketID=441&product=44&fn=/uk/disclaimerAndTerms.phtm&lang=000')),
-                          );
-                        },
-                        child: ListTile(
-                          leading: Text(''),
-                          title: Text(
-                            'Terms & condition',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        ),
-                      ),
-                      ListTile(
-                        leading: const Text(''),
-                        title: Text(
-                          'Version',
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                        subtitle: Text(
-                          version.toString(),
-                          style: Theme.of(context).textTheme.subtitle1,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          OpenStore.instance.open(
-                            //appStoreId: 'com.investtech.investtechapp',
-                            androidAppBundleId: 'com.investtech.investtechapp',
-                          );
-                        },
-                        child: ListTile(
-                          leading: Text(''),
-                          title: Text(
-                            'Learn Technical Analysis',
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                          subtitle: Text(
-                            'Get the app',
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        //indent: 20,
-                        // endIndent: 0,
-                        color: Colors.grey[300],
-                      ),
-                    ],
-                  ),
-                  Column(
+                    ),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      //indent: 20,
+                      // endIndent: 0,
+                      color: Colors.grey[300],
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ListTile(
                           leading: const Text(''),
                           title: Text(
-                            'Help',
+                            AppLocalizations.of(context)!.sharing,
+                            style: TextStyle(
+                                color: Colors.orange[800], fontSize: 12),
+                          ),
+                        ),
+                        ListTile(
+                          leading: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.share,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                            ],
+                          ),
+                          title: Text(
+                            AppLocalizations.of(context)!.include_notes,
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                          subtitle: Text(
+                            AppLocalizations.of(context)!.include_notes_summary,
+                            style: Theme.of(context).textTheme.subtitle1,
+                          ),
+                          trailing: Switch(
+                            inactiveTrackColor:
+                                Theme.of(context).iconTheme.color,
+                            onChanged: (_) {
+                              if (isNotesSwitched == false) {
+                                setState(() {
+                                  isNotesSwitched = true;
+                                  //textValue = 'Switch Button is ON';
+                                });
+                              } else {
+                                setState(() {
+                                  isNotesSwitched = false;
+                                  //textValue = 'Switch Button is OFF';
+                                });
+                              }
+                            },
+                            value: isNotesSwitched,
+                            activeColor: Colors.orange[700],
+                            //activeTrackColor: Colors.yellow,
+                            //inactiveThumbColor: Colors.redAccent,
+                            //inactiveTrackColor: Colors.orange,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          //indent: 20,
+                          // endIndent: 0,
+                          color: Colors.grey[300],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          leading: const Text(''),
+                          title: Text(
+                            AppLocalizations.of(context)!.about,
                             style: TextStyle(
                                 color: Colors.orange[800], fontSize: 12),
                           ),
@@ -444,41 +385,150 @@ class _SettingsPageState extends State<SettingsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => WebViewPrivacyPage(
-                                      'Chart Explanation',
-                                      'https://www.investtech.com/main/com/charthelp2012_000.php')),
+                                  builder: (context) => const Disclaimer()),
                             );
                           },
                           child: ListTile(
                             leading: Text(''),
                             title: Text(
-                              'Chart Explanation',
+                              AppLocalizations.of(context)!.disclaimer,
                               style: Theme.of(context).textTheme.caption,
                             ),
-                            subtitle: Text(
-                              'Understand our charts',
-                              style: Theme.of(context).textTheme.subtitle1,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => WebViewPrivacyPage(
+                                      'Privacy Policy',
+                                      'https://www.investtech.com/main/market.php?MarketID=1&product=0')),
+                            );
+                          },
+                          child: ListTile(
+                            leading: Text(''),
+                            title: Text(
+                              AppLocalizations.of(context)!.privacy_policy,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => WebViewPrivacyPage(
+                                      'Terms & Conditions',
+                                      'https://www.investtech.com/main/market.php?MarketID=441&product=44&fn=/uk/disclaimerAndTerms.phtm&lang=000')),
+                            );
+                          },
+                          child: ListTile(
+                            leading: Text(''),
+                            title: Text(
+                              AppLocalizations.of(context)!
+                                  .terms_and_conditions,
+                              style: Theme.of(context).textTheme.caption,
                             ),
                           ),
                         ),
                         ListTile(
-                          leading: Text(''),
+                          leading: const Text(''),
                           title: Text(
-                            'Support',
+                            AppLocalizations.of(context)!.version,
                             style: Theme.of(context).textTheme.caption,
                           ),
+                          subtitle: Text(
+                            version.toString(),
+                            style: Theme.of(context).textTheme.subtitle1,
+                          ),
                         ),
-                      ]),
-                ],
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
+                        InkWell(
+                          onTap: () {
+                            OpenStore.instance.open(
+                              //appStoreId: 'com.investtech.investtechapp',
+                              androidAppBundleId:
+                                  'com.investtech.investtechapp',
+                            );
+                          },
+                          child: ListTile(
+                            leading: Text(''),
+                            title: Text(
+                              AppLocalizations.of(context)!.lta,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            subtitle: Text(
+                              AppLocalizations.of(context)!.get_the_app,
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          //indent: 20,
+                          // endIndent: 0,
+                          color: Colors.grey[300],
+                        ),
+                      ],
+                    ),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            leading: const Text(''),
+                            title: Text(
+                              AppLocalizations.of(context)!.help,
+                              style: TextStyle(
+                                  color: Colors.orange[800], fontSize: 12),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WebViewPrivacyPage(
+                                        'Chart Explanation',
+                                        'https://www.investtech.com/main/com/charthelp2012_000.php')),
+                              );
+                            },
+                            child: ListTile(
+                              leading: Text(''),
+                              title: Text(
+                                AppLocalizations.of(context)!.chart_explanation,
+                                style: Theme.of(context).textTheme.caption,
+                              ),
+                              subtitle: Text(
+                                AppLocalizations.of(context)!
+                                    .chart_explanation_summary,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                            ),
+                          ),
+                          ListTile(
+                            leading: Text(''),
+                            title: Text(
+                              AppLocalizations.of(context)!.support,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          ),
+                        ]),
+                  ],
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
 
-          // By default, show a loading spinner.
-          return const Center(child: CircularProgressIndicator());
-        },
+            // By default, show a loading spinner.
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }

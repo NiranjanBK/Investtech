@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/colors.dart';
 
 class AppThemes {
   static final appThemeData = {
@@ -24,16 +25,16 @@ class AppThemes {
 
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
           bodyText1: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 15,
-              color: Colors.grey[600]),
-          bodyText2: TextStyle(fontSize: 12, color: Colors.grey[600]),
-          subtitle1: const TextStyle(fontSize: 10, color: Color(0xFF4A5357)),
-          caption: const TextStyle(
+              color: Color(ColorHex.DARK_GREY)),
+          bodyText2: TextStyle(fontSize: 12, color: Color(ColorHex.DARK_GREY)),
+          subtitle1: TextStyle(fontSize: 10, color: Color(ColorHex.DARK_GREY)),
+          caption: TextStyle(
             fontSize: 12,
-            color: Color(0xFF282828),
+            color: Color(ColorHex.DARK_GREY),
           )),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,

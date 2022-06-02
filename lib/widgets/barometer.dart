@@ -49,10 +49,13 @@ class BarometerGraphState extends State<BarometerGraph> {
         child: Column(
           children: [
             ProductHeader('', 0),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Text(_barometer.stockBarometer.market),
+            Text(
+              _barometer.stockBarometer.market,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             SizedBox(
               height: 200,
               child: SfCircularChart(
