@@ -15,6 +15,7 @@ import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
 import 'package:investtech_app/widgets/barometer.dart';
 import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/widgets/favorites.dart';
 import 'package:investtech_app/widgets/web_tv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/todays_signals.dart';
@@ -91,8 +92,6 @@ class _HomeOverviewState extends State<HomeOverview> {
   @override
   Widget build(BuildContext context) {
     late List<Teaser> teaserList = [];
-    Teaser favourites = Teaser(
-        '7', 'favourites', 'Favourites', {'message': 'no favourites added'});
 
     return Container(
       padding: const EdgeInsets.only(top: 5),
@@ -101,9 +100,10 @@ class _HomeOverviewState extends State<HomeOverview> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             teaserList = snapshot.data!.teaser;
-            teaserList.add(favourites);
+
             List reoderList =
                 reorderString == '' ? [] : reorderString.split(',');
+            print(reoderList);
             return Scaffold(
               appBar: AppBar(
                 title: InkWell(
@@ -154,7 +154,7 @@ class _HomeOverviewState extends State<HomeOverview> {
                                 )).then(onGoBack);
                             break;
                           case 'Settings':
-                            var result = Navigator.push(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => SettingsPage(),
@@ -204,7 +204,7 @@ class _HomeOverviewState extends State<HomeOverview> {
                     //height: 40,
                     width: double.infinity,
                     padding: const EdgeInsets.only(left: 10, top: 5),
-                    //color: Theme.of(context).primaryColorDark,
+                    color: Theme.of(context).primaryColorDark,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -237,18 +237,8 @@ class _HomeOverviewState extends State<HomeOverview> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const ScrollPhysics(),
-                    itemCount: reoderList.length == 0
-                        ? snapshot.data!.teaser.length
-                        : reoderList.length,
+                    itemCount: snapshot.data!.teaser.length,
                     itemBuilder: (context, index) {
-                      int prodId = reoderList.length == 0
-                          ? index
-                          : int.parse(reoderList[index]);
-                      var productName =
-                          snapshot.data!.teaser[index].productName +
-                              '\n\n' +
-                              //snapshot.data!.teaser[index].content +
-                              '\n\n';
                       return Column(
                         //height: 400,
                         children: [
@@ -260,6 +250,14 @@ class _HomeOverviewState extends State<HomeOverview> {
                             //padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.grey,
+                                    offset: Offset(0.0, 2.0),
+                                    blurRadius: 1.5,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
                                 border: const Border(
                                     bottom: BorderSide(
                                   width: 0.8,
@@ -267,58 +265,57 @@ class _HomeOverviewState extends State<HomeOverview> {
                                 ))),
                             child: Row(
                               children: [
-                                if (snapshot.data!.teaser[prodId].productName ==
+                                if (snapshot.data!.teaser[index].productName ==
                                     'marketCommentary') ...{
                                   MarketCommentaries(
-                                    snapshot.data!.teaser[prodId],
+                                    snapshot.data!.teaser[index],
                                   ),
                                 } else if (snapshot
-                                        .data!.teaser[prodId].productName ==
+                                        .data!.teaser[index].productName ==
                                     'todaysSignals') ...{
                                   TodaysSignals(
-                                    snapshot.data!.teaser[prodId],
+                                    snapshot.data!.teaser[index],
                                   ),
                                 } else if (snapshot
-                                        .data!.teaser[prodId].productName ==
+                                        .data!.teaser[index].productName ==
                                     'top20') ...{
                                   TopTwenty(
-                                    snapshot.data!.teaser[prodId],
+                                    snapshot.data!.teaser[index],
                                   ),
                                 } else if (snapshot
-                                        .data!.teaser[prodId].productName ==
+                                        .data!.teaser[index].productName ==
                                     'indicesAnalyses') ...{
                                   Indices(
-                                    snapshot.data!.teaser[prodId],
+                                    snapshot.data!.teaser[index],
                                     'analyses',
                                   ),
                                 } else if (snapshot
-                                        .data!.teaser[prodId].productName ==
+                                        .data!.teaser[index].productName ==
                                     'todaysCandidate') ...{
                                   TodaysCandidate(
-                                    snapshot.data!.teaser[prodId],
+                                    snapshot.data!.teaser[index],
                                     'case',
                                   ),
                                 } else if (snapshot
-                                        .data!.teaser[prodId].productName ==
+                                        .data!.teaser[index].productName ==
                                     'indicesEvaluations') ...{
                                   IndicesEvaluation(
-                                      snapshot.data!.teaser[prodId]),
+                                      snapshot.data!.teaser[index]),
                                 } else if (snapshot
-                                        .data!.teaser[prodId].productName ==
+                                        .data!.teaser[index].productName ==
                                     'barometer') ...{
                                   BarometerGraph(
-                                      snapshot.data!.teaser[prodId].content,
-                                      snapshot.data!.teaser[prodId].title),
+                                      snapshot.data!.teaser[index].content,
+                                      snapshot.data!.teaser[index].title),
                                 } else if (snapshot
-                                        .data!.teaser[7].productName ==
+                                        .data!.teaser[index].productName ==
                                     'webTV') ...{
-                                  WebTVTeaser(snapshot.data!.teaser[7]),
-                                } else ...{
-                                  Column(children: [
-                                    Text(productName),
-                                    ProductHeader('Favourites', 0),
-                                  ]),
-                                },
+                                  WebTVTeaser(snapshot.data!.teaser[index]),
+                                } else if (snapshot
+                                        .data!.teaser[index].productName ==
+                                    'favourites') ...{
+                                  FavoritesTeaser(snapshot.data!.teaser[index]),
+                                }
 
                                 //Text(),
                               ],

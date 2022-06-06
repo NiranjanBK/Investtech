@@ -19,7 +19,6 @@ class MarketSelection extends StatefulWidget {
 }
 
 class _MarketSelectionState extends State<MarketSelection> {
-  late Database _db;
   late Future<List<COUNTRY>> country;
 
   @override

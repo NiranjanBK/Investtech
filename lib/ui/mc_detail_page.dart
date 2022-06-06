@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/network/models/mc_detail.dart';
 import 'package:investtech_app/ui/blocs/mc_bloc.dart';
+import 'package:investtech_app/ui/company_page.dart';
 
 class MarketCommentaryDetailPage extends StatefulWidget {
   const MarketCommentaryDetailPage({Key? key}) : super(key: key);
@@ -52,39 +53,52 @@ class _MarketCommentaryDetailPageState
                               fontWeight: FontWeight.w700, fontSize: 12),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                                width: 0.5, color: (Colors.grey[400])!),
-                            top: BorderSide(
-                                width: 0.5, color: (Colors.green[400])!),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CompanyPage(
+                                  mcDetail!.analyze!.ingress!.companyId
+                                      .toString(),
+                                  4,
+                                ),
+                              ));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                  width: 0.5, color: (Colors.grey[400])!),
+                              top: BorderSide(
+                                  width: 0.5, color: (Colors.green[400])!),
+                            ),
                           ),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              mcDetail!.analyze!.ingress!.text.toString(),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              mcDetail!.analyze!.marketInfo!.numUpDown
-                                  .toString(),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              mcDetail!.analyze!.marketInfo!.totalTurnOver
-                                  .toString(),
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
+                          child: Column(
+                            children: [
+                              Text(
+                                mcDetail!.analyze!.ingress!.text.toString(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                mcDetail!.analyze!.marketInfo!.numUpDown
+                                    .toString(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                mcDetail!.analyze!.marketInfo!.totalTurnOver
+                                    .toString(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -97,20 +111,34 @@ class _MarketCommentaryDetailPageState
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                    width: 0.5, color: (Colors.grey[400])!),
-                                top: BorderSide(
-                                    width: 0.5, color: (Colors.grey[400])!),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompanyPage(
+                                      mcDetail!.analyze!.stocks!.stock[index]
+                                          .companyId
+                                          .toString(),
+                                      4,
+                                    ),
+                                  ));
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 0.5, color: (Colors.grey[400])!),
+                                  top: BorderSide(
+                                      width: 0.5, color: (Colors.grey[400])!),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              mcDetail!.analyze!.stocks!.stock[index].text
-                                  .toString(),
-                              style: const TextStyle(fontSize: 12),
+                              child: Text(
+                                mcDetail!.analyze!.stocks!.stock[index].text
+                                    .toString(),
+                                style: const TextStyle(fontSize: 12),
+                              ),
                             ),
                           ),
                         ],

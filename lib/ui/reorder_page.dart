@@ -54,6 +54,7 @@ class _ReorderPageState extends State<ReorderPage> {
 
   addListToSF(key, value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
     prefs.setString(key, value);
   }
 

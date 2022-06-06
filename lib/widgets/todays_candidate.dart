@@ -25,7 +25,7 @@ class TodaysCandidate extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => CompanyPage(
-                  companyObj.companyId,
+                  companyObj.companyId.toString(),
                   4,
                   companyName: companyObj.assetName,
                   ticker: companyObj.ticker,

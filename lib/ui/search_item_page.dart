@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/network/database/database_helper.dart';
+import 'package:investtech_app/network/models/recent_search.dart';
 import 'package:investtech_app/network/models/search_result.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/widgets/control_visibility.dart';
+import 'package:investtech_app/widgets/recent_search.dart';
 
 class SearchItemPage extends StatefulWidget {
   BuildContext context;
@@ -88,7 +91,7 @@ class _SearchItemPageState extends State<SearchItemPage> {
           //linearProgressIndicator.setVisibility(true);
         }
         return searchResult == null
-            ? const Text('Recent searches')
+            ? const RecentSearchList()
             : ListView.builder(
                 itemCount: searchResult!.length,
                 shrinkWrap: true,
@@ -102,7 +105,16 @@ class _SearchItemPageState extends State<SearchItemPage> {
                             bottom: BorderSide(
                                 color: (Colors.grey[400])!, width: 0.5))),
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        var recentSearch = RecentSearch(
+                            ticker: searchResult![index].ticker,
+                            companyId: searchResult![index].companyId,
+                            countryCode: searchResult![index].countryCode,
+                            companyName: searchResult![index].companyName,
+                            timestamp: DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toString());
+                        DatabaseHelper().addRecentSearch(recentSearch);
                         Navigator.push(
                             context,
                             MaterialPageRoute(

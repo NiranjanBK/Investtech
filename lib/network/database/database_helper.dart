@@ -4,11 +4,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:investtech_app/network/models/country.dart';
+import 'package:investtech_app/network/models/favorites.dart';
 import 'package:investtech_app/network/models/market.dart';
+import 'package:investtech_app/network/models/recent_search.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
+  static const int version = 1;
   static const String countryTable = "COUNTRY";
   static const String id = '_id';
   static const String countryId = "COUNTRY_ID";
@@ -25,6 +28,16 @@ class DatabaseHelper {
   static const String externalCode = "EXTERNAL_CODE";
   static const String currencyCode = "CURRENCY_CODE";
   static const String prefernce = "PREFERENCE";
+
+  static const String favoriteTable = "FAVORITE";
+  static const String companyName = "COMPANY_NAME";
+  static const String companyId = "COMPANY_ID";
+  static const String ticker = "TICKER";
+  static const String note = "NOTE";
+  static const String noteTimestamp = "NOTE_TIMESTAMP";
+  static const String timestamp = "TIMESTAMP";
+
+  static const String searchTable = "RECENT_SEARCH";
 
   static Database? _db;
 
@@ -60,8 +73,121 @@ class DatabaseHelper {
     } else {
       print("Opening existing database");
     }
+
 // open the database
-    return await openDatabase(path, readOnly: true);
+    return await openDatabase(
+      path,
+      version: version,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    var tables = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
+    List tableList = tables.map((e) => e["name"]).toList();
+    print("tables = ${tables.map((e) => e["name"]).toList()}");
+    print("contains favorite table = ${tableList.contains(favoriteTable)}");
+    if (tableList.contains(favoriteTable) == false) {
+      await db.execute('''
+           CREATE TABLE $favoriteTable(
+             $companyName TEXT,
+             $companyId TEXT PRIMARY KEY,
+             $ticker TEXT,
+             $note TEXT,
+             $noteTimestamp TEXT
+           )
+           ''');
+    }
+
+    if (tableList.contains(searchTable) == false) {
+      await db.execute('''
+           CREATE TABLE $searchTable(
+             $ticker TEXT PRIMARY KEY,
+             $companyId TEXT,
+             $countryCode TEXT,
+             $companyName TEXT,
+             $timestamp TEXT
+           )
+           ''');
+    }
+  }
+
+  Future<void> addRecentSearch(RecentSearch recentSearch) async {
+    final database = await db;
+    await database?.rawQuery(
+        "INSERT OR REPLACE INTO $searchTable($ticker,$companyId,$countryCode,$companyName,$timestamp) values (?,?,?,?,?)",
+        [
+          recentSearch.ticker,
+          recentSearch.companyId,
+          recentSearch.countryCode,
+          recentSearch.companyName,
+          recentSearch.timestamp
+        ]);
+  }
+
+  Future<void> addNoteAndFavorite(Favorites favorite) async {
+    final database = await db;
+    await database?.rawQuery(
+        "INSERT OR REPLACE INTO $favoriteTable($companyName,$companyId,$ticker,$note,$noteTimestamp) values (?,?,?,?,?)",
+        [
+          favorite.companyName,
+          favorite.companyId,
+          favorite.ticker,
+          favorite.note,
+          favorite.noteTimestamp
+        ]);
+  }
+
+  Future<List<Favorites>> getNoteAndFavorite() async {
+    final database = await db;
+
+    final List<Map<String, dynamic>> res = await database!.rawQuery(
+      "SELECT * FROM $favoriteTable ",
+    );
+
+    return List.generate(res.length, (index) {
+      return Favorites(
+        companyName: res[index][companyName],
+        companyId: res[index][companyId],
+        ticker: res[index][ticker],
+        note: res[index][note],
+        noteTimestamp: res[index][noteTimestamp],
+      );
+    });
+  }
+
+  Future<List<RecentSearch>> getRecentSearches() async {
+    final database = await db;
+
+    final List<Map<String, dynamic>> res = await database!.rawQuery(
+      "SELECT * FROM $searchTable ",
+    );
+    print(res);
+
+    return List.generate(res.length, (index) {
+      return RecentSearch(
+        ticker: res[index][ticker],
+        companyId: res[index][companyId],
+        countryCode: res[index][countryCode],
+        companyName: res[index][companyName],
+        timestamp: res[index][timestamp],
+      );
+    });
+  }
+
+  getNoteAndFavoriteCompanyIds() async {
+    final database = await db;
+
+    final List<Map<String, dynamic>> res = await database!.rawQuery(
+      "SELECT $companyId FROM $favoriteTable ",
+    );
+    // print(res);
+    int i;
+    //print(res[0]['COMPANY_ID']);
+    return List.generate(res.length, (index) {
+      return res[index]['COMPANY_ID'];
+    });
   }
 
   Future<List<COUNTRY>> getCountryDetails() async {

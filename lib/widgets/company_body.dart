@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/chart_const.dart';
+import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/company_bloc.dart';
@@ -13,6 +15,7 @@ class CompanyBody extends StatelessWidget {
   CompanyBody(this.companyId, this.chartId, {Key? key}) : super(key: key);
 
   List timeSpanString = ['Medium Term', 'Short Term', 'Long Term'];
+  List timeSpanChart = ['4', '5', '6'];
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +52,14 @@ class CompanyBody extends StatelessWidget {
                       //market: companyObj.marketCode.toString(),
                       term: timeSpanString[
                           chartId - 4]), //companyObj.term.toString(),
-                  Image.network(
-                      'https://www.investtech.com/main/img.php?CompanyID=$companyId&chartId=4&indicators=80,81,82,83,84,85,87,88&w=451&h=198'),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Image.network(ApiRepo().getChartUrl(
+                      CHART_TYPE_ADVANCED,
+                      timeSpanChart[chartId - 4],
+                      CHART_STYLE_NORMAL,
+                      companyId)),
                   const SizedBox(
                     height: 10,
                   ),
@@ -66,9 +75,17 @@ class CompanyBody extends StatelessWidget {
                   Text(
                     'Market: ${cmpData!.marketName}',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                     ),
-                  )
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.short_disclaimer,
+                    style: getSmallestTextStyle(),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               );
       }),

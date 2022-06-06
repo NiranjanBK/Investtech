@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:investtech_app/network/models/company.dart';
+import 'package:investtech_app/network/database/database_helper.dart';
+import 'package:investtech_app/network/models/favorites.dart';
 import 'package:investtech_app/widgets/company_body.dart';
 
-class CompanyPage extends StatelessWidget {
+class CompanyPage extends StatefulWidget {
   final String cmpId;
   final int chartId;
   String? companyName;
@@ -11,6 +12,12 @@ class CompanyPage extends StatelessWidget {
       {Key? key, this.companyName, this.ticker})
       : super(key: key);
 
+  @override
+  State<CompanyPage> createState() => _CompanyPageState();
+}
+
+class _CompanyPageState extends State<CompanyPage> {
+  TextEditingController notesController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +46,7 @@ class CompanyPage extends StatelessWidget {
                           EdgeInsets.symmetric(horizontal: 24, vertical: 0),
                       actionsPadding: EdgeInsets.zero,
                       title: Text(
-                        '$companyName ($ticker)',
+                        '${widget.companyName} (${widget.ticker})',
                       ),
                       content: SingleChildScrollView(
                         child: Column(
@@ -55,6 +62,7 @@ class CompanyPage extends StatelessWidget {
                               children: [
                                 Expanded(
                                     child: TextField(
+                                  controller: notesController,
                                   style: const TextStyle(fontSize: 12),
                                   cursorColor: const Color(0xFFEF6C00),
                                   maxLines: 8,
@@ -103,6 +111,15 @@ class CompanyPage extends StatelessWidget {
                                   ),
                                 ),
                                 onPressed: () {
+                                  var favorite = Favorites(
+                                      companyName: widget.companyName ?? "",
+                                      companyId: int.parse(widget.cmpId),
+                                      ticker: widget.ticker ?? "",
+                                      note: notesController.text,
+                                      noteTimestamp: DateTime.now()
+                                          .millisecondsSinceEpoch
+                                          .toString());
+                                  DatabaseHelper().addNoteAndFavorite(favorite);
                                   Navigator.of(context).pop();
                                 },
                               ),
@@ -139,7 +156,7 @@ class CompanyPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Container(
             padding: const EdgeInsets.all(10),
-            child: CompanyBody(cmpId, chartId)),
+            child: CompanyBody(widget.cmpId, widget.chartId)),
       ),
     );
   }

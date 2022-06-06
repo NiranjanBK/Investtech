@@ -4,7 +4,7 @@ part 'company.g.dart';
 
 @JsonSerializable()
 class Company {
-  final String companyId;
+  final String? companyId;
   final String ticker;
   final String? close;
   final String changePct;
@@ -21,7 +21,10 @@ class Company {
   final String? text;
   final String? evaluationText;
   final String? techScore,
+      Name,
       name,
+      Id,
+      countryCode,
       closePrice,
       closeText,
       marketName,
@@ -36,7 +39,11 @@ class Company {
       required this.ticker,
       required this.changePct,
       this.changeValue,
-      required this.companyId,
+      this.Name,
+      this.name,
+      this.Id,
+      this.countryCode,
+      this.companyId,
       this.changeVal,
       this.companyName,
       this.marketCode,
@@ -54,7 +61,6 @@ class Company {
       this.closeText,
       this.commentText,
       this.marketName,
-      this.name,
       this.priceDate,
       this.change,
       this.formattedDate});

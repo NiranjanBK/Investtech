@@ -7,4 +7,7 @@ class PrefKeys {
   static String selectedLang = "selectedLang";
   static String uid = "uid";
   static String pwd = "pwd";
+  static String newsLetterSubscriptionMode = "newsLetterSubscriptionMode";
+  static String newsLetterSubscriptionId = "newsLetterSubscriptionId";
+  static String newsLetterSubscriptionMarket = "newsLetterSubscriptionMarket";
 }

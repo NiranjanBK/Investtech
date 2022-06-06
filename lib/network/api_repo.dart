@@ -1,12 +1,17 @@
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http/http.dart' as http;
 import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/const/chart_const.dart';
+import 'package:investtech_app/network/database/database_helper.dart';
+import 'package:investtech_app/ui/news_letter_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiRepo {
   static final homeRepo = ApiRepo._();
   String? marketName;
   String? marketCode;
+  String? reorderString;
+  List? companyIds;
   String? lang;
 
   Map<String, String>? languageCodeMap = {
@@ -28,6 +33,7 @@ class ApiRepo {
 
   getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    reorderString = prefs.getString('items') ?? '';
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     lang = prefs.getString(PrefKeys.selectedLang) ?? 'en';
@@ -35,11 +41,13 @@ class ApiRepo {
 
   Future<http.Response> getHomePgae(market) async {
     await getListValuesSF();
+    companyIds = await DatabaseHelper().getNoteAndFavoriteCompanyIds();
+    String CompanyIDs = companyIds!.join(",");
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=home&market=$market&countryID=91&lang=${languageCodeMap![lang]}'),
+          'https://www.investtech.com/mobile/api.php?page=home&active=1,1,1,1&prefs=$reorderString&market=$market&countryID=91&lang=${languageCodeMap![lang]}&CompanyIDs=$CompanyIDs'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -58,6 +66,37 @@ class ApiRepo {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+  }
+
+  Future<http.Response> newsLetterSubscription(uid, mode, marketCode) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    return client.get(
+      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+      Uri.parse(
+          'https://www.investtech.com/mobile/api.php?page=emailNewsletter&prefs=$mode&uid=$uid&market=$marketCode'),
+      //body: json.encode(body.toJson()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+  }
+
+  getChartUrl(
+      [chartType = CHART_TYPE_FREE,
+      chartTerm = CHART_TERM_MEDIUM,
+      style = CHART_STYLE_NORMAL,
+      companyId]) {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    var url = "https://www.investtech.com/mobile/img.php?";
+    if (chartType == CHART_TYPE_ADVANCED) {
+      var type = "top20,$chartTerm";
+      url += "type=$type&CompanyID=$companyId";
+    } else {
+      var type = "free,$companyId";
+      url += "type=$type";
+    }
+    print('$url&size=1080,648&style=0&variant=mobile&density=2.75');
+    return '$url&size=1080,648&style=0&variant=mobile&density=2.75';
   }
 
   Future<http.Response> getTop20DetailPage() async {

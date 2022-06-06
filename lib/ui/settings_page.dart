@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
+import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/disclaimer_page.dart';
+import 'package:investtech_app/ui/news_letter_page.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
 import 'package:investtech_app/ui/web_view_privacy_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
@@ -65,12 +68,23 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<String> getUserTheme() async {
+  Future<String> getSettingPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String selectedTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? 'Light';
     String selectedLang = prefs.getString(PrefKeys.selectedLang) ?? 'en';
-    return jsonEncode(
-        {'selectedTheme': selectedTheme, 'selectedLang': selectedLang});
+    String newsLetterMode =
+        prefs.getString(PrefKeys.newsLetterSubscriptionMode) ?? '';
+    String newsLetterSubscriptionId =
+        prefs.getString(PrefKeys.newsLetterSubscriptionId) ?? '';
+    String newsLetterSubscriptionMarket =
+        prefs.getString(PrefKeys.newsLetterSubscriptionMarket) ?? '';
+    return jsonEncode({
+      'selectedTheme': selectedTheme,
+      'selectedLang': selectedLang,
+      'newsLetterMode': newsLetterMode,
+      'newsLetterSubscriptionId': newsLetterSubscriptionId,
+      'newsLetterSubscriptionMarket': newsLetterSubscriptionMarket
+    });
   }
 
   void getAppInfo() async {
@@ -92,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
           title: Text(AppLocalizations.of(context)!.settings),
         ),
         body: FutureBuilder(
-          future: getUserTheme(),
+          future: getSettingPrefs(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               print(
@@ -108,32 +122,75 @@ class _SettingsPageState extends State<SettingsPage> {
                             TextStyle(color: Colors.orange[800], fontSize: 12),
                       ),
                     ),
-                    ListTile(
-                      leading: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.mail,
-                            color: Theme.of(context).iconTheme.color,
-                          ),
-                        ],
-                      ),
-                      title: Text(
-                        AppLocalizations.of(context)!.news_letter_subscription,
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                      subtitle: Text(
-                        AppLocalizations.of(context)!.news_letter_summary,
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                      trailing: Switch(
-                        inactiveTrackColor: Theme.of(context).iconTheme.color,
-                        onChanged: toggleSwitch,
-                        value: isNewsLetterSwitched,
-                        activeColor: Colors.orange[700],
-                        //activeTrackColor: Colors.yellow,
-                        //inactiveThumbColor: Colors.redAccent,
-                        //inactiveTrackColor: Colors.orange,
+                    InkWell(
+                      onTap: () async {
+                        if (jsonDecode(
+                                snapshot.data.toString())['newsLetterMode'] ==
+                            "s") {
+                          http.Response response = await ApiRepo()
+                              .newsLetterSubscription(
+                                  jsonDecode(snapshot.data.toString())[
+                                      'newsLetterSubscriptionId'],
+                                  "u",
+                                  jsonDecode(snapshot.data.toString())[
+                                      'newsLetterSubscriptionMarket']);
+                          print(jsonDecode(snapshot.data.toString())[
+                              'newsLetterSubscriptionMarket']);
+                          if (response.statusCode == 200) {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.remove(PrefKeys.newsLetterSubscriptionId);
+                            prefs.remove(PrefKeys.newsLetterSubscriptionMode);
+                            prefs.remove(PrefKeys.newsLetterSubscriptionMarket);
+                            setState(() {});
+                            //return Home.fromJson(jsonDecode(response.body));
+                          } else {
+                            throw Exception('Failed to load data');
+                          }
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NewsLetter(
+                                    jsonDecode(snapshot.data.toString())[
+                                        'newsLetterMode'])),
+                          ).then((value) {
+                            setState(() {});
+                          });
+                        }
+                      },
+                      child: ListTile(
+                        leading: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.mail,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ],
+                        ),
+                        title: Text(
+                          AppLocalizations.of(context)!
+                              .news_letter_subscription,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        subtitle: Text(
+                          AppLocalizations.of(context)!.news_letter_summary,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                        trailing: Switch(
+                          inactiveTrackColor: Theme.of(context).iconTheme.color,
+                          onChanged: toggleSwitch,
+                          value: jsonDecode(snapshot.data.toString())[
+                                      'newsLetterMode'] ==
+                                  "s"
+                              ? true
+                              : false,
+                          activeColor: Colors.orange[700],
+                          //activeTrackColor: Colors.yellow,
+                          //inactiveThumbColor: Colors.redAccent,
+                          //inactiveTrackColor: Colors.orange,
+                        ),
                       ),
                     ),
                     ListTile(
