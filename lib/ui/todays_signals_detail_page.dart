@@ -51,9 +51,14 @@ class TodaysSignalDetailPage extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => CompanyPage(
-                                        todaysSignal!
-                                            .signalList.signal[index].companyId,
-                                        4),
+                                      todaysSignal!
+                                          .signalList.signal[index].companyId,
+                                      4,
+                                      companyName: todaysSignal!
+                                          .signalList.signal[index].companyName,
+                                      ticker: todaysSignal!
+                                          .signalList.signal[index].ticker,
+                                    ),
                                   ));
                             },
                             child: Container(

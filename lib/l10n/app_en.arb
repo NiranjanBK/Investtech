@@ -11,6 +11,16 @@
     },
 
     "language_code": "en",
+    "note_timestamp": "{date}",
+    "@note_timestamp": {
+      "placeholders": {
+        "date": {
+            "type": "DateTime",
+            "format": "yMMMd",
+            "example": "11/10/2021"
+        }
+      }
+    },
     "app_name": "Investtech",
     "clickable_header_template": "%1$s  〉",
     "template_two_float_points": "\"%.2f\"",

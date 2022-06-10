@@ -1,0 +1,109 @@
+{
+  "project_info": {
+    "project_number": "1039841495298",
+    "firebase_url": "https://investtechapp.firebaseio.com",
+    "project_id": "investtechapp",
+    "storage_bucket": "investtechapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039841495298:android:4f87df8b400075cb929a1b",
+        "android_client_info": {
+          "package_name": "com.example.investtech_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039841495298-7akrbh1fnphfup6fkfir39es59bftn67.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ2budyHwbHM9R02GXrqX7pcSEFiyJd_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039841495298-7akrbh1fnphfup6fkfir39es59bftn67.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1039841495298-6p9uvjgvdu9f5j20gd8h1pea4uu6gu4h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.investtech.FirstApp",
+                "app_store_id": "597391317"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1039841495298:android:235b4602b0f6aaf5",
+        "android_client_info": {
+          "package_name": "com.investtech.investtechapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1039841495298-46nk41a36m7efii4r72802vkhfjfqcfl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.investtech.investtechapp",
+            "certificate_hash": "4af56e46f624dd0ec4ea3df81167500ab5cb9700"
+          }
+        },
+        {
+          "client_id": "1039841495298-dcjd2k4sm60in8fpg1qucut6c5jfttau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.investtech.investtechapp",
+            "certificate_hash": "8eceff7dff1c9a92112a28242ea18fa4b1d909a2"
+          }
+        },
+        {
+          "client_id": "1039841495298-hfc7lsoj0895nv1j68o5o8mdn73itfha.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.investtech.investtechapp",
+            "certificate_hash": "8e3af45d49d5f771464ac29077238a9bfed69ac4"
+          }
+        },
+        {
+          "client_id": "1039841495298-7akrbh1fnphfup6fkfir39es59bftn67.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ2budyHwbHM9R02GXrqX7pcSEFiyJd_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1039841495298-7akrbh1fnphfup6fkfir39es59bftn67.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1039841495298-6p9uvjgvdu9f5j20gd8h1pea4uu6gu4h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.investtech.FirstApp",
+                "app_store_id": "597391317"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

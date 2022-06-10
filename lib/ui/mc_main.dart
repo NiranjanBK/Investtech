@@ -1,30 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/network/models/mc_detail.dart';
 import 'package:investtech_app/ui/blocs/mc_bloc.dart';
+import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/mc_detail_page.dart';
 import 'package:investtech_app/ui/mc_list_page.dart';
+import 'package:path/path.dart';
 
-class MarketCommentaryMain extends StatelessWidget {
+class MarketCommentaryMain extends StatefulWidget {
   final String title;
-  MarketCommentaryDetail? mcData;
-  int itemsOnStack = 0;
   int? index;
   static const list = "/list";
   static const detail = "/detail";
-  final _navigatorKey = GlobalKey<NavigatorState>();
+  static const company = "/company";
 
   MarketCommentaryMain(this.title, {Key? key, this.index}) : super(key: key);
 
+  @override
+  State<MarketCommentaryMain> createState() => _MarketCommentaryMainState();
+}
+
+class _MarketCommentaryMainState extends State<MarketCommentaryMain> {
+  MarketCommentaryDetail? mcData;
+
+  int itemsOnStack = 0;
+
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   _mcDetail() {
-    return MarketCommentaryDetailPage();
+    return MarketCommentaryDetailPage((context, companyId) async {
+      _mcDetailCompany(context, companyId);
+    }, () {
+      //Navigator.maybePop(context);
+    });
+  }
+
+  _mcDetailCompany(BuildContext context, String companyId) {
+    return Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CompanyPage(
+            companyId.toString(),
+            4,
+          ),
+        ));
   }
 
   Route _onGenerateRoute(RouteSettings settings) {
     Widget? page;
     switch (settings.name) {
-      case list:
+      case MarketCommentaryMain.list:
         page = McListPage(() async {
           onMCListSelected();
         }, () {
@@ -32,8 +59,13 @@ class MarketCommentaryMain extends StatelessWidget {
         });
         itemsOnStack++;
         break;
-      case detail:
+      case MarketCommentaryMain.detail:
         page = _mcDetail();
+        itemsOnStack++;
+        break;
+
+      case MarketCommentaryMain.company:
+        //page = _mcDetailCompany(compnayId);
         itemsOnStack++;
         break;
     }
@@ -61,14 +93,16 @@ class MarketCommentaryMain extends StatelessWidget {
   }
 
   void onMCListSelected() async {
-    _navigatorKey.currentState?.pushNamed(detail);
+    _navigatorKey.currentState?.pushNamed(MarketCommentaryMain.detail);
+  }
+
+  void onMCTickerSelected(cmpId) async {
+    _navigatorKey.currentState?.pushNamed(MarketCommentaryMain.detail);
   }
 
   void onScanCompleted() async {
-    _navigatorKey.currentState?.pushNamed(detail);
+    _navigatorKey.currentState?.pushNamed(MarketCommentaryMain.detail);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +120,7 @@ class MarketCommentaryMain extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: Text(widget.title),
         ),
         body: Container(
           padding: EdgeInsets.all(10),
@@ -94,11 +128,13 @@ class MarketCommentaryMain extends StatelessWidget {
             create: (context) {
               return MarketCommentaryBloc(ApiRepo())
                 ..add(MarketCommentaryBlocEvents.LOAD_MC)
-                ..index = index ?? 0;
+                ..index = widget.index ?? 0;
             },
             child: Navigator(
               key: _navigatorKey,
-              initialRoute: index == null ? list : detail,
+              initialRoute: widget.index == null
+                  ? MarketCommentaryMain.list
+                  : MarketCommentaryMain.detail,
               onGenerateRoute: _onGenerateRoute,
               observers: [],
             ),

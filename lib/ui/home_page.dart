@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/main.dart';
 
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/market_selection_page.dart';
@@ -103,7 +104,7 @@ class _HomeOverviewState extends State<HomeOverview> {
 
             List reoderList =
                 reorderString == '' ? [] : reorderString.split(',');
-            print(reoderList);
+            analysisDate = snapshot.data!.analysesDate.toString();
             return Scaffold(
               appBar: AppBar(
                 title: InkWell(

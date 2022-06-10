@@ -183,11 +183,29 @@ class DatabaseHelper {
       "SELECT $companyId FROM $favoriteTable ",
     );
     // print(res);
-    int i;
     //print(res[0]['COMPANY_ID']);
     return List.generate(res.length, (index) {
       return res[index]['COMPANY_ID'];
     });
+  }
+
+  checkNoteAndFavorite(cmpId) async {
+    final database = await db;
+
+    final List<Map<String, dynamic>> res = await database!.rawQuery(
+        "SELECT  COUNT(*), $note, $noteTimestamp FROM $favoriteTable  where $companyId=?",
+        [cmpId]);
+
+    if (Sqflite.firstIntValue(res) == 1) {
+      return jsonEncode({
+        'isFavourite': true,
+        'note': res[0][note],
+        'timeStamp': res[0][noteTimestamp]
+      });
+    } else {
+      return jsonEncode(
+          {'isFavourite': false, 'note': false, 'timeStamp': false});
+    }
   }
 
   Future<List<COUNTRY>> getCountryDetails() async {

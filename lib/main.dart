@@ -14,6 +14,8 @@ import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './UI/home_page.dart';
 
+var analysisDate;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();

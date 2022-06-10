@@ -30,8 +30,9 @@ class _FavoritesTeaserState extends State<FavoritesTeaser> {
         children: [
           ProductHeader('Favorites', 1),
           ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             shrinkWrap: true,
-            itemCount: favCmpObj.length > 5 ? 5 : 3,
+            itemCount: favCmpObj.length > 5 ? 5 : favCmpObj.length,
             physics: const NeverScrollableScrollPhysics(),
             separatorBuilder: (BuildContext context, int index) =>
                 const Divider(),
@@ -41,8 +42,12 @@ class _FavoritesTeaserState extends State<FavoritesTeaser> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            CompanyPage(favCmpObj[index].Id.toString(), 4),
+                        builder: (context) => CompanyPage(
+                          favCmpObj[index].Id.toString(),
+                          4,
+                          companyName: favCmpObj[index].Name,
+                          ticker: favCmpObj[index].ticker,
+                        ),
                       ));
                 },
                 child: Row(

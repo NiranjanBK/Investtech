@@ -1,9 +1,9 @@
 import 'dart:convert';
+
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:investtech_app/network/models/home.dart';
-import 'package:investtech_app/ui/home_page.dart';
-import 'package:investtech_app/const/pref_keys.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReorderPage extends StatefulWidget {
@@ -12,6 +12,11 @@ class ReorderPage extends StatefulWidget {
   List<Teaser> excludedProducts = [];
   List<Teaser> includedProducts = [];
   List<String> reoderList = [];
+  List<String> productMap = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
+
+  List<String> includedProdList = [];
+  List<String> excludedProdList = [];
+
   String prefList = '';
 
   ReorderPage(
@@ -50,6 +55,26 @@ class _ReorderPageState extends State<ReorderPage> {
         widget.excludedProducts.add(element);
       }
     });
+
+    if (widget.reorderString == '') {
+      widget.products.map((product) {
+        widget.includedProdList.add(product.id);
+      }).toList();
+    } else {
+      widget.reoderList = widget.reorderString.split(',');
+      widget.reoderList.map((prodId) {
+        widget.includedProdList.add(prodId);
+      }).toList();
+    }
+
+    widget.productMap.forEach((element) {
+      if (widget.includedProdList.contains(element) == false) {
+        widget.excludedProdList.add(element);
+      }
+    });
+
+    print(widget.includedProdList);
+    print(widget.excludedProdList);
   }
 
   addListToSF(key, value) async {
@@ -66,31 +91,17 @@ class _ReorderPageState extends State<ReorderPage> {
 
   @override
   Widget build(BuildContext context) {
-    // widget.excludedProducts = [];
-    // widget.reoderList = widget.reorderString.split(',');
-    // widget.reoderList.map((prodId) {
-    //   widget.products.map((product) {
-    //     if (prodId == product.id &&
-    //         !widget.includedProducts.contains(product)) {
-    //       widget.includedProducts.add(product);
-    //     }
-    //   }).toList();
-    // }).toList();
-
-    // widget.products.forEach((element) {
-    //   if (!widget.includedProducts.contains(element)) {
-    //     widget.excludedProducts.add(element);
-    //   }
-    // });
-
-    // widget.products.map((product) {
-    //   if (widget.reoderList.contains(product.id)) {
-    //     widget.includedProducts.add(product);
-    //   } else {
-    //     widget.excludedProducts.add(product);
-    //   }
-    // }).toList();
-
+    Map<String, String> productMap = {
+      '0': AppLocalizations.of(context)!.stock_exchange_barometer,
+      '1': AppLocalizations.of(context)!.market_commentary,
+      '2': AppLocalizations.of(context)!.todays_signals,
+      '3': AppLocalizations.of(context)!.indices_analysis,
+      '4': AppLocalizations.of(context)!.indices_evaluation,
+      '5': AppLocalizations.of(context)!.todays_candidate,
+      '6': AppLocalizations.of(context)!.top20,
+      '7': AppLocalizations.of(context)!.favourite,
+      '8': AppLocalizations.of(context)!.web_tv,
+    };
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -105,10 +116,10 @@ class _ReorderPageState extends State<ReorderPage> {
               String prodId = '';
 
               int i;
-              for (i = 0; i < widget.includedProducts.length - 1; i++) {
-                prodId += '${widget.includedProducts[i].id},';
+              for (i = 0; i < widget.includedProdList.length - 1; i++) {
+                prodId += '${widget.includedProdList[i]},';
               }
-              prodId += widget.includedProducts[i].id;
+              prodId += widget.includedProdList[i];
               addListToSF('items', prodId);
               Navigator.pop(context, true);
             },
@@ -123,13 +134,13 @@ class _ReorderPageState extends State<ReorderPage> {
             ReorderableListView(
               //padding: EdgeInsets.zero,
               shrinkWrap: true,
-              children: widget.includedProducts
+              children: widget.includedProdList
                   .map((item) => Container(
                         height: 45,
                         decoration: const BoxDecoration(
                             border: Border(
                                 bottom: BorderSide(color: Colors.black12))),
-                        key: Key(item.id),
+                        key: Key(item),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 0.0, horizontal: 10.0),
@@ -140,8 +151,8 @@ class _ReorderPageState extends State<ReorderPage> {
                                 onTap: () {
                                   setState(() {
                                     //String prodId = '';
-                                    widget.excludedProducts.add(item);
-                                    widget.includedProducts.remove(item);
+                                    widget.excludedProdList.add(item);
+                                    widget.includedProdList.remove(item);
 
                                     // int i;
                                     // for (i = 0;
@@ -171,7 +182,7 @@ class _ReorderPageState extends State<ReorderPage> {
                                 ),
                               ),
                               Text(
-                                item.title,
+                                productMap[item].toString(),
                                 style: const TextStyle(fontSize: 15),
                               ),
                             ],
@@ -188,31 +199,31 @@ class _ReorderPageState extends State<ReorderPage> {
                 // dragging from top to bottom
                 if (start < current) {
                   int end = current - 1;
-                  Teaser startItem = widget.includedProducts[start];
+                  String startItem = widget.includedProdList[start];
                   int i = 0;
                   int local = start;
                   do {
-                    widget.includedProducts[local] =
-                        widget.includedProducts[++local];
+                    widget.includedProdList[local] =
+                        widget.includedProdList[++local];
                     i++;
                   } while (i < end - start);
-                  widget.includedProducts[end] = startItem;
+                  widget.includedProdList[end] = startItem;
                 }
                 // dragging from bottom to top
                 else if (start > current) {
-                  Teaser startItem = widget.includedProducts[start];
+                  String startItem = widget.includedProdList[start];
                   for (int i = start; i > current; i--) {
-                    widget.includedProducts[i] = widget.includedProducts[i - 1];
+                    widget.includedProdList[i] = widget.includedProdList[i - 1];
                   }
-                  widget.includedProducts[current] = startItem;
+                  widget.includedProdList[current] = startItem;
                 }
                 setState(() {
                   String prodId = '';
                   int i;
-                  for (i = 0; i < widget.includedProducts.length - 1; i++) {
-                    prodId += '${widget.includedProducts[i].id},';
+                  for (i = 0; i < widget.includedProdList.length - 1; i++) {
+                    prodId += '${widget.includedProdList[i]},';
                   }
-                  prodId += widget.includedProducts[i].id;
+                  prodId += widget.includedProdList[i];
                   print(prodId);
                   addListToSF('items', prodId);
                 });
@@ -233,7 +244,7 @@ class _ReorderPageState extends State<ReorderPage> {
             ),
             ListView.builder(
               shrinkWrap: true,
-              itemCount: widget.excludedProducts.length,
+              itemCount: widget.excludedProdList.length,
               itemBuilder: (context, index) {
                 return Container(
                   height: 45,
@@ -250,10 +261,10 @@ class _ReorderPageState extends State<ReorderPage> {
                           onTap: () {
                             setState(() {
                               //String prodId = '';
-                              widget.includedProducts
-                                  .add(widget.excludedProducts[index]);
-                              widget.excludedProducts
-                                  .remove(widget.excludedProducts[index]);
+                              widget.includedProdList
+                                  .add(widget.excludedProdList[index]);
+                              widget.excludedProdList
+                                  .remove(widget.excludedProdList[index]);
                               // int i;
                               // for (i = 0;
                               //     i < widget.includedProducts.length - 1;
@@ -281,7 +292,7 @@ class _ReorderPageState extends State<ReorderPage> {
                           ),
                         ),
                         Text(
-                          widget.excludedProducts[index].title.toString(),
+                          productMap[widget.excludedProdList[index]].toString(),
                           style: const TextStyle(fontSize: 15),
                         ),
                       ],

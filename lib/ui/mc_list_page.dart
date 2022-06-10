@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/models/mc_detail.dart';
 import 'package:investtech_app/ui/blocs/mc_bloc.dart';
 
@@ -43,7 +44,7 @@ class _McListPageState extends State<McListPage> {
                   Text(
                     AppLocalizations.of(context)!.analysis_home_header_template(
                         DateTime.fromMillisecondsSinceEpoch(
-                            int.parse('1652714407') * 1000)),
+                            int.parse(analysisDate) * 1000)),
                     style: getSmallTextStyle(),
                   ),
                   ListView.builder(

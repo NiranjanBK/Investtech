@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/network/models/mc_detail.dart';
 import 'package:investtech_app/ui/blocs/mc_bloc.dart';
 import 'package:investtech_app/ui/company_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MarketCommentaryDetailPage extends StatefulWidget {
-  const MarketCommentaryDetailPage({Key? key}) : super(key: key);
+  Function(BuildContext context, String companyId) onItemSelected;
+  Function() onBackPressed;
+  MarketCommentaryDetailPage(this.onItemSelected, this.onBackPressed,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<MarketCommentaryDetailPage> createState() =>
@@ -41,7 +47,12 @@ class _MarketCommentaryDetailPageState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Analysis: ${analysisDate.toString()}'),
+                  Text(
+                    AppLocalizations.of(context)!.analysis_home_header_template(
+                        DateTime.fromMillisecondsSinceEpoch(
+                            int.parse(analysisDate.toString()) * 1000)),
+                    style: getSmallTextStyle(),
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -55,15 +66,17 @@ class _MarketCommentaryDetailPageState
                       ),
                       InkWell(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CompanyPage(
-                                  mcDetail!.analyze!.ingress!.companyId
-                                      .toString(),
-                                  4,
-                                ),
-                              ));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => CompanyPage(
+                          //         mcDetail!.analyze!.ingress!.companyId
+                          //             .toString(),
+                          //         4,
+                          //       ),
+                          //     ));
+                          widget.onItemSelected(context,
+                              mcDetail!.analyze!.ingress!.companyId.toString());
                         },
                         child: Container(
                           padding: const EdgeInsets.only(bottom: 10),
