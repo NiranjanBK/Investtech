@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:investtech_app/network/database/database_helper.dart';
+import 'package:investtech_app/main.dart';
+
 import 'package:investtech_app/network/models/company.dart';
-import 'package:investtech_app/network/models/favorites.dart';
+
 import 'package:investtech_app/ui/company_page.dart';
+import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 
 class FavoritesTeaser extends StatefulWidget {

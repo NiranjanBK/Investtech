@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
@@ -197,7 +198,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   border: const OutlineInputBorder(),
-                                  labelText: 'Username',
+                                  labelText:
+                                      AppLocalizations.of(context)!.username,
                                 ),
                               ),
                             ),
@@ -244,7 +246,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   border: const OutlineInputBorder(),
-                                  labelText: 'Password',
+                                  labelText:
+                                      AppLocalizations.of(context)!.password,
                                 ),
                               ),
                             ),
@@ -295,7 +298,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                 }
                               },
                               child: Text(
-                                'Login to Investtech.com',
+                                AppLocalizations.of(context)!
+                                    .login_to_investtech_com,
                                 style: TextStyle(
                                     color: Colors.orange[800], fontSize: 12),
                               ),
@@ -305,7 +309,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                             height: 100,
                             child: Center(
                               child: Text(
-                                'Exclusively for our website subscribers.',
+                                AppLocalizations.of(context)!
+                                    .webview_footer_info,
                                 style: TextStyle(
                                     color: Colors.grey[400], fontSize: 10),
                               ),

@@ -6,15 +6,20 @@ import 'package:investtech_app/ui/todays_signals_detail_page.dart';
 import 'package:investtech_app/widgets/indices.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 
-class TodaysSignals extends StatelessWidget {
+class TodaysSignals extends StatefulWidget {
   final dynamic _signalData;
 
   TodaysSignals(this._signalData);
 
   @override
+  State<TodaysSignals> createState() => _TodaysSignalsState();
+}
+
+class _TodaysSignalsState extends State<TodaysSignals> {
+  @override
   Widget build(BuildContext context) {
-    var _signals =
-        jsonDecode(jsonEncode(_signalData))['content']['signals'] as List;
+    var _signals = jsonDecode(jsonEncode(widget._signalData))['content']
+        ['signals'] as List;
 
     return Flexible(
       child: Column(
@@ -26,11 +31,11 @@ class TodaysSignals extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => TodaysSignalDetailPage(
-                        jsonDecode(jsonEncode(_signalData))['title'])),
+                        jsonDecode(jsonEncode(widget._signalData))['title'])),
               );
             },
-            child:
-                ProductHeader(jsonDecode(jsonEncode(_signalData))['title'], 1),
+            child: ProductHeader(
+                jsonDecode(jsonEncode(widget._signalData))['title'], 1),
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/main.dart';
 
@@ -24,11 +25,48 @@ import '../widgets/todays_signals.dart';
 import '../network/api_repo.dart';
 import '../network/models/home.dart';
 import '../widgets/market_commentary.dart';
-import '../widgets/product_Item_Header.dart';
+
 import '../widgets/top20.dart';
 import '../widgets/indices.dart';
 import '../widgets/todays_candidate.dart';
 import '../widgets/indices_evaluation.dart';
+
+import 'package:event/event.dart';
+
+EventBus eventBus = EventBus(sync: true);
+final controller = StreamController<String>();
+
+var myEvent = Event<Reload>();
+var c = Counter();
+
+class ReloadEvent {}
+
+// An example custom 'argument' class
+class Reload extends EventArgs {
+  bool reload;
+
+  Reload(this.reload);
+}
+
+class Counter {
+  /// The current [Counter] value.
+  int value = 0;
+
+  /// A custom [Event]
+  final counterIncremented = Event();
+
+  /// Increment the [Counter] [value] by 1.
+  void increment() {
+    value++;
+    counterIncremented.broadcast(); // Broadcast the change
+  }
+
+  /// Reset the [Counter] value to 0.
+  void reset() {
+    value = 0;
+    counterIncremented.broadcast(); // Broadcast the change
+  }
+}
 
 class HomeOverview extends StatefulWidget {
   @override
@@ -39,13 +77,26 @@ class _HomeOverviewState extends State<HomeOverview> {
   late String reorderString;
   String? marketCode;
   String? marketName;
+  StreamSubscription? _reloadStreamSub;
 
   Map teaser = {};
 
   @override
   void initState() {
     super.initState();
-    //getListValuesSF();
+
+    final subscription = controller.stream.listen((String data) {
+      print(data);
+    });
+
+    myEvent.subscribe((args) => print('myEvent occured'));
+    _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
+      print(event);
+      setState(() {});
+    });
+
+    // Subscribe to the custom event
+    c.counterIncremented.subscribe((args) => print(c.value));
   }
 
   Future<Home> fetchData() async {
@@ -94,248 +145,264 @@ class _HomeOverviewState extends State<HomeOverview> {
   Widget build(BuildContext context) {
     late List<Teaser> teaserList = [];
 
-    return Container(
-      padding: const EdgeInsets.only(top: 5),
-      child: FutureBuilder<Home>(
-        future: fetchData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            teaserList = snapshot.data!.teaser;
+    _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
+      print(event);
+      // setState(() {});
+    });
 
-            List reoderList =
-                reorderString == '' ? [] : reorderString.split(',');
-            analysisDate = snapshot.data!.analysesDate.toString();
-            return Scaffold(
-              appBar: AppBar(
-                title: InkWell(
-                  onTap: () {
-                    awaitReturnValueFromSecondScreen(context);
-                  },
-                  child: Row(
-                    children: [
-                      Text(marketName ?? 'National S.E'),
-                      Transform.rotate(
-                        angle: 33, //set the angel
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.orange[800],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return BlocProvider(
-                              create: (BuildContext context) =>
-                                  SearchBloc(ApiRepo()),
-                              child: SearchItemPage(context),
-                            );
-                          },
-                        ));
-                      },
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.orange[800],
-                      )),
-                  PopupMenuButton(
-                      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-                      color: Theme.of(context).appBarTheme.backgroundColor,
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'Reorder':
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReorderPage(teaserList, reorderString),
-                                )).then(onGoBack);
-                            break;
-                          case 'Settings':
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SettingsPage(),
-                                )).then((value) {
-                              setState(() {});
-                            });
+    return RefreshIndicator(
+      onRefresh: () {
+        setState(() {});
+        return Future.value();
+      },
+      color: const Color(0xFFFF6600),
+      backgroundColor: Colors.white,
+      child: Container(
+        padding: const EdgeInsets.only(top: 5),
+        child: FutureBuilder<Home>(
+          future: fetchData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              teaserList = snapshot.data!.teaser;
 
-                            break;
-                        }
-                      },
-                      itemBuilder: (ctx) => [
-                            PopupMenuItem(
-                              height: 30,
-                              value: 'Reorder',
-                              child: Text(
-                                'Reorder',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2!
-                                        .color),
-                              ),
-                              onTap: () {},
-                            ),
-                            PopupMenuItem(
-                              height: 30,
-                              value: 'Settings',
-                              child: Text(
-                                'Settings',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2!
-                                        .color),
-                              ),
-                            ),
-                          ])
-                ],
-              ),
-              body: ListView(
-                primary: true,
-                shrinkWrap: true,
-                children: [
-                  Container(
-                    //height: 40,
-                    width: double.infinity,
-                    padding: const EdgeInsets.only(left: 10, top: 5),
-                    color: Theme.of(context).primaryColorDark,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              List reoderList =
+                  reorderString == '' ? [] : reorderString.split(',');
+              analysisDate = snapshot.data!.analysesDate.toString();
+              return Scaffold(
+                appBar: AppBar(
+                  title: InkWell(
+                    onTap: () {
+                      awaitReturnValueFromSecondScreen(context);
+                    },
+                    child: Row(
                       children: [
-                        Text(
-                          AppLocalizations.of(context)!
-                              .analysis_home_header_template(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                      int.parse(snapshot.data!.analysesDate) *
-                                          1000)),
-                          style: getSmallestTextStyle(),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'Last Updated : ',
-                              style: getSmallestTextStyle(),
-                            ),
-                            Text(
-                              'just Now',
-                              style: getSmallestTextStyle(),
-                            ),
-                          ],
+                        Text(marketName ?? 'National S.E'),
+                        Transform.rotate(
+                          angle: 33, //set the angel
+                          child: Icon(
+                            Icons.play_arrow,
+                            color: Colors.orange[800],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const ScrollPhysics(),
-                    itemCount: snapshot.data!.teaser.length,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        //height: 400,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(
-                              bottom: 1,
-                            ),
-                            //padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.grey,
-                                    offset: Offset(0.0, 2.0),
-                                    blurRadius: 1.5,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
-                                border: const Border(
-                                    bottom: BorderSide(
-                                  width: 0.8,
-                                  color: Colors.black12,
-                                ))),
-                            child: Row(
-                              children: [
-                                if (snapshot.data!.teaser[index].productName ==
-                                    'marketCommentary') ...{
-                                  MarketCommentaries(
-                                    snapshot.data!.teaser[index],
-                                  ),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'todaysSignals') ...{
-                                  TodaysSignals(
-                                    snapshot.data!.teaser[index],
-                                  ),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'top20') ...{
-                                  TopTwenty(
-                                    snapshot.data!.teaser[index],
-                                  ),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'indicesAnalyses') ...{
-                                  Indices(
-                                    snapshot.data!.teaser[index],
-                                    'analyses',
-                                  ),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'todaysCandidate') ...{
-                                  TodaysCandidate(
-                                    snapshot.data!.teaser[index],
-                                    'case',
-                                  ),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'indicesEvaluations') ...{
-                                  IndicesEvaluation(
-                                      snapshot.data!.teaser[index]),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'barometer') ...{
-                                  BarometerGraph(
-                                      snapshot.data!.teaser[index].content,
-                                      snapshot.data!.teaser[index].title),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'webTV') ...{
-                                  WebTVTeaser(snapshot.data!.teaser[index]),
-                                } else if (snapshot
-                                        .data!.teaser[index].productName ==
-                                    'favourites') ...{
-                                  FavoritesTeaser(snapshot.data!.teaser[index]),
-                                }
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return BlocProvider(
+                                create: (BuildContext context) =>
+                                    SearchBloc(ApiRepo()),
+                                child: SearchItemPage(context),
+                              );
+                            },
+                          ));
+                        },
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.orange[800],
+                        )),
+                    PopupMenuButton(
+                        icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                        color: Theme.of(context).appBarTheme.backgroundColor,
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'Reorder':
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ReorderPage(teaserList, reorderString),
+                                  )).then(onGoBack);
+                              break;
+                            case 'Settings':
+                              myEvent.broadcast();
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SettingsPage(),
+                                  )).then((value) {
+                                setState(() {});
+                              });
 
-                                //Text(),
-                              ],
-                            ),
+                              break;
+                          }
+                        },
+                        itemBuilder: (ctx) => [
+                              PopupMenuItem(
+                                height: 30,
+                                value: 'Reorder',
+                                child: Text(
+                                  'Reorder',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .color),
+                                ),
+                                onTap: () {},
+                              ),
+                              PopupMenuItem(
+                                height: 30,
+                                value: 'Settings',
+                                child: Text(
+                                  'Settings',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .color),
+                                ),
+                              ),
+                            ])
+                  ],
+                ),
+                body: ListView(
+                  primary: true,
+                  shrinkWrap: true,
+                  children: [
+                    Container(
+                      //height: 40,
+                      width: double.infinity,
+                      padding: const EdgeInsets.only(left: 10, top: 5),
+                      color: Theme.of(context).primaryColorDark,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!
+                                .analysis_home_header_template(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(snapshot.data!.analysesDate) *
+                                            1000)),
+                            style: getSmallestTextStyle(),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                'Last Updated : ',
+                                style: getSmallestTextStyle(),
+                              ),
+                              Text(
+                                'just Now',
+                                style: getSmallestTextStyle(),
+                              ),
+                            ],
                           ),
                         ],
-                      );
-                    },
-                  ),
-                ],
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
+                      ),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const ScrollPhysics(),
+                      itemCount: snapshot.data!.teaser.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          //height: 400,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(
+                                bottom: 1,
+                              ),
+                              //padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      offset: Offset(0.0, 2.0),
+                                      blurRadius: 1.5,
+                                      spreadRadius: 0,
+                                    ),
+                                  ],
+                                  border: const Border(
+                                      bottom: BorderSide(
+                                    width: 0.8,
+                                    color: Colors.black12,
+                                  ))),
+                              child: Row(
+                                children: [
+                                  if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'marketCommentary') ...{
+                                    MarketCommentaries(
+                                      snapshot.data!.teaser[index],
+                                    ),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'todaysSignals') ...{
+                                    TodaysSignals(
+                                      snapshot.data!.teaser[index],
+                                    ),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'top20') ...{
+                                    TopTwenty(
+                                      snapshot.data!.teaser[index],
+                                    ),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'indicesAnalyses') ...{
+                                    Indices(
+                                      snapshot.data!.teaser[index],
+                                      'analyses',
+                                    ),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'todaysCandidate') ...{
+                                    TodaysCandidate(
+                                      snapshot.data!.teaser[index],
+                                      'case',
+                                    ),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'indicesEvaluations') ...{
+                                    IndicesEvaluation(
+                                        snapshot.data!.teaser[index]),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'barometer') ...{
+                                    BarometerGraph(
+                                        snapshot.data!.teaser[index].content,
+                                        snapshot.data!.teaser[index].title),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'webTV') ...{
+                                    WebTVTeaser(snapshot.data!.teaser[index]),
+                                  } else if (snapshot
+                                          .data!.teaser[index].productName ==
+                                      'favourites') ...{
+                                    FavoritesTeaser(
+                                        snapshot.data!.teaser[index]),
+                                  }
 
-          // By default, show a loading spinner.
-          return const Center(child: CircularProgressIndicator());
-        },
+                                  //Text(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+
+            // By default, show a loading spinner.
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
       ),
     );
   }

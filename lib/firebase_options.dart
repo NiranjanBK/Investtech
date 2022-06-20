@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDZ2budyHwbHM9R02GXrqX7pcSEFiyJd_Q',
-    appId: '1:1039841495298:android:4f87df8b400075cb929a1b',
+    appId: '1:1039841495298:android:235b4602b0f6aaf5',
     messagingSenderId: '1039841495298',
     projectId: 'investtechapp',
     databaseURL: 'https://investtechapp.firebaseio.com',

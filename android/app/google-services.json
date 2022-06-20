@@ -32,11 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "1039841495298-6p9uvjgvdu9f5j20gd8h1pea4uu6gu4h.apps.googleusercontent.com",
+              "client_id": "1039841495298-4vsmteitj5b7ggchvsrvq1kkpjcteag7.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.investtech.FirstApp",
-                "app_store_id": "597391317"
+                "bundle_id": "com.example.investtechApp"
               }
             }
           ]
@@ -93,11 +92,10 @@
               "client_type": 3
             },
             {
-              "client_id": "1039841495298-6p9uvjgvdu9f5j20gd8h1pea4uu6gu4h.apps.googleusercontent.com",
+              "client_id": "1039841495298-4vsmteitj5b7ggchvsrvq1kkpjcteag7.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.investtech.FirstApp",
-                "app_store_id": "597391317"
+                "bundle_id": "com.example.investtechApp"
               }
             }
           ]

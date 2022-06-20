@@ -126,16 +126,10 @@ class _MarketCommentaryDetailPageState
                         children: [
                           InkWell(
                             onTap: () {
-                              Navigator.push(
+                              widget.onItemSelected(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CompanyPage(
-                                      mcDetail!.analyze!.stocks!.stock[index]
-                                          .companyId
-                                          .toString(),
-                                      4,
-                                    ),
-                                  ));
+                                  mcDetail!.analyze!.ingress!.companyId
+                                      .toString());
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),

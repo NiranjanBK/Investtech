@@ -1,33 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:investtech_app/network/api_repo.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/network/models/company.dart';
-import 'package:investtech_app/ui/blocs/company_bloc.dart';
+
 import 'package:investtech_app/widgets/company_body.dart';
-import 'package:investtech_app/widgets/company_header.dart';
-
-const List<Tab> tabs = [
-  Tab(
-    child: Text(
-      'SHORT TERM',
-      //style: TextStyle(color: Colors.grey),
-    ),
-  ),
-  Tab(
-    child: Text(
-      'MEDIUM TERM',
-      //style: TextStyle(color: Colors.grey),
-    ),
-  ),
-  Tab(
-    child: Text(
-      'LONG TERM',
-      //style: TextStyle(color: Colors.grey),
-    ),
-  ),
-];
-
-var chartMap = {0: 5, 1: 4, 2: 6};
 
 class CompanyPageAdvance extends StatelessWidget {
   Company? cmpData;
@@ -38,6 +13,28 @@ class CompanyPageAdvance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Tab> tabs = [
+      Tab(
+        child: Text(
+          AppLocalizations.of(context)!.short_term,
+          //style: TextStyle(color: Colors.grey),
+        ),
+      ),
+      Tab(
+        child: Text(
+          AppLocalizations.of(context)!.medium_term,
+          //style: TextStyle(color: Colors.grey),
+        ),
+      ),
+      Tab(
+        child: Text(
+          AppLocalizations.of(context)!.long_term,
+          //style: TextStyle(color: Colors.grey),
+        ),
+      ),
+    ];
+
+    var chartMap = {0: 5, 1: 4, 2: 6};
     return DefaultTabController(
       length: 3,
       initialIndex: 1,
@@ -64,7 +61,7 @@ class CompanyPageAdvance extends StatelessWidget {
               color: Colors.orange[500],
             ),
           ],
-          bottom: const TabBar(
+          bottom: TabBar(
             indicatorColor: Colors.orange,
             labelColor: Colors.orange,
             unselectedLabelColor: Colors.grey,

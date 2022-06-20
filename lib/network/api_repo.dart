@@ -13,6 +13,7 @@ class ApiRepo {
   String? reorderString;
   List? companyIds;
   String? lang;
+  String? theme;
 
   Map<String, String>? languageCodeMap = {
     'en': '000',
@@ -37,6 +38,7 @@ class ApiRepo {
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     lang = prefs.getString(PrefKeys.selectedLang) ?? 'en';
+    theme = prefs.getString(PrefKeys.SELECTED_THEME) ?? 'Light';
   }
 
   Future<http.Response> getHomePgae(market) async {
@@ -86,6 +88,9 @@ class ApiRepo {
       chartTerm = CHART_TERM_MEDIUM,
       style = CHART_STYLE_NORMAL,
       companyId]) {
+    if (theme == 'Dark') {
+      style = '1';
+    }
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = "https://www.investtech.com/mobile/img.php?";
     if (chartType == CHART_TYPE_ADVANCED) {
@@ -95,8 +100,7 @@ class ApiRepo {
       var type = "free,$companyId";
       url += "type=$type";
     }
-    print('$url&size=1080,648&style=0&variant=mobile&density=2.75');
-    return '$url&size=1080,648&style=0&variant=mobile&density=2.75';
+    return '$url&size=1080,648&style=$style&variant=mobile&density=2.75';
   }
 
   Future<http.Response> getTop20DetailPage() async {

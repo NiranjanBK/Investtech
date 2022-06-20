@@ -59,8 +59,10 @@ class MarketCommentaries extends StatelessWidget {
                 Color? cardBackground =
                     double.parse((commentaryObj[index].evaluationCode)) > 0
                         ? Colors.green[50]
-                        : double.parse((commentaryObj[index].evaluationCode)) == 0
-                        ? Colors.orange[50] Colors.red[100];
+                        : double.parse((commentaryObj[index].evaluationCode)) ==
+                                0
+                            ? Colors.orange[50]
+                            : Colors.red[100];
                 return InkWell(
                   onTap: () {
                     Navigator.push(
@@ -79,8 +81,8 @@ class MarketCommentaries extends StatelessWidget {
                         Container(
                             height: 10,
                             // margin: EdgeInsets.only(top: 5),
-                            color: getBoarderColor(
-                                int.parse(commentaryObj[index].evaluationCode))),
+                            color: getBoarderColor(int.parse(
+                                commentaryObj[index].evaluationCode))),
                         Expanded(
                           child: Container(
                             color: cardBackground,
@@ -98,7 +100,7 @@ class MarketCommentaries extends StatelessWidget {
                                       .toStringAsFixed(2),
                                   style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                const SizedBox(height:2),
+                                const SizedBox(height: 2),
                                 Text(
                                   '${double.parse((commentaryObj[index].changePct)).toStringAsFixed(2)}%',
                                   style: TextStyle(
@@ -113,7 +115,6 @@ class MarketCommentaries extends StatelessWidget {
                                   commentaryObj[index].title,
                                   style: const TextStyle(
                                     fontSize: 12,
-                                 
                                   ),
                                 ),
                               ],

@@ -183,7 +183,7 @@
     "eval_info_medium_term": "Advanced Technical Analysis\nMedium Term\nRecommendation one to six months",
     "eval_info_long_term": "Advanced Technical Analysis\nLong Term\nRecommendation one to six quarters",
     "removed_from_favorites": "Removed from Favourites & Notes",
-    "share_message_template": "Technical Analysis for %1$s  by Investtech. read more here: %2$s",
+    "share_message_template": "Technical Analysis for %1$  by Investtech. read more here: %2$",
     "existing_user_new_update_message": "Dear customer,\n\nWe\\'re always working to make Investtech better for you. Thanks to your feedback and suggestions, we\\'ve completely rebuilt the app from the ground up. Streamlining the features you love, re-inventing and simplifying others for a much better user experience. Learn technical analysis is now an independent free app which can be accessed under Settings > Learn Technical Analysis\n\nWe\\'re overjoyed and think you will too! As always, we\\'d love your feedback. Reach out to our support team under Settings > Support. Thank you for using Investtech.\n\nChristian Sveen Harto\nCEO",
     "lta": "Learn Technical Analysis",
     "lta_info": "In 4 simple steps. Now free!",

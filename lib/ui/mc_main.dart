@@ -7,7 +7,6 @@ import 'package:investtech_app/ui/blocs/mc_bloc.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/mc_detail_page.dart';
 import 'package:investtech_app/ui/mc_list_page.dart';
-import 'package:path/path.dart';
 
 class MarketCommentaryMain extends StatefulWidget {
   final String title;
@@ -31,13 +30,13 @@ class _MarketCommentaryMainState extends State<MarketCommentaryMain> {
 
   _mcDetail() {
     return MarketCommentaryDetailPage((context, companyId) async {
-      _mcDetailCompany(context, companyId);
+      _mcDetailCompany(companyId);
     }, () {
       //Navigator.maybePop(context);
     });
   }
 
-  _mcDetailCompany(BuildContext context, String companyId) {
+  _mcDetailCompany(String companyId) {
     return Navigator.push(
         context,
         MaterialPageRoute(

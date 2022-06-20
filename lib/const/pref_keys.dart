@@ -10,4 +10,5 @@ class PrefKeys {
   static String newsLetterSubscriptionMode = "newsLetterSubscriptionMode";
   static String newsLetterSubscriptionId = "newsLetterSubscriptionId";
   static String newsLetterSubscriptionMarket = "newsLetterSubscriptionMarket";
+  static String introSlides = "introSlides";
 }

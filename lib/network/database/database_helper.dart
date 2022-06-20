@@ -196,6 +196,7 @@ class DatabaseHelper {
         "SELECT  COUNT(*), $note, $noteTimestamp FROM $favoriteTable  where $companyId=?",
         [cmpId]);
 
+    print(res);
     if (Sqflite.firstIntValue(res) == 1) {
       return jsonEncode({
         'isFavourite': true,
@@ -206,6 +207,13 @@ class DatabaseHelper {
       return jsonEncode(
           {'isFavourite': false, 'note': false, 'timeStamp': false});
     }
+  }
+
+  Future<int> deleteNoteAndFavourite(cmpId) async {
+    final database = await db;
+
+    return await database!
+        .rawDelete("DELETE FROM $favoriteTable WHERE $companyId=?", [cmpId]);
   }
 
   Future<List<COUNTRY>> getCountryDetails() async {

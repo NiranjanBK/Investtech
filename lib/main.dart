@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
+import 'package:investtech_app/ui/intro_page.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
 import 'package:investtech_app/ui/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
@@ -14,13 +15,22 @@ import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './UI/home_page.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+import 'package:event_bus/event_bus.dart';
+
 var analysisDate;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
+  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? true;
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
 
@@ -40,15 +50,17 @@ void main() async {
       );
     }
   }
-  runApp(MyApp(prefTheme, locale));
+  runApp(MyApp(prefTheme, locale, introSlides));
 }
 
 class MyApp extends StatelessWidget {
   final String? prefTheme;
   final String locale;
+  final bool introSlides;
   ThemeData? themeData;
   Locale? newLocale;
-  MyApp(this.prefTheme, this.locale, {Key? key}) : super(key: key);
+  MyApp(this.prefTheme, this.locale, this.introSlides, {Key? key})
+      : super(key: key);
 
   static const String _title = 'Flutter Code Sample';
 
@@ -91,7 +103,7 @@ class MyApp extends StatelessWidget {
               Locale('da', ''), // Norweign, no country code
               Locale('de', ''), // Norweign, no country code
             ],
-            home: MyStatefulWidget(),
+            home: MyStatefulWidget(introSlides),
           );
         },
       ),
@@ -100,7 +112,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
+  final bool introSlides;
+  const MyStatefulWidget(this.introSlides, {Key? key}) : super(key: key);
 
   @override
   State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
@@ -124,28 +137,30 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: _widgetOptions[selectedIndex],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.web_asset_off),
-            label: 'Web',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock_open_rounded),
-            label: 'Subscription',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
+    return widget.introSlides
+        ? IntroScreen()
+        : Scaffold(
+            body: Container(
+              child: _widgetOptions[selectedIndex],
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.web_asset_off),
+                  label: 'Web',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.lock_open_rounded),
+                  label: 'Subscription',
+                ),
+              ],
+              currentIndex: selectedIndex,
+              onTap: _onItemTapped,
+            ),
+          );
   }
 }
