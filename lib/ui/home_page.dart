@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:investtech_app/const/colors.dart';
 
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/main.dart';
@@ -392,6 +393,34 @@ class _HomeOverviewState extends State<HomeOverview> {
                         );
                       },
                     ),
+                    Container(
+                        margin: const EdgeInsets.only(
+                            top: 15, bottom: 10, left: 10, right: 10),
+                        padding: const EdgeInsets.only(
+                            top: 0, bottom: 10, left: 10, right: 10),
+                        color: Color(ColorHex.GREY),
+                        child: Tooltip(
+                          message: 'Text()',
+                          child: SizedBox(
+                            height: 150,
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ))
                   ],
                 ),
               );
