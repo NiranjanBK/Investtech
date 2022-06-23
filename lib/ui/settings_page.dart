@@ -446,7 +446,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const Disclaimer()),
+                                  builder: (context) =>
+                                      const Disclaimer(false)),
                             );
                           },
                           child: ListTile(

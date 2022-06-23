@@ -106,7 +106,7 @@ class MyApp extends StatelessWidget {
               Locale('da', ''), // Norweign, no country code
               Locale('de', ''), // Norweign, no country code
             ],
-            home: MyStatefulWidget(introSlides),
+            home: MainPage(introSlides),
           );
         },
       ),
@@ -114,15 +114,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
+class MainPage extends StatefulWidget {
   final bool introSlides;
-  const MyStatefulWidget(this.introSlides, {Key? key}) : super(key: key);
+  const MainPage(this.introSlides, {Key? key}) : super(key: key);
 
   @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+class _MainPageState extends State<MainPage> {
   int selectedIndex = 0;
 
   GlobalKey<HomeOverviewState> homeKey = GlobalKey();

@@ -9,6 +9,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_store/open_store.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:investtech_app/const/colors.dart';
+
 
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/main.dart';
@@ -418,6 +420,7 @@ class HomeOverviewState extends State<HomeOverview> {
                         );
                       },
                     ),
+
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -483,7 +486,37 @@ class HomeOverviewState extends State<HomeOverview> {
                           ],
                         ),
                       ),
-                    )
+                    ),
+
+                    Container(
+                        margin: const EdgeInsets.only(
+                            top: 15, bottom: 10, left: 10, right: 10),
+                        padding: const EdgeInsets.only(
+                            top: 0, bottom: 10, left: 10, right: 10),
+                        color: Color(ColorHex.GREY),
+                        child: Tooltip(
+                          message: 'Text()',
+                          child: SizedBox(
+                            height: 150,
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ))
+
                   ],
                 ),
               );
