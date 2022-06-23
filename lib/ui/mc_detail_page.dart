@@ -42,7 +42,10 @@ class _MarketCommentaryDetailPageState
         bloc?.add(MarketCommentaryBlocEvents.LOAD_MC);
       }
       return mcDetail == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Align(
+              alignment: Alignment.topCenter,
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

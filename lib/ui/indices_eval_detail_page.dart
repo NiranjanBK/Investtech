@@ -36,7 +36,10 @@ class _IndicesEvalDetailPageState extends State<IndicesEvalDetailPage> {
                 indices = state.IndicesEval;
               }
               return indices == null
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Align(
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
                   : SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

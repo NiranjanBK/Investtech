@@ -3,9 +3,12 @@ import 'dart:convert';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_store/open_store.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/main.dart';
@@ -34,7 +37,7 @@ import '../widgets/indices_evaluation.dart';
 import 'package:event/event.dart';
 
 EventBus eventBus = EventBus(sync: true);
-final controller = StreamController<String>();
+// final controller = StreamController<String>();
 
 var myEvent = Event<Reload>();
 var c = Counter();
@@ -69,25 +72,49 @@ class Counter {
 }
 
 class HomeOverview extends StatefulWidget {
+  HomeOverview({Key? key}) : super(key: key);
+
   @override
-  State<HomeOverview> createState() => _HomeOverviewState();
+  State<HomeOverview> createState() => HomeOverviewState();
 }
 
-class _HomeOverviewState extends State<HomeOverview> {
+class HomeOverviewState extends State<HomeOverview> {
   late String reorderString;
   String? marketCode;
   String? marketName;
   StreamSubscription? _reloadStreamSub;
-
+  ScrollController controller = ScrollController();
   Map teaser = {};
+  bool isVisible = false;
+  final streamController = StreamController<DateTime>.broadcast();
+
+  DateTime startTime = DateTime.now();
+
+
+  @override
+  void dispose() {
+    streamController.close();
+  }
 
   @override
   void initState() {
     super.initState();
-
-    final subscription = controller.stream.listen((String data) {
-      print(data);
+    controller.addListener(() {
+      isVisible =
+          controller.position.userScrollDirection == ScrollDirection.forward;
     });
+    /*final subscription = controller.stream.listen((String data) {
+      print(data);
+    });*/
+
+    Timer.periodic(Duration(seconds: 2), (timer) {
+      streamController.add(DateTime.now());
+    });
+    // streamController.stream.listen((event) {
+    //   final time = event.difference(startTime);
+    //   updatedTime = time;
+    //   print(time.inSeconds);
+    // });
 
     myEvent.subscribe((args) => print('myEvent occured'));
     _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
@@ -107,6 +134,7 @@ class _HomeOverviewState extends State<HomeOverview> {
       // then parse the JSON.
       //print(response.body);
       //reorderString = await getListValuesSF();
+      startTime = DateTime.now();
       return Home.fromJson(jsonDecode(response.body));
     } else {
       // If the server did not return a 200 OK response,
@@ -262,7 +290,8 @@ class _HomeOverviewState extends State<HomeOverview> {
                   ],
                 ),
                 body: ListView(
-                  primary: true,
+                  controller: controller,
+                  // primary: true,
                   shrinkWrap: true,
                   children: [
                     Container(
@@ -290,10 +319,7 @@ class _HomeOverviewState extends State<HomeOverview> {
                                 'Last Updated : ',
                                 style: getSmallestTextStyle(),
                               ),
-                              Text(
-                                'just Now',
-                                style: getSmallestTextStyle(),
-                              ),
+                              buildUpdatedTime(),
                             ],
                           ),
                         ],
@@ -392,11 +418,77 @@ class _HomeOverviewState extends State<HomeOverview> {
                         );
                       },
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(.4),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.close),
+                                color: Colors.white,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    AppLocalizations.of(context)!.lta,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: Colors.white),
+                                  )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    AppLocalizations.of(context)!.lta,
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  )),
+                            ),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    OpenStore.instance.open(
+                                      //appStoreId: 'com.investtech.investtechapp',
+                                      androidAppBundleId:
+                                          'com.investtech.investtechapp',
+                                    );
+                                  },
+                                  child: Text(
+                                    "Get the app",
+                                    style: TextStyle(color: Colors.orange),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.white,
+                                    textStyle:
+                                        const TextStyle(color: Colors.orange),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
               );
             } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
+              return Center(child: Text('${snapshot.error}'));
             }
 
             // By default, show a loading spinner.
@@ -405,5 +497,29 @@ class _HomeOverviewState extends State<HomeOverview> {
         ),
       ),
     );
+  }
+
+  StreamBuilder<DateTime> buildUpdatedTime() {
+    return StreamBuilder<DateTime>(
+        stream: streamController.stream,
+        builder: (context, snapshot) {
+          int time = snapshot.data?.difference(startTime).inSeconds ?? 0;
+          if (time > 60) {
+            return Text(
+              '${snapshot.data?.difference(startTime).inMinutes} Minute ago',
+              style: getSmallestTextStyle(),
+            );
+          } else if (time > 3600) {
+            return Text(
+              '${snapshot.data?.difference(startTime).inHours} Hours ago',
+              style: getSmallestTextStyle(),
+            );
+          } else {
+            return Text(
+              'Just Now',
+              style: getSmallestTextStyle(),
+            );
+          }
+        });
   }
 }

@@ -32,7 +32,10 @@ class Top20ListPage extends StatelessWidget {
               top20Companies = state.top20;
             }
             return top20Companies == null
-                ? Center(child: CircularProgressIndicator())
+                ? const Align(
+                alignment: Alignment.topCenter,
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
                 : SingleChildScrollView(
                     child: Top20List(top20Companies!.company),
                   );

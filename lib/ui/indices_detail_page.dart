@@ -30,7 +30,10 @@ class IndicesDetailPage extends StatelessWidget {
             analysesDate = state.analysesDate;
           }
           return indicesAnalysis == null
-              ? const Center(child: CircularProgressIndicator())
+              ? const Align(
+              alignment: Alignment.topCenter,
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
               : SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
