@@ -11,7 +11,6 @@ import 'package:open_store/open_store.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:investtech_app/const/colors.dart';
 
-
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/main.dart';
 
@@ -91,7 +90,6 @@ class HomeOverviewState extends State<HomeOverview> {
   final streamController = StreamController<DateTime>.broadcast();
 
   DateTime startTime = DateTime.now();
-
 
   @override
   void dispose() {
@@ -438,7 +436,8 @@ class HomeOverviewState extends State<HomeOverview> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 5),
                               child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
@@ -450,7 +449,8 @@ class HomeOverviewState extends State<HomeOverview> {
                                   )),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 5),
                               child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
@@ -488,35 +488,34 @@ class HomeOverviewState extends State<HomeOverview> {
                       ),
                     ),
 
-                    Container(
-                        margin: const EdgeInsets.only(
-                            top: 15, bottom: 10, left: 10, right: 10),
-                        padding: const EdgeInsets.only(
-                            top: 0, bottom: 10, left: 10, right: 10),
-                        color: Color(ColorHex.GREY),
-                        child: Tooltip(
-                          message: 'Text()',
-                          child: SizedBox(
-                            height: 150,
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {},
-                                      icon: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ))
-
+                    // Container(
+                    //     margin: const EdgeInsets.only(
+                    //         top: 15, bottom: 10, left: 10, right: 10),
+                    //     padding: const EdgeInsets.only(
+                    //         top: 0, bottom: 10, left: 10, right: 10),
+                    //     color: Color(ColorHex.GREY),
+                    //     child: Tooltip(
+                    //       message: 'Text()',
+                    //       child: SizedBox(
+                    //         height: 150,
+                    //         child: Column(
+                    //           children: [
+                    //             Row(
+                    //               mainAxisAlignment: MainAxisAlignment.end,
+                    //               children: [
+                    //                 IconButton(
+                    //                   onPressed: () {},
+                    //                   icon: const Icon(
+                    //                     Icons.close,
+                    //                     color: Colors.white,
+                    //                   ),
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ))
                   ],
                 ),
               );
