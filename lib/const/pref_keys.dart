@@ -11,4 +11,5 @@ class PrefKeys {
   static String newsLetterSubscriptionId = "newsLetterSubscriptionId";
   static String newsLetterSubscriptionMarket = "newsLetterSubscriptionMarket";
   static String introSlides = "introSlides";
+  static String LTA_CONTAINER = "ltaContainer";
 }

@@ -1,19 +1,22 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:hidable/hidable.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
+import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/intro_page.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
 import 'package:investtech_app/ui/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import './UI/home_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -121,12 +124,11 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int selectedIndex = 0;
+
+  GlobalKey<HomeOverviewState> homeKey = GlobalKey();
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static final List<Widget> _widgetOptions = <Widget>[
-    HomeOverview(),
-    WebLoginPage(ApiRepo(), false),
-    Subscription(),
+   List<Widget> widgetOptions = <Widget>[
   ];
 
   void _onItemTapped(int index) {
@@ -135,32 +137,62 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  _onWillPop() {
+    if (selectedIndex != 0) {
+      setState(() {
+        selectedIndex = 0;
+      });
+    } else {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    }
+  }
+
+
+  @override
+  void initState() {
+    widgetOptions = [
+      HomeOverview(key:homeKey ,),
+      WebLoginPage(ApiRepo(), false),
+      Subscription(),
+    ];
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return widget.introSlides
-        ? IntroScreen()
-        : Scaffold(
-            body: Container(
-              child: _widgetOptions[selectedIndex],
+    return
+      // widget.introSlides
+      //   ? IntroScreen()
+      //   :
+      WillPopScope(
+        onWillPop: () => _onWillPop(),
+        child: Scaffold(
+              body: Container(
+                child: widgetOptions[selectedIndex],
+              ),
+              bottomNavigationBar: Hidable(
+                controller: homeKey.currentState?.controller ?? ScrollController(),
+                child: BottomNavigationBar(
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.web_asset_off),
+                      label: 'Web',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.lock_open_rounded),
+                      label: 'Subscription',
+                    ),
+                  ],
+                  currentIndex: selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              ),
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.web_asset_off),
-                  label: 'Web',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.lock_open_rounded),
-                  label: 'Subscription',
-                ),
-              ],
-              currentIndex: selectedIndex,
-              onTap: _onItemTapped,
-            ),
-          );
+      );
   }
 }

@@ -13,6 +13,7 @@ import 'package:investtech_app/ui/web_view_privacy_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:open_store/open_store.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    getAppInfo();
     super.initState();
     //getAppInfo();
   }
@@ -88,9 +89,12 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void getAppInfo() async {
-    // PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    // version = packageInfo.version;
-    // print('debug $version');
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState((){
+      version = packageInfo.version;
+      print('debug $version');
+    });
+
   }
 
   @override

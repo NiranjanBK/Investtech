@@ -71,21 +71,20 @@ class _CompanyPageState extends State<CompanyPage> {
             widget.isFavourite =
                 jsonDecode(snapshot.data!.toString())['isFavourite'];
             widget.hasNote = jsonDecode(snapshot.data!.toString())['note']
-                        .toString()
-                        .length >
-                    0
+                        .toString().isNotEmpty
                 ? true
                 : false;
             widget.hasTimestamp =
                 jsonDecode(snapshot.data!.toString())['timeStamp']
-                            .toString()
-                            .length >
-                        0
+                            != false
                     ? true
                     : false;
 
             notesController.text =
                 jsonDecode(snapshot.data!.toString())['note'].toString();
+          } else{
+            widget.isFavourite =
+            jsonDecode(snapshot.data!.toString())['isFavourite'];
           }
 
           return Scaffold(
@@ -253,17 +252,19 @@ class _CompanyPageState extends State<CompanyPage> {
                                       ))
                                     ],
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        widget.hasTimestamp
-                                            ? '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
-                                            : '',
-                                        style: getSmallestTextStyle(),
-                                      ),
-                                    ],
-                                  ),
+                                  if(widget.hasTimestamp)
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          widget.hasTimestamp
+                                              ? '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
+                                              : '',
+                                          style: getSmallestTextStyle(),
+                                        ),
+                                      ],
+                                    ),
+
                                 ],
                               ),
                             ),

@@ -30,7 +30,10 @@ class TodaysSignalDetailPage extends StatelessWidget {
             analysesDate = state.todaysSignal.analysesDate;
           }
           return todaysSignal == null
-              ? const Center(child: CircularProgressIndicator())
+              ? const Align(
+              alignment: Alignment.topCenter,
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(10),
                   child: Column(
