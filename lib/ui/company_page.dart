@@ -71,20 +71,20 @@ class _CompanyPageState extends State<CompanyPage> {
             widget.isFavourite =
                 jsonDecode(snapshot.data!.toString())['isFavourite'];
             widget.hasNote = jsonDecode(snapshot.data!.toString())['note']
-                        .toString().isNotEmpty
+                    .toString()
+                    .isNotEmpty
                 ? true
                 : false;
             widget.hasTimestamp =
-                jsonDecode(snapshot.data!.toString())['timeStamp']
-                            != false
+                jsonDecode(snapshot.data!.toString())['timeStamp'] != false
                     ? true
                     : false;
 
             notesController.text =
                 jsonDecode(snapshot.data!.toString())['note'].toString();
-          } else{
+          } else {
             widget.isFavourite =
-            jsonDecode(snapshot.data!.toString())['isFavourite'];
+                jsonDecode(snapshot.data!.toString())['isFavourite'];
           }
 
           return Scaffold(
@@ -252,7 +252,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                       ))
                                     ],
                                   ),
-                                  if(widget.hasTimestamp)
+                                  if (widget.hasTimestamp)
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
@@ -264,7 +264,6 @@ class _CompanyPageState extends State<CompanyPage> {
                                         ),
                                       ],
                                     ),
-
                                 ],
                               ),
                             ),

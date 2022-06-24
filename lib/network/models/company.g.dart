@@ -34,6 +34,7 @@ Company _$CompanyFromJson(Map<String, dynamic> json) => Company(
       commentText: json['commentText'] as String?,
       marketName: json['marketName'] as String?,
       priceDate: json['priceDate'] as String?,
+      PriceDate: json['PriceDate'] as String?,
       change: json['change'] as String?,
       formattedDate: json['formattedDate'] as String?,
     );
@@ -64,6 +65,7 @@ Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
       'closeText': instance.closeText,
       'marketName': instance.marketName,
       'priceDate': instance.priceDate,
+      'PriceDate': instance.PriceDate,
       'commentText': instance.commentText,
       'autoComment': instance.autoComment,
       'change': instance.change,

@@ -116,6 +116,19 @@ class ApiRepo {
     );
   }
 
+  Future<http.Response> getWebTVList() async {
+    await getListValuesSF();
+    return client.get(
+      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+      Uri.parse(
+          'https://www.investtech.com/mobile/api.php?page=webTV&market=$marketCode&lang=${languageCodeMap![lang]}&countryID=91'),
+      //body: json.encode(body.toJson()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+  }
+
   Future<http.Response> getMCDetailPage() async {
     await getListValuesSF();
     return client.get(

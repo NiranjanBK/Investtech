@@ -65,6 +65,8 @@ dependencies:
   firebase_dynamic_links: ^4.0.7
   sprintf: ^6.0.0
   smooth_page_indicator: ^1.0.0+2
+  cached_network_image: ^3.2.1
+ 
   
 
 dev_dependencies:

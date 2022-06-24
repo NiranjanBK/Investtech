@@ -29,6 +29,7 @@ class Company {
       closeText,
       marketName,
       priceDate,
+      PriceDate,
       commentText,
       autoComment,
       change,
@@ -62,6 +63,7 @@ class Company {
       this.commentText,
       this.marketName,
       this.priceDate,
+      this.PriceDate,
       this.change,
       this.formattedDate});
 

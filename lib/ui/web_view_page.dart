@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'dart:developer';
+
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
-import 'package:investtech_app/main.dart';
+
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/search_item_page.dart';

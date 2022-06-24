@@ -24,6 +24,19 @@ class WebTv {
       };
 }
 
+class WebLinkDetail {
+  WebLinkDetail({
+    this.video,
+  });
+  List<Video>? video;
+  factory WebLinkDetail.fromJson(Map<String, dynamic> json) => WebLinkDetail(
+        video: List<Video>.from(json["video"].map((x) => Video.fromJson(x))),
+      );
+  Map<String, dynamic> toJson() => {
+        "video": List<dynamic>.from(video!.map((x) => x.toJson())),
+      };
+}
+
 class Video {
   Video({
     required this.youtubeId,

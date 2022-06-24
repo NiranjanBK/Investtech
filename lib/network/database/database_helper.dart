@@ -216,6 +216,12 @@ class DatabaseHelper {
         .rawDelete("DELETE FROM $favoriteTable WHERE $companyId=?", [cmpId]);
   }
 
+  Future<int> deleteAllNotesAndFavourites() async {
+    final database = await db;
+
+    return await database!.rawDelete("DELETE  FROM $favoriteTable");
+  }
+
   Future<List<COUNTRY>> getCountryDetails() async {
     final database = await db;
     final List<Map<String, dynamic>> res = await database!.rawQuery(
