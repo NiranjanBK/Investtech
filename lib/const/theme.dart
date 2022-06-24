@@ -54,7 +54,7 @@ class AppThemes {
           bodyText1: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
-              color: Color(0xFF9b9b9b)),
+              color: Color(0xffb3afaf)),
           bodyText2: TextStyle(fontSize: 12, color: Color(0xFFE8E8E8)),
           subtitle1: TextStyle(fontSize: 11, color: Color(0xFFE8E8E8)),
           caption: TextStyle(
@@ -62,7 +62,7 @@ class AppThemes {
             color: Color(0xFFE8E8E8),
           )),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF9b9b9b),
+        backgroundColor: Color(0xFF3d3d3d),
         titleTextStyle: TextStyle(color: Colors.white),
         iconTheme: IconThemeData(
           color: Colors.white54,
@@ -77,7 +77,7 @@ class AppThemes {
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF9b9b9b),
+        backgroundColor: Color(0xFF3d3d3d),
         selectedIconTheme: IconThemeData(color: Color(0xFFFF6600)),
         selectedLabelStyle: TextStyle(color: Color(0xFFFF6600)),
         unselectedIconTheme: IconThemeData(color: Color(0xFFE8E8E8)),

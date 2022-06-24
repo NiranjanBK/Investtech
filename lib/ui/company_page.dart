@@ -71,28 +71,28 @@ class _CompanyPageState extends State<CompanyPage> {
             widget.isFavourite =
                 jsonDecode(snapshot.data!.toString())['isFavourite'];
             widget.hasNote = jsonDecode(snapshot.data!.toString())['note']
-                        .toString().isNotEmpty
+                    .toString()
+                    .isNotEmpty
                 ? true
                 : false;
             widget.hasTimestamp =
-                jsonDecode(snapshot.data!.toString())['timeStamp']
-                            != false
+                jsonDecode(snapshot.data!.toString())['timeStamp'] != false
                     ? true
                     : false;
 
             notesController.text =
                 jsonDecode(snapshot.data!.toString())['note'].toString();
-          } else{
+          } else {
             widget.isFavourite =
-            jsonDecode(snapshot.data!.toString())['isFavourite'];
+                jsonDecode(snapshot.data!.toString())['isFavourite'];
           }
 
           return Scaffold(
             appBar: AppBar(
-              iconTheme: const IconThemeData(
-                color: Colors.black, //change your color here
-              ),
-              backgroundColor: Colors.white,
+              // iconTheme: const IconThemeData(
+              //   color: Colors.w, //change your color here
+              // ),
+              // backgroundColor: Colors.white,
               actions: [
                 InkWell(
                   onTap: () async {
@@ -198,8 +198,8 @@ class _CompanyPageState extends State<CompanyPage> {
                     onTap: () {
                       showDialog(
                         context: context,
-                        barrierDismissible:
-                            false, // dialog is dismissible with a tap on the barrier
+                        barrierDismissible: false,
+                        // dialog is dismissible with a tap on the barrier
                         useSafeArea: true,
                         builder: (BuildContext context) {
                           return AlertDialog(
@@ -252,19 +252,24 @@ class _CompanyPageState extends State<CompanyPage> {
                                       ))
                                     ],
                                   ),
-                                  if(widget.hasTimestamp)
+                                  if (widget.hasTimestamp)
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
                                           widget.hasTimestamp
-                                              ? '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
+                                              ? jsonDecode(snapshot.data!
+                                                                  .toString())[
+                                                              'timeStamp']
+                                                          .toString() ==
+                                                      "false"
+                                                  ? ''
+                                                  : '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
                                               : '',
                                           style: getSmallestTextStyle(),
                                         ),
                                       ],
                                     ),
-
                                 ],
                               ),
                             ),
