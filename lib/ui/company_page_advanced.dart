@@ -40,10 +40,10 @@ class CompanyPageAdvance extends StatelessWidget {
       initialIndex: 1,
       child: Scaffold(
         appBar: AppBar(
-          iconTheme: const IconThemeData(
+          /*iconTheme: const IconThemeData(
             color: Colors.black, //change your color here
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.white,*/
           actions: [
             Icon(
               Icons.star_border_outlined,

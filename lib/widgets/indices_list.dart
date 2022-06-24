@@ -45,24 +45,18 @@ class IndicesList extends StatelessWidget {
               if (page == 'detail') ...{
                 Text(
                   _indicesEvaluation[index].ticker,
-                  style: const TextStyle(
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(fontSize: 11),
                 ),
                 Text(
                   double.parse(
                     _indicesEvaluation[index].close,
                   ).toStringAsFixed(2),
-                  style: const TextStyle(
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(fontSize: 11),
                 ),
                 Text(
                   double.parse(_indicesEvaluation[index].change)
                       .toStringAsFixed(2),
-                  style: const TextStyle(
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(fontSize: 11),
                 ),
                 displayArrow(
                   int.parse(_indicesEvaluation[index].short),

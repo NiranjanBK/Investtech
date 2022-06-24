@@ -36,58 +36,60 @@ class CompanyBody extends StatelessWidget {
         }
         return cmpData == null
             ? const Center(child: CircularProgressIndicator())
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CompanyHeader(
-                      ticker: cmpData!.ticker,
-                      companyName: cmpData!.name.toString(),
-                      changePct: cmpData!.changePct,
-                      changeValue: cmpData!.change!.toString(),
-                      close: cmpData!.closePrice!,
-                      evaluation: cmpData!.evaluationText.toString(),
-                      evalCode: cmpData!.evaluationCode,
-                      priceDate: cmpData!.priceDate,
-                      showDate: 'show',
-                      //market: companyObj.marketCode.toString(),
-                      term: timeSpanString[
-                          chartId - 4]), //companyObj.term.toString(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Image.network(ApiRepo().getChartUrl(
-                      CHART_TYPE_ADVANCED,
-                      timeSpanChart[chartId - 4],
-                      CHART_STYLE_NORMAL,
-                      companyId)),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    cmpData!.commentText.toString(),
-                    style: const TextStyle(
-                      fontSize: 12,
+            : SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CompanyHeader(
+                        ticker: cmpData!.ticker,
+                        companyName: cmpData!.name.toString(),
+                        changePct: cmpData!.changePct,
+                        changeValue: cmpData!.change!.toString(),
+                        close: cmpData!.closePrice!,
+                        evaluation: cmpData!.evaluationText.toString(),
+                        evalCode: cmpData!.evaluationCode,
+                        priceDate: cmpData!.priceDate,
+                        showDate: 'show',
+                        //market: companyObj.marketCode.toString(),
+                        term: timeSpanString[
+                            chartId - 4]), //companyObj.term.toString(),
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Market: ${cmpData!.marketName}',
-                    style: const TextStyle(
-                      fontSize: 10,
+                    Image.network(ApiRepo().getChartUrl(
+                        CHART_TYPE_ADVANCED,
+                        timeSpanChart[chartId - 4],
+                        CHART_STYLE_NORMAL,
+                        companyId)),
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.short_disclaimer,
-                    style: getSmallestTextStyle(),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              );
+                    Text(
+                      cmpData!.commentText.toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Market: ${cmpData!.marketName}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.short_disclaimer,
+                      style: getSmallestTextStyle(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+            );
       }),
     );
   }

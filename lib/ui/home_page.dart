@@ -83,6 +83,7 @@ class HomeOverviewState extends State<HomeOverview> {
   late String reorderString;
   String? marketCode;
   String? marketName;
+  bool? lta;
   StreamSubscription? _reloadStreamSub;
   ScrollController controller = ScrollController();
   Map teaser = {};
@@ -167,6 +168,7 @@ class HomeOverviewState extends State<HomeOverview> {
     reorderString = prefs.getString('items') ?? '';
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
+    lta = prefs.getBool(PrefKeys.LTA_CONTAINER) ?? false;
   }
 
   @override
@@ -194,7 +196,7 @@ class HomeOverviewState extends State<HomeOverview> {
               teaserList = snapshot.data!.teaser;
 
               List reoderList =
-                  reorderString == '' ? [] : reorderString.split(',');
+              reorderString == '' ? [] : reorderString.split(',');
               analysisDate = snapshot.data!.analysesDate.toString();
               return Scaffold(
                 appBar: AppBar(
@@ -259,34 +261,34 @@ class HomeOverviewState extends State<HomeOverview> {
                           }
                         },
                         itemBuilder: (ctx) => [
-                              PopupMenuItem(
-                                height: 30,
-                                value: 'Reorder',
-                                child: Text(
-                                  AppLocalizations.of(context)!.reorder,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2!
-                                          .color),
-                                ),
-                                onTap: () {},
-                              ),
-                              PopupMenuItem(
-                                height: 30,
-                                value: 'Settings',
-                                child: Text(
-                                  AppLocalizations.of(context)!.settings,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2!
-                                          .color),
-                                ),
-                              ),
-                            ])
+                          PopupMenuItem(
+                            height: 30,
+                            value: 'Reorder',
+                            child: Text(
+                              'Reorder',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2!
+                                      .color),
+                            ),
+                            onTap: () {},
+                          ),
+                          PopupMenuItem(
+                            height: 30,
+                            value: 'Settings',
+                            child: Text(
+                              'Settings',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2!
+                                      .color),
+                            ),
+                          ),
+                        ])
                   ],
                 ),
                 body: ListView(
@@ -305,9 +307,9 @@ class HomeOverviewState extends State<HomeOverview> {
                           Text(
                             AppLocalizations.of(context)!
                                 .analysis_home_header_template(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.parse(snapshot.data!.analysesDate) *
-                                            1000)),
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(snapshot.data!.analysesDate) *
+                                        1000)),
                             style: getSmallestTextStyle(),
                           ),
                           const SizedBox(
@@ -351,60 +353,60 @@ class HomeOverviewState extends State<HomeOverview> {
                                   ],
                                   border: const Border(
                                       bottom: BorderSide(
-                                    width: 0.8,
-                                    color: Colors.black12,
-                                  ))),
+                                        width: 0.8,
+                                        color: Colors.black12,
+                                      ))),
                               child: Row(
                                 children: [
                                   if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'marketCommentary') ...{
                                     MarketCommentaries(
                                       snapshot.data!.teaser[index],
                                     ),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'todaysSignals') ...{
                                     TodaysSignals(
                                       snapshot.data!.teaser[index],
                                     ),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'top20') ...{
                                     TopTwenty(
                                       snapshot.data!.teaser[index],
                                     ),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'indicesAnalyses') ...{
                                     Indices(
                                       snapshot.data!.teaser[index],
                                       'analyses',
                                     ),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'todaysCandidate') ...{
                                     TodaysCandidate(
                                       snapshot.data!.teaser[index],
                                       'case',
                                     ),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'indicesEvaluations') ...{
                                     IndicesEvaluation(
                                         snapshot.data!.teaser[index]),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'barometer') ...{
                                     BarometerGraph(
                                         snapshot.data!.teaser[index].content,
                                         snapshot.data!.teaser[index].title),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'webTV') ...{
                                     WebTVTeaser(snapshot.data!.teaser[index]),
                                   } else if (snapshot
-                                          .data!.teaser[index].productName ==
+                                      .data!.teaser[index].productName ==
                                       'favourites') ...{
                                     FavoritesTeaser(
                                         snapshot.data!.teaser[index]),
@@ -419,74 +421,84 @@ class HomeOverviewState extends State<HomeOverview> {
                       },
                     ),
 
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(.4),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.close),
-                                color: Colors.white,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 5),
-                              child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    AppLocalizations.of(context)!.lta,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Colors.white),
-                                  )),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 5),
-                              child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    AppLocalizations.of(context)!.lta,
-                                    style: const TextStyle(
-                                        fontSize: 14, color: Colors.white),
-                                  )),
-                            ),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    OpenStore.instance.open(
-                                      //appStoreId: 'com.investtech.investtechapp',
-                                      androidAppBundleId:
-                                          'com.investtech.investtechapp',
-                                    );
+                    if(lta == true)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(.4),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () async{
+                                    SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                    prefs.setBool(PrefKeys.LTA_CONTAINER,
+                                        false);
+
+                                    setState((){
+                                      lta = false;
+                                    });
                                   },
-                                  child: Text(
-                                    "Get the app",
-                                    style: TextStyle(color: Colors.orange),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.white,
-                                    textStyle:
-                                        const TextStyle(color: Colors.orange),
-                                  ),
+                                  icon: const Icon(Icons.close),
+                                  color: Colors.white,
                                 ),
                               ),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 5),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      AppLocalizations.of(context)!.lta,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.white),
+                                    )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 5),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      AppLocalizations.of(context)!.lta,
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white),
+                                    )),
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      OpenStore.instance.open(
+                                        //appStoreId: 'com.investtech.investtechapp',
+                                        androidAppBundleId:
+                                        'com.investtech.investtechapp',
+                                      );
+                                    },
+                                    child: Text(
+                                      "Get the app",
+                                      style: TextStyle(color: Colors.orange),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.white,
+                                      textStyle:
+                                      const TextStyle(color: Colors.orange),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
                     // Container(
                     //     margin: const EdgeInsets.only(
@@ -555,3 +567,4 @@ class HomeOverviewState extends State<HomeOverview> {
         });
   }
 }
+
