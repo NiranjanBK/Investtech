@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
@@ -130,8 +131,8 @@ class _WebViewPageState extends State<WebViewPage> {
                           PopupMenuItem(
                             height: 30,
                             value: 'Search',
-                            child: const Text(
-                              'Search',
+                            child: Text(
+                              AppLocalizations.of(context)!.search,
                               style: TextStyle(fontSize: 12),
                             ),
                             onTap: () {},
@@ -139,18 +140,18 @@ class _WebViewPageState extends State<WebViewPage> {
                           PopupMenuItem(
                             height: 30,
                             value: 'Logout',
-                            child: const Text(
-                              'Logout',
+                            child: Text(
+                              AppLocalizations.of(context)!.logout,
                               style: TextStyle(fontSize: 12),
                             ),
                             onTap: () {},
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             height: 30,
                             value: 'Settings',
                             child: Text(
-                              'Settings',
-                              style: TextStyle(fontSize: 12),
+                              AppLocalizations.of(context)!.settings,
+                              style: const TextStyle(fontSize: 12),
                             ),
                           ),
                         ])
