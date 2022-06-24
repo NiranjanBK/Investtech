@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:investtech_app/const/colors.dart';
 
 getSmallTextStyle() {
-  return const TextStyle(fontSize: 12, color: Color(ColorHex.DARK_GREY));
+  return const TextStyle(fontSize: 12, );
 }
 
 getSmallestTextStyle() {
-  return const TextStyle(fontSize: 10, color: Color(ColorHex.DARK_GREY));
+  return const TextStyle(fontSize: 10, );
 }
 
 getSmallBoldTextStyle() {
   return const TextStyle(
       fontSize: 12,
-      color: Color(ColorHex.DARK_GREY),
+
       fontWeight: FontWeight.bold);
 }
 
 getHomePageHeadingTextStyle() {
   return const TextStyle(
-      color: Color(ColorHex.GREY), fontSize: 20, fontWeight: FontWeight.bold);
+     fontSize: 20, fontWeight: FontWeight.bold);
 }
 
 getEvaluationTextStyle() {
   return const TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.bold,
-      color: Color(ColorHex.DARK_GREY));
+      );
 }
 
 getHomePageSeeAllTextStyle() {
@@ -37,16 +37,16 @@ getHomePageSeeAllTextStyle() {
 
 getBoldTextStyle() {
   return const TextStyle(
-      fontWeight: FontWeight.bold, color: Color(ColorHex.DARK_GREY));
+      fontWeight: FontWeight.bold, );
 }
 
 getDescriptionTextStyle() {
-  return const TextStyle(fontSize: 13, color: Color(ColorHex.DARK_GREY));
+  return const TextStyle(fontSize: 13, );
 }
 
 getNameAndTickerTextStyle() {
   return const TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.bold,
-      color: Color(ColorHex.DARK_GREY));
+     );
 }

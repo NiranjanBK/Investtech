@@ -89,10 +89,10 @@ class _CompanyPageState extends State<CompanyPage> {
 
           return Scaffold(
             appBar: AppBar(
-              iconTheme: const IconThemeData(
-                color: Colors.black, //change your color here
-              ),
-              backgroundColor: Colors.white,
+              // iconTheme: const IconThemeData(
+              //   color: Colors.w, //change your color here
+              // ),
+              // backgroundColor: Colors.white,
               actions: [
                 InkWell(
                   onTap: () async {
@@ -198,8 +198,8 @@ class _CompanyPageState extends State<CompanyPage> {
                     onTap: () {
                       showDialog(
                         context: context,
-                        barrierDismissible:
-                            false, // dialog is dismissible with a tap on the barrier
+                        barrierDismissible: false,
+                        // dialog is dismissible with a tap on the barrier
                         useSafeArea: true,
                         builder: (BuildContext context) {
                           return AlertDialog(
@@ -258,7 +258,13 @@ class _CompanyPageState extends State<CompanyPage> {
                                       children: [
                                         Text(
                                           widget.hasTimestamp
-                                              ? '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
+                                              ? jsonDecode(snapshot.data!
+                                                                  .toString())[
+                                                              'timeStamp']
+                                                          .toString() ==
+                                                      "false"
+                                                  ? ''
+                                                  : '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
                                               : '',
                                           style: getSmallestTextStyle(),
                                         ),

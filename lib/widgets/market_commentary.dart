@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/theme.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/mc_main.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import '../network/models/market_commentary.dart';
@@ -56,8 +59,11 @@ class MarketCommentaries extends StatelessWidget {
                 //crossAxisSpacing: 1.0,
               ),
               itemBuilder: (ctx, index) {
-                Color? cardBackground =
-                    double.parse((commentaryObj[index].evaluationCode)) > 0
+                Color? cardBackground = BlocProvider.of<ThemeBloc>(context)
+                            .loadTheme ==
+                        AppTheme.darkTheme
+                    ? Theme.of(context).primaryColor
+                    : double.parse((commentaryObj[index].evaluationCode)) > 0
                         ? Colors.green[50]
                         : double.parse((commentaryObj[index].evaluationCode)) ==
                                 0
@@ -75,53 +81,57 @@ class MarketCommentaries extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Card(
-                    child: Column(
-                      children: [
-                        Container(
-                            height: 10,
-                            // margin: EdgeInsets.only(top: 5),
-                            color: getBoarderColor(int.parse(
-                                commentaryObj[index].evaluationCode))),
-                        Expanded(
-                          child: Container(
-                            color: cardBackground,
-                            padding: const EdgeInsets.only(left: 5, right: 5),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  commentaryObj[index].market,
-                                  style: TextStyle(fontWeight: FontWeight.w600),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  double.parse((commentaryObj[index].close))
-                                      .toStringAsFixed(2),
-                                  style: TextStyle(fontWeight: FontWeight.w600),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${double.parse((commentaryObj[index].changePct)).toStringAsFixed(2)}%',
-                                  style: TextStyle(
-                                      color: double.parse((commentaryObj[index]
-                                                  .changePct)) >
-                                              0
-                                          ? Colors.green[900]
-                                          : Colors.red[900]),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  commentaryObj[index].title,
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Container(
+                              height: 10,
+                              // margin: EdgeInsets.only(top: 5),
+                              color: getBoarderColor(int.parse(
+                                  commentaryObj[index].evaluationCode))),
+                          Expanded(
+                            child: Container(
+                              color: cardBackground,
+                              padding: const EdgeInsets.only(left: 5, right: 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    commentaryObj[index].market,
+                                    style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    double.parse((commentaryObj[index].close))
+                                        .toStringAsFixed(2),
+                                    style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${double.parse((commentaryObj[index].changePct)).toStringAsFixed(2)}%',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: double.parse((commentaryObj[index]
+                                                    .changePct)) >
+                                                0
+                                            ? Colors.green[900]
+                                            : Colors.red[900]),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    commentaryObj[index].title,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

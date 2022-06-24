@@ -155,16 +155,23 @@ class _MainPageState extends State<MainPage> {
       WebLoginPage(ApiRepo(), false),
       Subscription(),
     ];
-
+    if(widget.introSlides){
+      setLTA();
+    }
     super.initState();
+  }
+
+  setLTA() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(PrefKeys.LTA_CONTAINER, true);
   }
 
   @override
   Widget build(BuildContext context) {
     return
-      // widget.introSlides
-      //   ? IntroScreen()
-      //   :
+      widget.introSlides
+        ? IntroScreen()
+        :
       WillPopScope(
         onWillPop: () => _onWillPop(),
         child: Scaffold(
