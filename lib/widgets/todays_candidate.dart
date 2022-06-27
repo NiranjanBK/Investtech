@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
@@ -50,6 +51,8 @@ class TodaysCandidate extends StatelessWidget {
                       evalCode: companyObj.evaluationCode,
                       formattedDate: companyObj.formattedDate,
                       showDate: 'true',
+                      chartId: CHART_TERM_MEDIUM,
+                      access: 'free',
                       //market: companyObj.marketCode.toString(),
                       term: 'Medium Term'), //companyObj.term.toString(),
                   Image.network(

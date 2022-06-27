@@ -69,22 +69,22 @@ class _CompanyPageState extends State<CompanyPage> {
           print(snapshot.data);
           if (jsonDecode(snapshot.data!.toString())['isFavourite']) {
             widget.isFavourite =
-            jsonDecode(snapshot.data!.toString())['isFavourite'];
+                jsonDecode(snapshot.data!.toString())['isFavourite'];
             widget.hasNote = jsonDecode(snapshot.data!.toString())['note']
-                .toString()
-                .isNotEmpty
+                    .toString()
+                    .isNotEmpty
                 ? true
                 : false;
             widget.hasTimestamp =
-            jsonDecode(snapshot.data!.toString())['timeStamp'] != false
-                ? true
-                : false;
+                jsonDecode(snapshot.data!.toString())['timeStamp'] != false
+                    ? true
+                    : false;
 
             notesController.text =
                 jsonDecode(snapshot.data!.toString())['note'].toString();
           } else {
             widget.isFavourite =
-            jsonDecode(snapshot.data!.toString())['isFavourite'];
+                jsonDecode(snapshot.data!.toString())['isFavourite'];
           }
 
           return Scaffold(
@@ -103,7 +103,7 @@ class _CompanyPageState extends State<CompanyPage> {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 10),
                           title:
-                          Text(AppLocalizations.of(context)!.are_you_sure),
+                              Text(AppLocalizations.of(context)!.are_you_sure),
                           content: Text(AppLocalizations.of(context)!
                               .note_exists_warning),
                           actions: <Widget>[
@@ -158,7 +158,6 @@ class _CompanyPageState extends State<CompanyPage> {
                       int deleteFlag = await DatabaseHelper()
                           .deleteNoteAndFavourite(widget.cmpId);
                       print(deleteFlag);
-                      c.counterIncremented.broadcast();
 
                       setState(() {
                         future =
@@ -166,7 +165,6 @@ class _CompanyPageState extends State<CompanyPage> {
                       });
                       eventBus.fire(ReloadEvent());
                       myEvent.broadcast(Reload(true));
-                      c.counterIncremented.broadcast();
                     } else {
                       var favorite = Favorites(
                           companyName: widget.companyName ?? "",
@@ -174,7 +172,7 @@ class _CompanyPageState extends State<CompanyPage> {
                           ticker: widget.ticker ?? "",
                           note: notesController.text,
                           noteTimestamp:
-                          DateTime.now().millisecondsSinceEpoch.toString());
+                              DateTime.now().millisecondsSinceEpoch.toString());
                       await DatabaseHelper().addNoteAndFavorite(favorite);
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       eventBus.fire(ReloadEvent());
@@ -223,33 +221,33 @@ class _CompanyPageState extends State<CompanyPage> {
                                     children: [
                                       Expanded(
                                           child: TextField(
-                                            controller: notesController,
-                                            style: const TextStyle(fontSize: 12),
-                                            cursorColor: const Color(0xFFEF6C00),
-                                            maxLines: 8,
-                                            //autofocus: true,
-                                            decoration: InputDecoration(
-                                                isDense: true,
-                                                contentPadding:
+                                        controller: notesController,
+                                        style: const TextStyle(fontSize: 12),
+                                        cursorColor: const Color(0xFFEF6C00),
+                                        maxLines: 8,
+                                        //autofocus: true,
+                                        decoration: InputDecoration(
+                                            isDense: true,
+                                            contentPadding:
                                                 const EdgeInsets.all(5),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      width: 1,
-                                                      color: (Colors.grey[600])!),
-                                                  borderRadius:
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: (Colors.grey[600])!),
+                                              borderRadius:
                                                   BorderRadius.circular(5),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      width: 1,
-                                                      color: (Colors.grey[600])!),
-                                                  borderRadius:
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: (Colors.grey[600])!),
+                                              borderRadius:
                                                   BorderRadius.circular(5),
-                                                )),
-                                            onChanged: (value) {
-                                              //teamName = value;
-                                            },
-                                          ))
+                                            )),
+                                        onChanged: (value) {
+                                          //teamName = value;
+                                        },
+                                      ))
                                     ],
                                   ),
                                   if (widget.hasTimestamp)
@@ -259,12 +257,12 @@ class _CompanyPageState extends State<CompanyPage> {
                                         Text(
                                           widget.hasTimestamp
                                               ? jsonDecode(snapshot.data!
-                                              .toString())[
-                                          'timeStamp']
-                                              .toString() ==
-                                              "false"
-                                              ? ''
-                                              : '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
+                                                                  .toString())[
+                                                              'timeStamp']
+                                                          .toString() ==
+                                                      "false"
+                                                  ? ''
+                                                  : '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
                                               : '',
                                           style: getSmallestTextStyle(),
                                         ),
@@ -296,7 +294,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                       onPressed: () async {
                                         var favorite = Favorites(
                                             companyName:
-                                            widget.companyName ?? "",
+                                                widget.companyName ?? "",
                                             companyId: int.parse(widget.cmpId),
                                             ticker: widget.ticker ?? "",
                                             note: notesController.text,
@@ -318,7 +316,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                     child: Text(
                                       AppLocalizations.of(context)!.cancel,
                                       style:
-                                      TextStyle(color: Colors.orange[800]),
+                                          TextStyle(color: Colors.orange[800]),
                                     ),
                                     onPressed: () {
                                       Navigator.of(context).pop();
@@ -362,7 +360,7 @@ class _CompanyPageState extends State<CompanyPage> {
             body: SingleChildScrollView(
               child: Container(
                   padding: const EdgeInsets.all(10),
-                  child: CompanyBody(widget.cmpId, widget.chartId)),
+                  child: CompanyBody(widget.cmpId, widget.chartId, 'paid')),
             ),
           );
         } else if (snapshot.hasError) {

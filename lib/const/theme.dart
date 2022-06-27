@@ -5,7 +5,7 @@ class AppThemes {
   static final appThemeData = {
     AppTheme.lightTheme: ThemeData(
       scaffoldBackgroundColor: Colors.white,
-      //primarySwatch: Colors.blue,
+      //primarySwatch: Colors.orange,
       backgroundColor: const Color(0XFFf5f3f3),
       primaryColor: const Color(0XFFf5f3f3),
       primaryColorDark: const Color(0XFFf5f3f3),
@@ -41,7 +41,7 @@ class AppThemes {
         selectedIconTheme: IconThemeData(color: Color(0xFFFF6600)),
         selectedLabelStyle: TextStyle(color: Color(0xFFFF6600)),
         unselectedIconTheme: IconThemeData(color: Color(0xFF6e6e6e)),
-        unselectedLabelStyle: TextStyle(color: Colors.blue),
+        //unselectedLabelStyle: TextStyle(color: Colors.blue),
       ),
     ),
     AppTheme.darkTheme: ThemeData(

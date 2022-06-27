@@ -128,8 +128,7 @@ class _MainPageState extends State<MainPage> {
   GlobalKey<HomeOverviewState> homeKey = GlobalKey();
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-   List<Widget> widgetOptions = <Widget>[
-  ];
+  List<Widget> widgetOptions = <Widget>[];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -147,15 +146,16 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-
   @override
   void initState() {
     widgetOptions = [
-      HomeOverview(key:homeKey ,),
+      HomeOverview(
+        key: homeKey,
+      ),
       WebLoginPage(ApiRepo(), false),
       Subscription(),
     ];
-    if(widget.introSlides){
+    if (widget.introSlides) {
       setLTA();
     }
     super.initState();
@@ -168,18 +168,17 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      widget.introSlides
+    return widget.introSlides
         ? IntroScreen()
-        :
-      WillPopScope(
-        onWillPop: () => _onWillPop(),
-        child: Scaffold(
+        : WillPopScope(
+            onWillPop: () => _onWillPop(),
+            child: Scaffold(
               body: Container(
                 child: widgetOptions[selectedIndex],
               ),
               bottomNavigationBar: Hidable(
-                controller: homeKey.currentState?.controller ?? ScrollController(),
+                controller:
+                    homeKey.currentState?.controller ?? ScrollController(),
                 child: BottomNavigationBar(
                   items: const <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
@@ -200,6 +199,6 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
             ),
-      );
+          );
   }
 }

@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
@@ -11,8 +13,10 @@ import 'package:investtech_app/widgets/company_header.dart';
 class CompanyBody extends StatelessWidget {
   Company? cmpData;
   final String companyId;
+  final String access;
   final int chartId;
-  CompanyBody(this.companyId, this.chartId, {Key? key}) : super(key: key);
+  CompanyBody(this.companyId, this.chartId, this.access, {Key? key})
+      : super(key: key);
 
   List timeSpanString = ['Medium Term', 'Short Term', 'Long Term'];
   List timeSpanChart = ['4', '5', '6'];
@@ -37,7 +41,7 @@ class CompanyBody extends StatelessWidget {
         return cmpData == null
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-              child: Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CompanyHeader(
@@ -50,20 +54,28 @@ class CompanyBody extends StatelessWidget {
                         evalCode: cmpData!.evaluationCode,
                         priceDate: cmpData!.priceDate,
                         showDate: 'show',
+                        chartId: chartId.toString(),
+                        access: access,
                         //market: companyObj.marketCode.toString(),
                         term: timeSpanString[
                             chartId - 4]), //companyObj.term.toString(),
                     const SizedBox(
                       height: 10,
                     ),
-                    Image.network(ApiRepo().getChartUrl(
-                        CHART_TYPE_ADVANCED,
-                        timeSpanChart[chartId - 4],
-                        CHART_STYLE_NORMAL,
-                        companyId)),
-                    const SizedBox(
-                      height: 10,
+                    CachedNetworkImage(
+                      imageUrl: ApiRepo().getChartUrl(
+                          CHART_TYPE_FREE, 4, CHART_STYLE_NORMAL, companyId),
+                      placeholder: (context, url) => Container(
+                          height: 275,
+                          width: double.infinity,
+                          child: const Center(
+                              child: CircularProgressIndicator(
+                                  color: Color(
+                            ColorHex.ACCENT_COLOR,
+                          )))),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
+
                     Text(
                       cmpData!.commentText.toString(),
                       style: const TextStyle(
@@ -89,7 +101,7 @@ class CompanyBody extends StatelessWidget {
                     ),
                   ],
                 ),
-            );
+              );
       }),
     );
   }

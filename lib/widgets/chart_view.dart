@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:investtech_app/const/chart_const.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -48,9 +49,12 @@ class ChartView extends StatelessWidget {
           imageUrl: ApiRepo()
               .getChartUrl(CHART_TYPE_ADVANCED, 4, CHART_STYLE_NORMAL, cmpId),
           placeholder: (context, url) => Container(
-              height: 300,
+              height: 275,
               width: double.infinity,
-              child: const Center(child: CircularProgressIndicator())),
+              child: const Center(
+                  child: CircularProgressIndicator(
+                color: Color(ColorHex.ACCENT_COLOR),
+              ))),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
         // Image.network(ApiRepo()

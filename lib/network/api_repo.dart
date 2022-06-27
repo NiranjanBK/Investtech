@@ -44,12 +44,13 @@ class ApiRepo {
   Future<http.Response> getHomePgae(market) async {
     await getListValuesSF();
     companyIds = await DatabaseHelper().getNoteAndFavoriteCompanyIds();
+
     String CompanyIDs = companyIds!.join(",");
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=home&active=1,1,1,1&prefs=$reorderString&market=$market&countryID=91&lang=${languageCodeMap![lang]}&CompanyIDs=$CompanyIDs'),
+          'https://www.investtech.com/mobile/api.php?page=home&active=1,1,1,1&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$market&countryID=91&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',

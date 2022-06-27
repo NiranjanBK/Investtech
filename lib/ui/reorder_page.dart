@@ -72,14 +72,11 @@ class _ReorderPageState extends State<ReorderPage> {
         widget.excludedProdList.add(element);
       }
     });
-
-    print(widget.includedProdList);
-    print(widget.excludedProdList);
   }
 
   addListToSF(key, value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+
     prefs.setString(key, value);
   }
 

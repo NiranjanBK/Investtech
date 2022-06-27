@@ -41,7 +41,6 @@ EventBus eventBus = EventBus(sync: true);
 // final controller = StreamController<String>();
 
 var myEvent = Event<Reload>();
-var c = Counter();
 
 class ReloadEvent {}
 
@@ -50,26 +49,6 @@ class Reload extends EventArgs {
   bool reload;
 
   Reload(this.reload);
-}
-
-class Counter {
-  /// The current [Counter] value.
-  int value = 0;
-
-  /// A custom [Event]
-  final counterIncremented = Event();
-
-  /// Increment the [Counter] [value] by 1.
-  void increment() {
-    value++;
-    counterIncremented.broadcast(); // Broadcast the change
-  }
-
-  /// Reset the [Counter] value to 0.
-  void reset() {
-    value = 0;
-    counterIncremented.broadcast(); // Broadcast the change
-  }
 }
 
 class HomeOverview extends StatefulWidget {
@@ -84,6 +63,7 @@ class HomeOverviewState extends State<HomeOverview> {
   String? marketCode;
   String? marketName;
   bool? lta;
+  bool? top20;
   StreamSubscription? _reloadStreamSub;
   ScrollController controller = ScrollController();
   Map teaser = {};
@@ -124,7 +104,6 @@ class HomeOverviewState extends State<HomeOverview> {
     });
 
     // Subscribe to the custom event
-    c.counterIncremented.subscribe((args) => print(c.value));
   }
 
   Future<Home> fetchData() async {
@@ -169,6 +148,7 @@ class HomeOverviewState extends State<HomeOverview> {
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     lta = prefs.getBool(PrefKeys.LTA_CONTAINER) ?? false;
+    top20 = prefs.getBool(PrefKeys.TOP_20) ?? false;
   }
 
   @override
@@ -196,7 +176,7 @@ class HomeOverviewState extends State<HomeOverview> {
               teaserList = snapshot.data!.teaser;
 
               List reoderList =
-              reorderString == '' ? [] : reorderString.split(',');
+                  reorderString == '' ? [] : reorderString.split(',');
               analysisDate = snapshot.data!.analysesDate.toString();
               return Scaffold(
                 appBar: AppBar(
@@ -261,34 +241,34 @@ class HomeOverviewState extends State<HomeOverview> {
                           }
                         },
                         itemBuilder: (ctx) => [
-                          PopupMenuItem(
-                            height: 30,
-                            value: 'Reorder',
-                            child: Text(
-                              'Reorder',
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2!
-                                      .color),
-                            ),
-                            onTap: () {},
-                          ),
-                          PopupMenuItem(
-                            height: 30,
-                            value: 'Settings',
-                            child: Text(
-                              'Settings',
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2!
-                                      .color),
-                            ),
-                          ),
-                        ])
+                              PopupMenuItem(
+                                height: 30,
+                                value: 'Reorder',
+                                child: Text(
+                                  'Reorder',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .color),
+                                ),
+                                onTap: () {},
+                              ),
+                              PopupMenuItem(
+                                height: 30,
+                                value: 'Settings',
+                                child: Text(
+                                  'Settings',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .color),
+                                ),
+                              ),
+                            ])
                   ],
                 ),
                 body: ListView(
@@ -307,9 +287,9 @@ class HomeOverviewState extends State<HomeOverview> {
                           Text(
                             AppLocalizations.of(context)!
                                 .analysis_home_header_template(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    int.parse(snapshot.data!.analysesDate) *
-                                        1000)),
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(snapshot.data!.analysesDate) *
+                                            1000)),
                             style: getSmallestTextStyle(),
                           ),
                           const SizedBox(
@@ -353,60 +333,60 @@ class HomeOverviewState extends State<HomeOverview> {
                                   ],
                                   border: const Border(
                                       bottom: BorderSide(
-                                        width: 0.8,
-                                        color: Colors.black12,
-                                      ))),
+                                    width: 0.8,
+                                    color: Colors.black12,
+                                  ))),
                               child: Row(
                                 children: [
                                   if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'marketCommentary') ...{
                                     MarketCommentaries(
                                       snapshot.data!.teaser[index],
                                     ),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'todaysSignals') ...{
                                     TodaysSignals(
                                       snapshot.data!.teaser[index],
                                     ),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'top20') ...{
                                     TopTwenty(
                                       snapshot.data!.teaser[index],
                                     ),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'indicesAnalyses') ...{
                                     Indices(
                                       snapshot.data!.teaser[index],
                                       'analyses',
                                     ),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'todaysCandidate') ...{
                                     TodaysCandidate(
                                       snapshot.data!.teaser[index],
                                       'case',
                                     ),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'indicesEvaluations') ...{
                                     IndicesEvaluation(
                                         snapshot.data!.teaser[index]),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'barometer') ...{
                                     BarometerGraph(
                                         snapshot.data!.teaser[index].content,
                                         snapshot.data!.teaser[index].title),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'webTV') ...{
                                     WebTVTeaser(snapshot.data!.teaser[index]),
                                   } else if (snapshot
-                                      .data!.teaser[index].productName ==
+                                          .data!.teaser[index].productName ==
                                       'favourites') ...{
                                     FavoritesTeaser(
                                         snapshot.data!.teaser[index]),
@@ -421,7 +401,7 @@ class HomeOverviewState extends State<HomeOverview> {
                       },
                     ),
 
-                    if(lta == true)
+                    if (lta == true)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
@@ -433,13 +413,13 @@ class HomeOverviewState extends State<HomeOverview> {
                               Align(
                                 alignment: Alignment.topRight,
                                 child: IconButton(
-                                  onPressed: () async{
+                                  onPressed: () async {
                                     SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                    prefs.setBool(PrefKeys.LTA_CONTAINER,
-                                        false);
+                                        await SharedPreferences.getInstance();
+                                    prefs.setBool(
+                                        PrefKeys.LTA_CONTAINER, false);
 
-                                    setState((){
+                                    setState(() {
                                       lta = false;
                                     });
                                   },
@@ -480,7 +460,7 @@ class HomeOverviewState extends State<HomeOverview> {
                                       OpenStore.instance.open(
                                         //appStoreId: 'com.investtech.investtechapp',
                                         androidAppBundleId:
-                                        'com.investtech.investtechapp',
+                                            'com.investtech.investtechapp',
                                       );
                                     },
                                     child: Text(
@@ -490,7 +470,7 @@ class HomeOverviewState extends State<HomeOverview> {
                                     style: ElevatedButton.styleFrom(
                                       primary: Colors.white,
                                       textStyle:
-                                      const TextStyle(color: Colors.orange),
+                                          const TextStyle(color: Colors.orange),
                                     ),
                                   ),
                                 ),
@@ -567,4 +547,3 @@ class HomeOverviewState extends State<HomeOverview> {
         });
   }
 }
-

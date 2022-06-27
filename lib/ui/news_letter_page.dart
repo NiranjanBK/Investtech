@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/market_selection_page.dart';
@@ -53,25 +54,48 @@ class _NewsLetterState extends State<NewsLetter> {
           return Center(
             child: Column(
               children: [
-                Icon(Icons.mail),
-                Text(AppLocalizations.of(context)!.news_letter_points_title),
+                Padding(
+                  padding: const EdgeInsets.only(top: 15, bottom: 25),
+                  child: Image.asset(
+                    'assets/images/news_letter.PNG',
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: Text(
+                    AppLocalizations.of(context)!.news_letter_points_title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
                 Text(AppLocalizations.of(context)!.news_letter_points_desc),
-                InkWell(
-                  onTap: () {
-                    awaitReturnValueFromSecondScreen(context);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(marketName ?? 'National S.E'),
-                      Transform.rotate(
-                        angle: 33, //set the angel
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.orange[800],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: InkWell(
+                    onTap: () {
+                      awaitReturnValueFromSecondScreen(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          marketName ?? 'National S.E',
+                          style: const TextStyle(
+                              fontSize: 15,
+                              color: Color(ColorHex.DARK_GREY),
+                              fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
+                        Transform.rotate(
+                          angle: 33, //set the angel
+                          child: Icon(
+                            Icons.play_arrow,
+                            color: Colors.orange[800],
+                            size: 15,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 ListTile(

@@ -39,7 +39,7 @@ class _FavoritesDetailState extends State<FavoritesDetail> {
   @override
   Widget build(BuildContext context) {
     var itemCount = widget.favCmpObj.length;
-    return widget.isNoFavourites
+    return widget.isNoFavourites || itemCount == 0
         ? Scaffold(
             appBar: AppBar(
               title: Text(AppLocalizations.of(context)!.favourites),

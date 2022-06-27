@@ -58,16 +58,19 @@ class IndicesEvalTableHead extends StatelessWidget {
               ),
               Text(
                 _indicesEvaluation.title.short,
+                textAlign: TextAlign.center,
                 style:
                     const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.medium,
+                textAlign: TextAlign.center,
                 style:
                     const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),
               Text(
                 _indicesEvaluation.title.long,
+                textAlign: TextAlign.center,
                 style:
                     const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               ),

@@ -20,8 +20,8 @@ class Top20List extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      CompanyPageAdvance(top20Obj[index].companyId),
+                  builder: (context) => CompanyPageAdvance(
+                      top20Obj[index].companyId, top20Obj[index]),
                 ));
           },
           child: Row(
