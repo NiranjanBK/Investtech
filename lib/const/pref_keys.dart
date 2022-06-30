@@ -3,8 +3,10 @@ class PrefKeys {
   static String IS_LOGGED_IN = "isLoggedIn";
   static String SELECTED_MARKET = "selectedMarket";
   static String SELECTED_MARKET_CODE = "selectedMarketCode";
+  static String SELECTED_MARKET_ID = "selectedMarketId";
   static String SELECTED_THEME = "selectedTheme";
   static String TOP_20 = "top20";
+  static String SUBSCRIBED_USER = "subscribedUser";
   static String selectedLang = "selectedLang";
   static String uid = "uid";
   static String pwd = "pwd";

@@ -337,22 +337,25 @@ class _CompanyPageState extends State<CompanyPage> {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () async {
-                    String mylink = await createDynamicLink(
-                        widget.cmpId, widget.companyName);
-                    var shareText = interpolate(
-                        AppLocalizations.of(context)!.share_message_template,
-                        [widget.companyName.toString(), mylink]);
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: InkWell(
+                    onTap: () async {
+                      String mylink = await createDynamicLink(
+                          widget.cmpId, widget.companyName);
+                      var shareText = interpolate(
+                          AppLocalizations.of(context)!.share_message_template,
+                          [widget.companyName.toString(), mylink]);
 
-                    await FlutterShare.share(
-                      title: shareText,
-                      text: shareText,
-                    );
-                  },
-                  child: Icon(
-                    Icons.share,
-                    color: Colors.orange[500],
+                      await FlutterShare.share(
+                        title: shareText,
+                        text: shareText,
+                      );
+                    },
+                    child: Icon(
+                      Icons.share,
+                      color: Colors.orange[500],
+                    ),
                   ),
                 ),
               ],

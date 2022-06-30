@@ -3,18 +3,16 @@ class MARKET {
   final String marketCode;
   final String marketName;
   final int countryId;
-  final String externalCode;
-  final String currencyCode;
-  final int prefernce;
+  final String countryCode;
+  final String countryName;
 
   const MARKET({
     required this.marketId,
     required this.marketCode,
     required this.marketName,
     required this.countryId,
-    required this.externalCode,
-    required this.currencyCode,
-    required this.prefernce,
+    required this.countryCode,
+    required this.countryName,
   });
 
   // Convert a Dog into a Map. The keys must correspond to the names of the
@@ -25,9 +23,8 @@ class MARKET {
       'marketCode': marketCode,
       'marketName': marketName,
       'countryId': countryId,
-      'externalCode': externalCode,
-      'currencyCode': currencyCode,
-      'prefernce': prefernce,
+      'countryCode': countryCode,
+      'countryName': countryName,
     };
   }
 

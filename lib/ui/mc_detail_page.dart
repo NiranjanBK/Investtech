@@ -7,7 +7,8 @@ import 'package:investtech_app/ui/company_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MarketCommentaryDetailPage extends StatefulWidget {
-  Function(BuildContext context, String companyId) onItemSelected;
+  Function(BuildContext context, String companyId, String name, String ticker)
+      onItemSelected;
   Function() onBackPressed;
   MarketCommentaryDetailPage(this.onItemSelected, this.onBackPressed,
       {Key? key})
@@ -69,20 +70,15 @@ class _MarketCommentaryDetailPageState
                       ),
                       InkWell(
                         onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => CompanyPage(
-                          //         mcDetail!.analyze!.ingress!.companyId
-                          //             .toString(),
-                          //         4,
-                          //       ),
-                          //     ));
-                          widget.onItemSelected(context,
-                              mcDetail!.analyze!.ingress!.companyId.toString());
+                          widget.onItemSelected(
+                              context,
+                              mcDetail!.analyze!.ingress!.companyId.toString(),
+                              mcDetail!.analyze!.ingress!.companyName
+                                  .toString(),
+                              mcDetail!.analyze!.ingress!.ticker.toString());
                         },
                         child: Container(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.only(bottom: 10, top: 10),
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
@@ -131,7 +127,13 @@ class _MarketCommentaryDetailPageState
                             onTap: () {
                               widget.onItemSelected(
                                   context,
-                                  mcDetail!.analyze!.ingress!.companyId
+                                  mcDetail!
+                                      .analyze!.stocks!.stock[index].companyId
+                                      .toString(),
+                                  mcDetail!
+                                      .analyze!.stocks!.stock[index].companyName
+                                      .toString(),
+                                  mcDetail!.analyze!.stocks!.stock[index].ticker
                                       .toString());
                             },
                             child: Container(

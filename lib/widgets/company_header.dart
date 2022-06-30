@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -11,6 +12,7 @@ class CompanyHeader extends StatelessWidget {
       evaluation,
       chartId,
       access;
+  final bool subscribedUser;
   final String? formattedDate, market, term, evalCode, priceDate, showDate;
 
   // ignore: use_key_in_widget_constructors
@@ -23,6 +25,7 @@ class CompanyHeader extends StatelessWidget {
       required this.evaluation,
       required this.chartId,
       required this.access,
+      required this.subscribedUser,
       this.market,
       this.term,
       this.formattedDate,
@@ -48,7 +51,7 @@ class CompanyHeader extends StatelessWidget {
       "6": AppLocalizations.of(context)!.eval_info_long_term,
     };
     var date = formattedDate ?? priceDate;
-    return access == 'free'
+    return access == 'free' || subscribedUser
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -155,6 +158,56 @@ class CompanyHeader extends StatelessWidget {
                   ],
                 ),
               ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 2, right: 2),
+                        decoration: BoxDecoration(
+                            border: Border(
+                          bottom:
+                              BorderSide(color: getBoarderColor(1), width: 7),
+                        )),
+                        child: Text(
+                          AppLocalizations.of(context)!.positive,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.or,
+                        style: const TextStyle(fontSize: 8),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 2, left: 2),
+                        decoration: BoxDecoration(
+                            border: Border(
+                          bottom:
+                              BorderSide(color: getBoarderColor(-1), width: 7),
+                        )),
+                        child: Text(
+                          AppLocalizations.of(context)!.negative,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 15),
+                    child: InkWell(
+                      onTap: () {},
+                      child: Text(
+                        AppLocalizations.of(context)!.free_trail_button_text,
+                        style: const TextStyle(
+                          color: Color(ColorHex.ACCENT_COLOR),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
             ],
           );
   }

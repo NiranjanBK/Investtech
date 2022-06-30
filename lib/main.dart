@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hidable/hidable.dart';
 import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/intro_page.dart';
@@ -24,16 +25,25 @@ import 'firebase_options.dart';
 import 'package:event_bus/event_bus.dart';
 
 var analysisDate;
+var globalMarketId;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  ConnectionStatusSingleton connectionStatus =
+      ConnectionStatusSingleton.getInstance();
+  connectionStatus.initialize();
+
+  print(WidgetsBinding.instance.window.locale.countryCode);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
-  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? true;
+  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
+  globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
+
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
 

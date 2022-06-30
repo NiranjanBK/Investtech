@@ -29,21 +29,19 @@ class _MarketCommentaryMainState extends State<MarketCommentaryMain> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   _mcDetail() {
-    return MarketCommentaryDetailPage((context, companyId) async {
-      _mcDetailCompany(companyId);
+    return MarketCommentaryDetailPage((context, companyId, name, ticker) async {
+      _mcDetailCompany(companyId, name, ticker);
     }, () {
       //Navigator.maybePop(context);
     });
   }
 
-  _mcDetailCompany(String companyId) {
+  _mcDetailCompany(String companyId, name, ticker) {
     return Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CompanyPage(
-            companyId.toString(),
-            4,
-          ),
+          builder: (context) => CompanyPage(companyId.toString(), 4,
+              companyName: name, ticker: ticker),
         ));
   }
 

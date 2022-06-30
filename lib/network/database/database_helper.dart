@@ -244,7 +244,7 @@ class DatabaseHelper {
   Future<List<MARKET>> getMarketDetails() async {
     final database = await db;
     final List<Map<String, dynamic>> res = await database!.rawQuery(
-      "SELECT * FROM $marketTable order by PREFERENCE ",
+      "SELECT M.MARKET_CODE, M.MARKET_ID, M.MARKET_NAME, C.COUNTRY_CODE, C.COUNTRY_ID, C.COUNTRY_NAME FROM MARKET M, COUNTRY C WHERE M.COUNTRY_ID = C.COUNTRY_ID ORDER BY M.PREFERENCE",
     );
 
     return List.generate(res.length, (index) {
@@ -253,9 +253,8 @@ class DatabaseHelper {
         marketCode: res[index][marketCode],
         marketName: res[index][marketName],
         countryId: int.tryParse(res[index][countryId].toString()) ?? -1,
-        externalCode: res[index][externalCode],
-        currencyCode: res[index][currencyCode],
-        prefernce: res[index][prefernce],
+        countryCode: res[index][countryCode],
+        countryName: res[index][countryName],
       );
     });
   }

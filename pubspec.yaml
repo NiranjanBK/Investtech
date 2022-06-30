@@ -66,6 +66,7 @@ dependencies:
   sprintf: ^6.0.0
   smooth_page_indicator: ^1.0.0+2
   cached_network_image: ^3.2.1
+  connectivity: ^3.0.6
  
   
 

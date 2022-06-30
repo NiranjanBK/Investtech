@@ -61,9 +61,9 @@ class HomeOverview extends StatefulWidget {
 class HomeOverviewState extends State<HomeOverview> {
   late String reorderString;
   String? marketCode;
+  String? marketId;
   String? marketName;
   bool? lta;
-  bool? top20;
   StreamSubscription? _reloadStreamSub;
   ScrollController controller = ScrollController();
   Map teaser = {};
@@ -147,8 +147,8 @@ class HomeOverviewState extends State<HomeOverview> {
     reorderString = prefs.getString('items') ?? '';
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
+    marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
     lta = prefs.getBool(PrefKeys.LTA_CONTAINER) ?? false;
-    top20 = prefs.getBool(PrefKeys.TOP_20) ?? false;
   }
 
   @override
@@ -161,6 +161,7 @@ class HomeOverviewState extends State<HomeOverview> {
     });
 
     return RefreshIndicator(
+      edgeOffset: 100,
       onRefresh: () {
         setState(() {});
         return Future.value();
@@ -273,7 +274,6 @@ class HomeOverviewState extends State<HomeOverview> {
                 ),
                 body: ListView(
                   controller: controller,
-                  // primary: true,
                   shrinkWrap: true,
                   children: [
                     Container(

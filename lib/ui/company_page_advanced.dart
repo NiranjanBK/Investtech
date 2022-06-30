@@ -366,22 +366,26 @@ class _CompanyPageAdvanceState extends State<CompanyPageAdvance> {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () async {
-                      String mylink = await createDynamicLink(
-                          widget.companyId, widget.companyName);
-                      var shareText = interpolate(
-                          AppLocalizations.of(context)!.share_message_template,
-                          [widget.companyName.toString(), mylink]);
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: InkWell(
+                      onTap: () async {
+                        String mylink = await createDynamicLink(
+                            widget.companyId, widget.companyName);
+                        var shareText = interpolate(
+                            AppLocalizations.of(context)!
+                                .share_message_template,
+                            [widget.companyName.toString(), mylink]);
 
-                      await FlutterShare.share(
-                        title: shareText,
-                        text: shareText,
-                      );
-                    },
-                    child: Icon(
-                      Icons.share,
-                      color: Colors.orange[500],
+                        await FlutterShare.share(
+                          title: shareText,
+                          text: shareText,
+                        );
+                      },
+                      child: Icon(
+                        Icons.share,
+                        color: Colors.orange[500],
+                      ),
                     ),
                   ),
                 ],
