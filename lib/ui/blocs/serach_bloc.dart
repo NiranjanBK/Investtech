@@ -40,6 +40,7 @@ class SearchBloc extends Bloc<SearchBlocEvents, SearchBlocState> {
   ApiRepo apiRepo;
   String? searchTerm;
   String? marketId;
+  String? selectedDropdwonVal;
   bool? isLoading;
   SearchBloc(this.apiRepo) : super(InitialState());
 

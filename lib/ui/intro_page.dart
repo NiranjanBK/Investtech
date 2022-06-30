@@ -15,6 +15,7 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: Stack(children: [
         PageView(
           controller: _pageController,
@@ -45,12 +46,12 @@ class _IntroScreenState extends State<IntroScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(20),
               child: Center(
                 child: SmoothPageIndicator(
                   controller: _pageController,
                   count: 3,
-                  effect: WormEffect(
+                  effect: const WormEffect(
                       dotColor: Color(ColorHex.lightGrey),
                       paintStyle: PaintingStyle.stroke,
                       strokeWidth: 2,

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http/http.dart' as http;
 import 'package:investtech_app/const/pref_keys.dart';
@@ -5,15 +7,18 @@ import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/ui/news_letter_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:connectivity/connectivity.dart';
 
 class ApiRepo {
   static final homeRepo = ApiRepo._();
   String? marketName;
   String? marketCode;
+  String? marketId;
   String? reorderString;
   List? companyIds;
   String? lang;
   String? theme;
+  bool top20 = false;
 
   Map<String, String>? languageCodeMap = {
     'en': '000',
@@ -37,20 +42,39 @@ class ApiRepo {
     reorderString = prefs.getString('items') ?? '';
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
+    marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
     lang = prefs.getString(PrefKeys.selectedLang) ?? 'en';
     theme = prefs.getString(PrefKeys.SELECTED_THEME) ?? 'Light';
+    top20 = prefs.getBool(PrefKeys.TOP_20) ?? true;
+  }
+
+  Future<bool> hasNetwork() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final result = await InternetAddress.lookup("www.google.com");
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException catch (_) {
+      return false;
+    }
   }
 
   Future<http.Response> getHomePgae(market) async {
     await getListValuesSF();
     companyIds = await DatabaseHelper().getNoteAndFavoriteCompanyIds();
+    var top20Flag = '0';
+    var favFlag = '0';
+
+    if (top20) top20Flag = '1';
+    if (reorderString.toString().contains('7')) favFlag = '1';
+
+    var activeFlag = '$favFlag,$top20Flag,1,1';
 
     String CompanyIDs = companyIds!.join(",");
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=home&active=1,1,1,1&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$market&countryID=91&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}'),
+          'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$market&countryID=91&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -187,7 +211,7 @@ class ApiRepo {
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/main/autoCompleteSearch.php?output=json&q=${term}&MarketId=${marketId}'),
+          'https://www.investtech.com/main/autoCompleteSearch.php?output=json&q=${term}&MarketID=${marketId}'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',

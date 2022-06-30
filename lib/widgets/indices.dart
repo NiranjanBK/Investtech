@@ -51,6 +51,7 @@ class Indices extends StatelessWidget {
                   evalCode: companyObj.evaluationCode,
                   chartId: CHART_TERM_MEDIUM,
                   access: 'free',
+                  subscribedUser: true,
                 ),
                 Image.network(
                     'https://www.investtech.com/main/img.php?CompanyID=91294651&chartId=4&indicators=80,81,82,83,84,85,87,88&w=451&h=198'),

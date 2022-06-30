@@ -53,6 +53,7 @@ class TodaysCandidate extends StatelessWidget {
                       showDate: 'true',
                       chartId: CHART_TERM_MEDIUM,
                       access: 'free',
+                      subscribedUser: true,
                       //market: companyObj.marketCode.toString(),
                       term: 'Medium Term'), //companyObj.term.toString(),
                   Image.network(

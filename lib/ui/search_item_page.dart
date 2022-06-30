@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/recent_search.dart';
 import 'package:investtech_app/network/models/search_result.dart';
@@ -9,6 +12,8 @@ import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/widgets/control_visibility.dart';
 import 'package:investtech_app/widgets/recent_search.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchItemPage extends StatefulWidget {
   BuildContext context;
@@ -23,12 +28,14 @@ class _SearchItemPageState extends State<SearchItemPage> {
   SearchBloc? bloc;
   String? q;
   bool? isLoading;
+
   VisibilityController linearProgressIndicator = VisibilityController(false);
   final Debounce _debounce = Debounce(Duration(milliseconds: 1000));
 
   @override
   void initState() {
     super.initState();
+    //SharedPreferences prefs = await SharedPreferences.getInstance();
     bloc = context.read<SearchBloc>();
   }
 
@@ -40,6 +47,25 @@ class _SearchItemPageState extends State<SearchItemPage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<DropdownMenuItem<String>> list = [
+      DropdownMenuItem(
+          value: globalMarketId,
+          child: Text(AppLocalizations.of(context)!.stocks)),
+      DropdownMenuItem(
+          value: "992", child: Text(AppLocalizations.of(context)!.indices)),
+      DropdownMenuItem(
+          value: "993", child: Text(AppLocalizations.of(context)!.currencies)),
+      DropdownMenuItem(
+          value: "980", child: Text(AppLocalizations.of(context)!.commodities))
+    ];
+
+    final Map<String, String> dropdownVal = {
+      globalMarketId: AppLocalizations.of(context)!.stocks,
+      "992": AppLocalizations.of(context)!.indices,
+      "993": AppLocalizations.of(context)!.currencies,
+      "980": AppLocalizations.of(context)!.commodities
+    };
+
     return Scaffold(
       appBar: AppBar(
           iconTheme: const IconThemeData(
@@ -68,13 +94,13 @@ class _SearchItemPageState extends State<SearchItemPage> {
                 cursorColor: Colors.orange[800],
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Search...',
+                  hintText: AppLocalizations.of(context)!.search.toString(),
                   border: InputBorder.none,
                 ),
                 onChanged: (value) {
                   _debounce(() {
                     bloc!.searchTerm = value;
-                    bloc!.marketId = '911';
+                    bloc!.marketId = globalMarketId;
                     bloc!.add(SearchBlocEvents.LOAD_SEARCH);
                     linearProgressIndicator.setVisibility(true);
                   });
@@ -92,88 +118,117 @@ class _SearchItemPageState extends State<SearchItemPage> {
         }
         return searchResult == null
             ? const RecentSearchList()
-            : ListView.builder(
-                itemCount: searchResult!.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                color: (Colors.grey[400])!, width: 0.5))),
-                    child: InkWell(
-                      onTap: () async {
-                        var recentSearch = RecentSearch(
-                            ticker: searchResult![index].ticker,
-                            companyId: searchResult![index].companyId,
-                            countryCode: searchResult![index].countryCode,
-                            companyName: searchResult![index].companyName,
-                            timestamp: DateTime.now()
-                                .millisecondsSinceEpoch
-                                .toString());
-                        DatabaseHelper().addRecentSearch(recentSearch);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CompanyPage(
-                                searchResult![index].companyId,
-                                4,
-                              ),
-                            ));
-                      },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${index + 1}.',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 12),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                searchResult![index].ticker,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700, fontSize: 12),
-                              ),
-                              Text(
-                                searchResult![index].companyName,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                double.parse((searchResult![index].lastClose))
-                                    .toStringAsFixed(2),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700, fontSize: 12),
-                              ),
-                              Text(
-                                '${double.parse((searchResult![index].changeVal))}(${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: double.parse((searchResult![index]
-                                                .changeVal)) >
-                                            0
-                                        ? Colors.green[900]
-                                        : Colors.red[900]),
-                              ),
-                            ],
-                          ),
-                        ],
+            : ListView(
+                children: [
+                  ListTile(
+                    leading: Text(AppLocalizations.of(context)!.search_results),
+                    trailing: DropdownButton<String>(
+                      //value: selectedDropdownVal,
+                      hint: Text(
+                        dropdownVal[bloc!.selectedDropdwonVal ?? globalMarketId]
+                            .toString(),
+                        style: getSmallTextStyle(),
                       ),
+                      items: list,
+                      onChanged: (value) {
+                        bloc!.marketId = value;
+                        bloc!.selectedDropdwonVal = value;
+                        bloc!.add(SearchBlocEvents.LOAD_SEARCH);
+                        linearProgressIndicator.setVisibility(true);
+                      },
                     ),
-                  );
-                },
+                  ),
+                  ListView.builder(
+                    itemCount: searchResult!.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    color: (Colors.grey[400])!, width: 0.5))),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: InkWell(
+                            onTap: () async {
+                              var recentSearch = RecentSearch(
+                                  ticker: searchResult![index].ticker,
+                                  companyId: searchResult![index].companyId,
+                                  countryCode: searchResult![index].countryCode,
+                                  companyName: searchResult![index].companyName,
+                                  timestamp: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString());
+                              DatabaseHelper().addRecentSearch(recentSearch);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompanyPage(
+                                        searchResult![index].companyId, 4,
+                                        companyName:
+                                            searchResult![index].companyName,
+                                        ticker: searchResult![index].ticker),
+                                  ));
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: Image.asset(
+                                    'assets/images/flags/h20/${searchResult![index].countryCode}.png',
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      searchResult![index].ticker,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 12),
+                                    ),
+                                    Text(
+                                      searchResult![index].companyName,
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      double.parse(
+                                              (searchResult![index].lastClose))
+                                          .toStringAsFixed(2),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 12),
+                                    ),
+                                    Text(
+                                      '${double.parse((searchResult![index].changeVal))}(${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: double.parse(
+                                                      (searchResult![index]
+                                                          .changeVal)) >
+                                                  0
+                                              ? Colors.green[900]
+                                              : Colors.red[900]),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               );
       }),
     );

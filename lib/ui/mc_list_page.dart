@@ -50,7 +50,7 @@ class _McListPageState extends State<McListPage> {
                   ListView.builder(
                     shrinkWrap: true,
                     itemCount: mc!.marketCommentary.length,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (ctx, index) {
                       return InkWell(
                         onTap: () {
@@ -93,6 +93,8 @@ class _McListPageState extends State<McListPage> {
                                   ),
                                   ListView.builder(
                                     shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemCount: mc!.marketCommentary[index]
                                         .analyze!.stocks!.stock.length,
                                     itemBuilder: (ctx, i) {

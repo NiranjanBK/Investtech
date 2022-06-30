@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/country.dart';
 import 'package:investtech_app/network/models/market.dart';
@@ -50,6 +51,10 @@ class _MarketSelectionState extends State<MarketSelection> {
                                   snapshot.data![index].marketName);
                               prefs.setString(PrefKeys.SELECTED_MARKET_CODE,
                                   snapshot.data![index].marketCode);
+                              prefs.setString(PrefKeys.SELECTED_MARKET_ID,
+                                  snapshot.data![index].marketId.toString());
+                              globalMarketId =
+                                  snapshot.data![index].marketId.toString();
 
                               Navigator.pop(context, {
                                 'marketCode': snapshot.data![index].marketCode,
@@ -59,7 +64,7 @@ class _MarketSelectionState extends State<MarketSelection> {
                             child: Row(
                               children: [
                                 Image.asset(
-                                    'assets/images/flags/h20/${snapshot.data![index].countryId}.png'),
+                                    'assets/images/flags/h20/${snapshot.data![index].countryCode}.png'),
                                 const SizedBox(
                                   width: 10,
                                 ),

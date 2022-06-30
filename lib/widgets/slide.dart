@@ -24,7 +24,7 @@ class Slide extends StatelessWidget {
     return Container(
       color: backGroundColor,
       padding: const EdgeInsets.symmetric(
-        vertical: 10,
+        vertical: 25,
       ),
       child: Column(
         children: [
