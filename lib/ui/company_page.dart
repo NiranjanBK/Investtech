@@ -25,6 +25,7 @@ class CompanyPage extends StatefulWidget {
   final int chartId;
   String? companyName;
   String? ticker;
+
   bool isFavourite = false;
   bool hasNote = false;
   bool hasTimestamp = false;
