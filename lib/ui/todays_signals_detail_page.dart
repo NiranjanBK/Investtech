@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/todays_signals_detal.dart';
 import 'package:investtech_app/ui/blocs/todays_signal_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'company_page.dart';
 
@@ -31,15 +34,21 @@ class TodaysSignalDetailPage extends StatelessWidget {
           }
           return todaysSignal == null
               ? const Align(
-              alignment: Alignment.topCenter,
-              child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Analysis: ' + analysesDate.toString()),
+                      Text(
+                        AppLocalizations.of(context)!
+                            .analysis_home_header_template(
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(analysisDate) * 1000)),
+                        style: getSmallTextStyle(),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -96,7 +105,16 @@ class TodaysSignalDetailPage extends StatelessWidget {
                           );
                         },
                       ),
-                      const Text('Disclaimer'),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Center(
+                          child: Text(
+                            AppLocalizations.of(context)!.short_disclaimer,
+                            style: getSmallestTextStyle(),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );

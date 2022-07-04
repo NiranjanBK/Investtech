@@ -20,14 +20,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 class WebLoginPage extends StatefulWidget {
   ApiRepo apiRepo;
   bool isLoggedOut;
-  WebLoginPage(this.apiRepo, this.isLoggedOut, {Key? key}) : super(key: key);
+  bool isEmptyAppBarActions;
+  WebLoginPage(this.apiRepo, this.isLoggedOut, this.isEmptyAppBarActions,
+      {Key? key})
+      : super(key: key);
 
   @override
   _WebLoginPageState createState() => _WebLoginPageState();
 }
 
 class _WebLoginPageState extends State<WebLoginPage> {
-  bool _passwordVisible = false;
+  bool _passwordVisible = true;
   bool isVerifiedUser = false;
   bool isLoading = false;
   late String? uid;
@@ -82,81 +85,92 @@ class _WebLoginPageState extends State<WebLoginPage> {
 
             return isVerifiedUser == false
                 ? Scaffold(
-                    appBar: AppBar(
-                      iconTheme: IconThemeData(color: Colors.grey[800]),
-                      backgroundColor: Colors.white,
-                      bottom: PreferredSize(
-                          preferredSize: const Size(double.infinity, 1),
-                          child: SizedBox(
-                            height: 1,
-                            child: isLoading == true
-                                ? LinearProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                    color: Colors.orange[800],
-                                  )
-                                : Container(),
-                          )),
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return BlocProvider(
-                                  create: (BuildContext context) =>
-                                      SearchBloc(ApiRepo()),
-                                  child: SearchItemPage(context),
-                                );
+                    appBar: widget.isEmptyAppBarActions
+                        ? AppBar(
+                            leading: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
                               },
-                            ));
-                          },
-                          icon: Icon(
-                            Icons.search,
-                            color: Colors.orange[800],
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            SystemChrome.setEnabledSystemUIOverlays(
-                                [SystemUiOverlay.bottom]);
-                            if (MediaQuery.of(context).orientation ==
-                                Orientation.portrait) {
-                              SystemChrome.setPreferredOrientations(
-                                  [DeviceOrientation.landscapeLeft]);
-                            } else {
-                              SystemChrome.setPreferredOrientations(
-                                  [DeviceOrientation.portraitUp]);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.fullscreen,
-                            color: Colors.orange[800],
-                          ),
-                        ),
-                        PopupMenuButton(
-                          onSelected: (value) {
-                            switch (value) {
-                              case 'Settings':
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SettingsPage(),
-                                    ));
-                                break;
-                            }
-                          },
-                          itemBuilder: (ctx) => [
-                            const PopupMenuItem(
-                              height: 30,
-                              value: 'Settings',
-                              child: Text(
-                                'Settings',
-                                style: TextStyle(fontSize: 12),
-                              ),
+                              icon: const Icon(Icons.close),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                            title: Text(AppLocalizations.of(context)!.login),
+                          )
+                        : AppBar(
+                            iconTheme: IconThemeData(color: Colors.grey[800]),
+                            backgroundColor: Colors.white,
+                            bottom: PreferredSize(
+                                preferredSize: const Size(double.infinity, 1),
+                                child: SizedBox(
+                                  height: 1,
+                                  child: isLoading == true
+                                      ? LinearProgressIndicator(
+                                          backgroundColor: Colors.white,
+                                          color: Colors.orange[800],
+                                        )
+                                      : Container(),
+                                )),
+                            actions: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) {
+                                      return BlocProvider(
+                                        create: (BuildContext context) =>
+                                            SearchBloc(ApiRepo()),
+                                        child: SearchItemPage(context),
+                                      );
+                                    },
+                                  ));
+                                },
+                                icon: Icon(
+                                  Icons.search,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  SystemChrome.setEnabledSystemUIOverlays(
+                                      [SystemUiOverlay.bottom]);
+                                  if (MediaQuery.of(context).orientation ==
+                                      Orientation.portrait) {
+                                    SystemChrome.setPreferredOrientations(
+                                        [DeviceOrientation.landscapeLeft]);
+                                  } else {
+                                    SystemChrome.setPreferredOrientations(
+                                        [DeviceOrientation.portraitUp]);
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.fullscreen,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                              PopupMenuButton(
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'Settings':
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SettingsPage(),
+                                          ));
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (ctx) => [
+                                  const PopupMenuItem(
+                                    height: 30,
+                                    value: 'Settings',
+                                    child: Text(
+                                      'Settings',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                     body: SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
