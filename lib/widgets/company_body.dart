@@ -71,7 +71,7 @@ class CompanyBody extends StatelessWidget {
                           subscribedUser
                               ? CHART_TYPE_ADVANCED
                               : CHART_TYPE_FREE,
-                          4,
+                          chartId,
                           CHART_STYLE_NORMAL,
                           companyId),
                       placeholder: (context, url) => Container(

@@ -18,17 +18,19 @@ import 'package:investtech_app/ui/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-import 'package:event_bus/event_bus.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 var analysisDate;
 var globalMarketId;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -36,8 +38,10 @@ void main() async {
   ConnectionStatusSingleton connectionStatus =
       ConnectionStatusSingleton.getInstance();
   connectionStatus.initialize();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   print(WidgetsBinding.instance.window.locale.countryCode);
+  print(PhoneNumber().dialCode);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
@@ -162,12 +166,13 @@ class _MainPageState extends State<MainPage> {
       HomeOverview(
         key: homeKey,
       ),
-      WebLoginPage(ApiRepo(), false),
+      WebLoginPage(ApiRepo(), false, false),
       Subscription(),
     ];
     if (widget.introSlides) {
       setLTA();
     }
+    FlutterNativeSplash.remove();
     super.initState();
   }
 

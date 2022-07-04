@@ -75,6 +75,7 @@ class HomeOverviewState extends State<HomeOverview> {
   @override
   void dispose() {
     streamController.close();
+    super.dispose();
   }
 
   @override
@@ -89,7 +90,7 @@ class HomeOverviewState extends State<HomeOverview> {
     });*/
 
     Timer.periodic(Duration(seconds: 2), (timer) {
-      streamController.add(DateTime.now());
+      if (!streamController.isClosed) streamController.add(DateTime.now());
     });
     // streamController.stream.listen((event) {
     //   final time = event.difference(startTime);

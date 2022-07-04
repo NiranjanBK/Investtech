@@ -1,10 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
+import 'package:investtech_app/const/colors.dart';
+import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/indices_analysis_bloc.dart';
+import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/widgets/company_header.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // ignore: must_be_immutable
 class IndicesDetailPage extends StatelessWidget {
@@ -33,10 +39,17 @@ class IndicesDetailPage extends StatelessWidget {
           return indicesAnalysis == null
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Analysis: ' + analysesDate.toString()),
+                      Text(
+                        AppLocalizations.of(context)!
+                            .analysis_home_header_template(
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(analysisDate) * 1000)),
+                        style: getSmallTextStyle(),
+                      ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -47,40 +60,74 @@ class IndicesDetailPage extends StatelessWidget {
                         separatorBuilder: (BuildContext context, int index) =>
                             const Divider(),
                         itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              CompanyHeader(
-                                ticker: indicesAnalysis![index].ticker,
-                                companyName: indicesAnalysis![index]
-                                    .companyName
-                                    .toString(),
-                                changePct: indicesAnalysis![index].changePct,
-                                changeValue: indicesAnalysis![index]
-                                    .changeValue
-                                    .toString(),
-                                close: indicesAnalysis![index].close!,
-                                evaluation: indicesAnalysis![index]
-                                    .evaluation
-                                    .toString(),
-                                market: indicesAnalysis![index]
-                                    .marketCode
-                                    .toString(),
-                                term: indicesAnalysis![index].term.toString(),
-                                evalCode:
-                                    indicesAnalysis![index].evaluationCode,
-                                chartId: CHART_TERM_MEDIUM,
-                                access: 'free',
-                                subscribedUser: true,
-                              ),
-                              Image.network(
-                                  'https://www.investtech.com/main/img.php?CompanyID=${indicesAnalysis![index].companyId}&chartId=4&indicators=80,81,82,83,84,85,87,88&w=451&h=198'),
-                              Text(
-                                indicesAnalysis![index].commentary.toString(),
-                                style: const TextStyle(
-                                  fontSize: 12,
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompanyPage(
+                                        indicesAnalysis![index]
+                                            .companyId
+                                            .toString(),
+                                        4,
+                                        companyName:
+                                            indicesAnalysis![index].companyName,
+                                        ticker: indicesAnalysis![index].ticker),
+                                  ));
+                            },
+                            child: Column(
+                              children: [
+                                CompanyHeader(
+                                  ticker: indicesAnalysis![index].ticker,
+                                  companyName: indicesAnalysis![index]
+                                      .companyName
+                                      .toString(),
+                                  changePct: indicesAnalysis![index].changePct,
+                                  changeValue: indicesAnalysis![index]
+                                      .changeValue
+                                      .toString(),
+                                  close: indicesAnalysis![index].close!,
+                                  evaluation: indicesAnalysis![index]
+                                      .evaluation
+                                      .toString(),
+                                  market: indicesAnalysis![index]
+                                      .marketCode
+                                      .toString(),
+                                  term: indicesAnalysis![index].term.toString(),
+                                  evalCode:
+                                      indicesAnalysis![index].evaluationCode,
+                                  chartId: CHART_TERM_MEDIUM,
+                                  access: 'free',
+                                  subscribedUser: true,
                                 ),
-                              ),
-                            ],
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: CachedNetworkImage(
+                                    imageUrl: ApiRepo().getChartUrl(
+                                        CHART_TYPE_ADVANCED,
+                                        4,
+                                        CHART_STYLE_NORMAL,
+                                        indicesAnalysis![index].companyId),
+                                    placeholder: (context, url) => Container(
+                                        height: 275,
+                                        width: double.infinity,
+                                        child: const Center(
+                                            child: CircularProgressIndicator(
+                                                color: Color(
+                                          ColorHex.ACCENT_COLOR,
+                                        )))),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  ),
+                                ),
+                                Text(
+                                  indicesAnalysis![index].commentary.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       ),

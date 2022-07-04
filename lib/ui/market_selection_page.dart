@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/country.dart';
@@ -41,7 +42,9 @@ class _MarketSelectionState extends State<MarketSelection> {
                         itemCount: snapshot.data!.length,
                         physics: const NeverScrollableScrollPhysics(),
                         separatorBuilder: (BuildContext context, int index) =>
-                            const Divider(),
+                            const Divider(
+                          height: 0,
+                        ),
                         itemBuilder: (context, index) {
                           return InkWell(
                             onTap: () async {
@@ -61,18 +64,29 @@ class _MarketSelectionState extends State<MarketSelection> {
                                 'marketName': snapshot.data![index].marketName
                               });
                             },
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                    'assets/images/flags/h20/${snapshot.data![index].countryCode}.png'),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  snapshot.data![index].marketName,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              ],
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                      'assets/images/flags/h20/${snapshot.data![index].countryCode}.png'),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    snapshot.data![index].marketName,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const Spacer(),
+                                  snapshot.data![index].marketId.toString() ==
+                                          globalMarketId.toString()
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Color(ColorHex.ACCENT_COLOR),
+                                        )
+                                      : const Text('')
+                                ],
+                              ),
                             ),
                           );
                         },
