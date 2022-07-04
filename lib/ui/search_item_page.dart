@@ -138,39 +138,44 @@ class _SearchItemPageState extends State<SearchItemPage> {
                       },
                     ),
                   ),
-                  ListView.builder(
+                  ListView.separated(
                     itemCount: searchResult!.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(
+                      height: 0,
+                    ),
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(
                             border: Border(
                                 bottom: BorderSide(
                                     color: (Colors.grey[400])!, width: 0.5))),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: InkWell(
-                            onTap: () async {
-                              var recentSearch = RecentSearch(
-                                  ticker: searchResult![index].ticker,
-                                  companyId: searchResult![index].companyId,
-                                  countryCode: searchResult![index].countryCode,
-                                  companyName: searchResult![index].companyName,
-                                  timestamp: DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString());
-                              DatabaseHelper().addRecentSearch(recentSearch);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CompanyPage(
-                                        searchResult![index].companyId, 4,
-                                        companyName:
-                                            searchResult![index].companyName,
-                                        ticker: searchResult![index].ticker),
-                                  ));
-                            },
+                        child: InkWell(
+                          onTap: () async {
+                            var recentSearch = RecentSearch(
+                                ticker: searchResult![index].ticker,
+                                companyId: searchResult![index].companyId,
+                                countryCode: searchResult![index].countryCode,
+                                companyName: searchResult![index].companyName,
+                                timestamp: DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString());
+                            DatabaseHelper().addRecentSearch(recentSearch);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CompanyPage(
+                                      searchResult![index].companyId, 4,
+                                      companyName:
+                                          searchResult![index].companyName,
+                                      ticker: searchResult![index].ticker),
+                                ));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
