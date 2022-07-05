@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:investtech_app/ui/subscription_page.dart';
 
 class CompanyHeader extends StatelessWidget {
   final String ticker,
@@ -197,7 +198,13 @@ class CompanyHeader extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 15),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Subscription(),
+                            ));
+                      },
                       child: Text(
                         AppLocalizations.of(context)!.free_trail_button_text,
                         style: const TextStyle(
