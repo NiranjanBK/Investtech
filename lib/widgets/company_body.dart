@@ -10,6 +10,7 @@ import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/company_bloc.dart';
 import 'package:investtech_app/widgets/company_header.dart';
+import 'package:investtech_app/widgets/progress_indicator.dart';
 
 class CompanyBody extends StatelessWidget {
   Company? cmpData;
@@ -42,7 +43,7 @@ class CompanyBody extends StatelessWidget {
           subscribedUser = state.scuscribedUser;
         }
         return cmpData == null
-            ? const Center(child: CircularProgressIndicator())
+            ? buildProgressIndicator()
             : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,12 +122,15 @@ class CompanyBody extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 30,
                     ),
-                    Text(
-                      AppLocalizations.of(context)!.short_disclaimer,
-                      style: getSmallestTextStyle(),
-                      textAlign: TextAlign.center,
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        AppLocalizations.of(context)!.short_disclaimer,
+                        style: getSmallestTextStyle(),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ],
                 ),

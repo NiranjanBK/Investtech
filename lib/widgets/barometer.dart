@@ -56,6 +56,9 @@ class BarometerGraphState extends State<BarometerGraph> {
               _barometer.stockBarometer.market,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             SizedBox(
               height: 200,
               child: SfCircularChart(
@@ -65,7 +68,7 @@ class BarometerGraphState extends State<BarometerGraph> {
                       onPointTap: (ChartPointDetails details) {},
                       explode: true,
                       innerRadius: '20.0',
-                      radius: '70',
+                      radius: '100',
                       dataLabelMapper: (ChartData data, _) =>
                           '${data.y.toStringAsFixed(1)} %\n${data.x}',
                       dataLabelSettings:
@@ -79,6 +82,9 @@ class BarometerGraphState extends State<BarometerGraph> {
                 centerY: '50%',
                 margin: const EdgeInsets.all(5),
               ),
+            ),
+            const SizedBox(
+              height: 10,
             ),
           ],
         ),

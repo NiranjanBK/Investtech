@@ -18,6 +18,7 @@ import 'package:investtech_app/widgets/product_Item_Header.dart';
 
 class FavoritesTeaser extends StatefulWidget {
   final dynamic favObj;
+
   const FavoritesTeaser(this.favObj, {Key? key}) : super(key: key);
 
   @override
@@ -74,9 +75,14 @@ class _FavoritesTeaserState extends State<FavoritesTeaser> {
                             ));
                           },
                           child: Text(
-                            AppLocalizations.of(context)!.add_favorites,
+                            AppLocalizations.of(context)!
+                                .add_favorites
+                                .toUpperCase(),
                             style: const TextStyle(
-                              color: Color(ColorHex.ACCENT_COLOR),
+                              fontWeight: FontWeight.bold,
+                              color: Color(
+                                ColorHex.ACCENT_COLOR,
+                              ),
                             ),
                           ),
                         )
