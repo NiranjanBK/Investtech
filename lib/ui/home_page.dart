@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:investtech_app/widgets/fade_animation.dart';
 import 'package:open_store/open_store.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:investtech_app/const/colors.dart';
@@ -84,25 +85,15 @@ class HomeOverviewState extends State<HomeOverview> {
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
     });
-    /*final subscription = controller.stream.listen((String data) {
-      print(data);
-    });*/
 
     Timer.periodic(Duration(seconds: 2), (timer) {
       streamController.add(DateTime.now());
     });
-    // streamController.stream.listen((event) {
-    //   final time = event.difference(startTime);
-    //   updatedTime = time;
-    //   print(time.inSeconds);
-    // });
-
     myEvent.subscribe((args) => print('myEvent occured'));
     _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
       print(event);
       setState(() {});
     });
-
     // Subscribe to the custom event
   }
 
@@ -175,109 +166,18 @@ class HomeOverviewState extends State<HomeOverview> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               teaserList = snapshot.data!.teaser;
-
               List reoderList =
                   reorderString == '' ? [] : reorderString.split(',');
               analysisDate = snapshot.data!.analysesDate.toString();
               return Scaffold(
-                appBar: AppBar(
-                  title: InkWell(
-                    onTap: () {
-                      awaitReturnValueFromSecondScreen(context);
-                    },
-                    child: Row(
-                      children: [
-                        Text(marketName ?? 'National S.E'),
-                        Transform.rotate(
-                          angle: 33, //set the angel
-                          child: Icon(
-                            Icons.play_arrow,
-                            color: Colors.orange[800],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return BlocProvider(
-                                create: (BuildContext context) =>
-                                    SearchBloc(ApiRepo()),
-                                child: SearchItemPage(context),
-                              );
-                            },
-                          ));
-                        },
-                        icon: Icon(
-                          Icons.search,
-                          color: Colors.orange[800],
-                        )),
-                    PopupMenuButton(
-                        icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-                        color: Theme.of(context).appBarTheme.backgroundColor,
-                        onSelected: (value) {
-                          switch (value) {
-                            case 'Reorder':
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ReorderPage(teaserList, reorderString),
-                                  )).then(onGoBack);
-                              break;
-                            case 'Settings':
-                              myEvent.broadcast();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SettingsPage(),
-                                  )).then((value) {
-                                setState(() {});
-                              });
-
-                              break;
-                          }
-                        },
-                        itemBuilder: (ctx) => [
-                              PopupMenuItem(
-                                height: 30,
-                                value: 'Reorder',
-                                child: Text(
-                                  'Reorder',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2!
-                                          .color),
-                                ),
-                                onTap: () {},
-                              ),
-                              PopupMenuItem(
-                                height: 30,
-                                value: 'Settings',
-                                child: Text(
-                                  'Settings',
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2!
-                                          .color),
-                                ),
-                              ),
-                            ])
-                  ],
-                ),
+                backgroundColor: Theme.of(context).primaryColorDark,
+                appBar: buildAppBar(context, teaserList),
                 body: ListView(
                   controller: controller,
                   shrinkWrap: true,
                   children: [
                     Container(
-                      //height: 40,
+                      height: 40,
                       width: double.infinity,
                       padding: const EdgeInsets.only(left: 10, top: 5),
                       color: Theme.of(context).primaryColorDark,
@@ -287,9 +187,9 @@ class HomeOverviewState extends State<HomeOverview> {
                           Text(
                             AppLocalizations.of(context)!
                                 .analysis_home_header_template(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.parse(snapshot.data!.analysesDate) *
-                                            1000)),
+                                DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(snapshot.data!.analysesDate) *
+                                        1000)),
                             style: getSmallestTextStyle(),
                           ),
                           const SizedBox(
@@ -307,97 +207,93 @@ class HomeOverviewState extends State<HomeOverview> {
                         ],
                       ),
                     ),
+                    Container(height: 20, color: Theme.of(context).primaryColorDark,),
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: const ScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.teaser.length,
                       itemBuilder: (context, index) {
-                        return Column(
-                          //height: 400,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.only(
-                                bottom: 1,
-                              ),
-                              //padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.grey,
-                                      offset: Offset(0.0, 2.0),
-                                      blurRadius: 1.5,
-                                      spreadRadius: 0,
-                                    ),
-                                  ],
-                                  border: const Border(
-                                      bottom: BorderSide(
+                        return FadeAnimation(delay: 2, child:  Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(
+                            bottom: 1,
+                          ),
+                          //padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  offset: Offset(0.0, 2.0),
+                                  blurRadius: 1.5,
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                              border: const Border(
+                                  bottom: BorderSide(
                                     width: 0.8,
                                     color: Colors.black12,
                                   ))),
-                              child: Row(
-                                children: [
-                                  if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'marketCommentary') ...{
-                                    MarketCommentaries(
-                                      snapshot.data!.teaser[index],
-                                    ),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'todaysSignals') ...{
-                                    TodaysSignals(
-                                      snapshot.data!.teaser[index],
-                                    ),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'top20') ...{
-                                    TopTwenty(
-                                      snapshot.data!.teaser[index],
-                                    ),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'indicesAnalyses') ...{
-                                    Indices(
-                                      snapshot.data!.teaser[index],
-                                      'analyses',
-                                    ),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'todaysCandidate') ...{
-                                    TodaysCandidate(
-                                      snapshot.data!.teaser[index],
-                                      'case',
-                                    ),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'indicesEvaluations') ...{
-                                    IndicesEvaluation(
-                                        snapshot.data!.teaser[index]),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'barometer') ...{
-                                    BarometerGraph(
-                                        snapshot.data!.teaser[index].content,
-                                        snapshot.data!.teaser[index].title),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'webTV') ...{
-                                    WebTVTeaser(snapshot.data!.teaser[index]),
-                                  } else if (snapshot
-                                          .data!.teaser[index].productName ==
-                                      'favourites') ...{
-                                    FavoritesTeaser(
-                                        snapshot.data!.teaser[index]),
-                                  }
+                          child: Row(
+                            children: [
+                              if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'marketCommentary') ...{
+                                MarketCommentaries(
+                                  snapshot.data!.teaser[index],
+                                ),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'todaysSignals') ...{
+                                TodaysSignals(
+                                  snapshot.data!.teaser[index],
+                                ),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'top20') ...{
+                                TopTwenty(
+                                  snapshot.data!.teaser[index],
+                                ),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'indicesAnalyses') ...{
+                                Indices(
+                                  snapshot.data!.teaser[index],
+                                  'analyses',
+                                ),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'todaysCandidate') ...{
+                                TodaysCandidate(
+                                  snapshot.data!.teaser[index],
+                                  'case',
+                                ),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'indicesEvaluations') ...{
+                                IndicesEvaluation(
+                                    snapshot.data!.teaser[index]),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'barometer') ...{
+                                BarometerGraph(
+                                    snapshot.data!.teaser[index].content,
+                                    snapshot.data!.teaser[index].title),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'webTV') ...{
+                                WebTVTeaser(snapshot.data!.teaser[index]),
+                              } else if (snapshot
+                                  .data!.teaser[index].productName ==
+                                  'favourites') ...{
+                                FavoritesTeaser(
+                                    snapshot.data!.teaser[index]),
+                              }
 
-                                  //Text(),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
+                              //Text(),
+                            ],
+                          ),
+                        ),);
                       },
                     ),
 
@@ -480,34 +376,6 @@ class HomeOverviewState extends State<HomeOverview> {
                         ),
                       ),
 
-                    // Container(
-                    //     margin: const EdgeInsets.only(
-                    //         top: 15, bottom: 10, left: 10, right: 10),
-                    //     padding: const EdgeInsets.only(
-                    //         top: 0, bottom: 10, left: 10, right: 10),
-                    //     color: Color(ColorHex.GREY),
-                    //     child: Tooltip(
-                    //       message: 'Text()',
-                    //       child: SizedBox(
-                    //         height: 150,
-                    //         child: Column(
-                    //           children: [
-                    //             Row(
-                    //               mainAxisAlignment: MainAxisAlignment.end,
-                    //               children: [
-                    //                 IconButton(
-                    //                   onPressed: () {},
-                    //                   icon: const Icon(
-                    //                     Icons.close,
-                    //                     color: Colors.white,
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ))
                   ],
                 ),
               );
@@ -516,11 +384,106 @@ class HomeOverviewState extends State<HomeOverview> {
             }
 
             // By default, show a loading spinner.
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator( valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)));
           },
         ),
       ),
     );
+  }
+
+  AppBar buildAppBar(BuildContext context, List<Teaser> teaserList) {
+    return AppBar(
+                title: InkWell(
+                  onTap: () {
+                    awaitReturnValueFromSecondScreen(context);
+                  },
+                  child: Row(
+                    children: [
+                      Text(marketName ?? 'National S.E'),
+                      Transform.rotate(
+                        angle: 33, //set the angel
+                        child: Icon(
+                          Icons.play_arrow,
+                          color: Colors.orange[800],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return BlocProvider(
+                              create: (BuildContext context) =>
+                                  SearchBloc(ApiRepo()),
+                              child: SearchItemPage(context),
+                            );
+                          },
+                        ));
+                      },
+                      icon: Icon(
+                        Icons.search,
+                        color: Colors.orange[800],
+                      )),
+                  PopupMenuButton(
+                      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+                      color: Theme.of(context).appBarTheme.backgroundColor,
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'Reorder':
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReorderPage(teaserList, reorderString),
+                                )).then(onGoBack);
+                            break;
+                          case 'Settings':
+                            myEvent.broadcast();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SettingsPage(),
+                                )).then((value) {
+                              setState(() {});
+                            });
+
+                            break;
+                        }
+                      },
+                      itemBuilder: (ctx) => [
+                            PopupMenuItem(
+                              height: 30,
+                              value: 'Reorder',
+                              child: Text(
+                                'Reorder',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .color),
+                              ),
+                              onTap: () {},
+                            ),
+                            PopupMenuItem(
+                              height: 30,
+                              value: 'Settings',
+                              child: Text(
+                                'Settings',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .color),
+                              ),
+                            ),
+                          ])
+                ],
+              );
   }
 
   StreamBuilder<DateTime> buildUpdatedTime() {

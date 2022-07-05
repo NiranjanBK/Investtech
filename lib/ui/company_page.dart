@@ -11,6 +11,8 @@ import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/widgets/company_body.dart';
 import 'package:flutter_share/flutter_share.dart';
 
+import '../widgets/progress_indicator.dart';
+
 class CompanyPage extends StatefulWidget {
   final String cmpId;
   final int chartId;
@@ -89,10 +91,6 @@ class _CompanyPageState extends State<CompanyPage> {
 
           return Scaffold(
             appBar: AppBar(
-              // iconTheme: const IconThemeData(
-              //   color: Colors.w, //change your color here
-              // ),
-              // backgroundColor: Colors.white,
               actions: [
                 InkWell(
                   onTap: () async {
@@ -367,9 +365,9 @@ class _CompanyPageState extends State<CompanyPage> {
             ),
           );
         } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
+          return Center(child: Text('${snapshot.error}'));
         } else {
-          return const CircularProgressIndicator();
+          return buildProgressIndicator();
         }
       },
     );
