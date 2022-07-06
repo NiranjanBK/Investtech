@@ -56,6 +56,8 @@ class _MarketSelectionState extends State<MarketSelection> {
                                   snapshot.data![index].marketCode);
                               prefs.setString(PrefKeys.SELECTED_MARKET_ID,
                                   snapshot.data![index].marketId.toString());
+                              prefs.setString(PrefKeys.SELECTED_COUNTRY_ID,
+                                  snapshot.data![index].countryId.toString());
                               globalMarketId =
                                   snapshot.data![index].marketId.toString();
 

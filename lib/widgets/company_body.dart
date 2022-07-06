@@ -67,23 +67,26 @@ class CompanyBody extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    CachedNetworkImage(
-                      imageUrl: ApiRepo().getChartUrl(
-                          subscribedUser
-                              ? CHART_TYPE_ADVANCED
-                              : CHART_TYPE_FREE,
-                          chartId,
-                          CHART_STYLE_NORMAL,
-                          companyId),
-                      placeholder: (context, url) => Container(
-                          height: 275,
-                          width: double.infinity,
-                          child: const Center(
-                              child: CircularProgressIndicator(
-                                  color: Color(
-                            ColorHex.ACCENT_COLOR,
-                          )))),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: CachedNetworkImage(
+                        imageUrl: ApiRepo().getChartUrl(
+                            subscribedUser
+                                ? CHART_TYPE_ADVANCED
+                                : CHART_TYPE_FREE,
+                            chartId,
+                            CHART_STYLE_NORMAL,
+                            companyId),
+                        placeholder: (context, url) => Container(
+                            height: 275,
+                            width: double.infinity,
+                            child: const Center(
+                                child: CircularProgressIndicator(
+                                    color: Color(
+                              ColorHex.ACCENT_COLOR,
+                            )))),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
                     ),
                     subscribedUser
                         ? Text(

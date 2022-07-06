@@ -14,6 +14,7 @@ class ApiRepo {
   String? marketName;
   String? marketCode;
   String? marketId;
+  String? countryId;
   String? reorderString;
   List? companyIds;
   String? lang;
@@ -43,6 +44,7 @@ class ApiRepo {
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
+    countryId = prefs.getString(PrefKeys.SELECTED_COUNTRY_ID) ?? '91';
     lang = prefs.getString(PrefKeys.selectedLang) ?? 'en';
     theme = prefs.getString(PrefKeys.SELECTED_THEME) ?? 'Light';
     top20 = prefs.getBool(PrefKeys.TOP_20) ?? true;
@@ -74,7 +76,7 @@ class ApiRepo {
     return client.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
       Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$market&countryID=91&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}'),
+          'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$marketCode&countryID=$countryId&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}'),
       //body: json.encode(body.toJson()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',

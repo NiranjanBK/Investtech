@@ -64,6 +64,7 @@ class HomeOverviewState extends State<HomeOverview> {
   String? marketCode;
   String? marketId;
   String? marketName;
+  bool isOffline = false;
   bool? lta;
   StreamSubscription? _reloadStreamSub;
   ScrollController controller = ScrollController();
@@ -82,6 +83,7 @@ class HomeOverviewState extends State<HomeOverview> {
   @override
   void initState() {
     super.initState();
+    checkInternet();
     controller.addListener(() {
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
@@ -96,6 +98,11 @@ class HomeOverviewState extends State<HomeOverview> {
       setState(() {});
     });
     // Subscribe to the custom event
+  }
+
+  void checkInternet() async {
+    isOffline = await ApiRepo().hasNetwork();
+    print(('network : $isOffline'));
   }
 
   Future<Home> fetchData() async {
@@ -162,329 +169,341 @@ class HomeOverviewState extends State<HomeOverview> {
       backgroundColor: Colors.white,
       child: Container(
         padding: const EdgeInsets.only(top: 5),
-        child: FutureBuilder<Home>(
-          future: fetchData(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              teaserList = snapshot.data!.teaser;
-              List reoderList =
-                  reorderString == '' ? [] : reorderString.split(',');
-              analysisDate = snapshot.data!.analysesDate.toString();
-              return Scaffold(
-                backgroundColor: Theme.of(context).primaryColorDark,
-                appBar: buildAppBar(context, teaserList),
-                body: ListView(
-                  controller: controller,
-                  shrinkWrap: true,
-                  children: [
-                    Container(
-                      height: 40,
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(left: 10, top: 5),
-                      color: Theme.of(context).primaryColorDark,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+        child: isOffline == true
+            ? FutureBuilder<Home>(
+                future: fetchData(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    teaserList = snapshot.data!.teaser;
+                    List reoderList =
+                        reorderString == '' ? [] : reorderString.split(',');
+                    analysisDate = snapshot.data!.analysesDate.toString();
+                    return Scaffold(
+                      backgroundColor: Theme.of(context).primaryColorDark,
+                      appBar: buildAppBar(context, teaserList),
+                      body: ListView(
+                        controller: controller,
+                        shrinkWrap: true,
                         children: [
-                          Text(
-                            AppLocalizations.of(context)!
-                                .analysis_home_header_template(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    int.parse(snapshot.data!.analysesDate) *
-                                        1000)),
-                            style: getSmallestTextStyle(),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Last Updated : ',
-                                style: getSmallestTextStyle(),
-                              ),
-                              buildUpdatedTime(),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(height: 20, color: Theme.of(context).primaryColorDark,),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: snapshot.data!.teaser.length,
-                      itemBuilder: (context, index) {
-                        return FadeAnimation(delay: 2, child:  Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.only(
-                            bottom: 1,
-                          ),
-                          //padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  offset: Offset(0.0, 2.0),
-                                  blurRadius: 1.5,
-                                  spreadRadius: 0,
+                          Container(
+                            height: 40,
+                            width: double.infinity,
+                            padding: const EdgeInsets.only(left: 10, top: 5),
+                            color: Theme.of(context).primaryColorDark,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .analysis_home_header_template(DateTime
+                                          .fromMillisecondsSinceEpoch(int.parse(
+                                                  snapshot.data!.analysesDate) *
+                                              1000)),
+                                  style: getSmallestTextStyle(),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Last Updated : ',
+                                      style: getSmallestTextStyle(),
+                                    ),
+                                    buildUpdatedTime(),
+                                  ],
                                 ),
                               ],
-                              border: const Border(
-                                  bottom: BorderSide(
-                                    width: 0.8,
-                                    color: Colors.black12,
-                                  ))),
-                          child: Row(
-                            children: [
-                              if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'marketCommentary') ...{
-                                MarketCommentaries(
-                                  snapshot.data!.teaser[index],
-                                ),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'todaysSignals') ...{
-                                TodaysSignals(
-                                  snapshot.data!.teaser[index],
-                                ),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'top20') ...{
-                                TopTwenty(
-                                  snapshot.data!.teaser[index],
-                                ),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'indicesAnalyses') ...{
-                                Indices(
-                                  snapshot.data!.teaser[index],
-                                  'analyses',
-                                ),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'todaysCandidate') ...{
-                                TodaysCandidate(
-                                  snapshot.data!.teaser[index],
-                                  'case',
-                                ),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'indicesEvaluations') ...{
-                                IndicesEvaluation(
-                                    snapshot.data!.teaser[index]),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'barometer') ...{
-                                BarometerGraph(
-                                    snapshot.data!.teaser[index].content,
-                                    snapshot.data!.teaser[index].title),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'webTV') ...{
-                                WebTVTeaser(snapshot.data!.teaser[index]),
-                              } else if (snapshot
-                                  .data!.teaser[index].productName ==
-                                  'favourites') ...{
-                                FavoritesTeaser(
-                                    snapshot.data!.teaser[index]),
-                              }
-
-                              //Text(),
-                            ],
+                            ),
                           ),
-                        ),);
-                      },
-                    ),
+                          Container(
+                            height: 20,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data!.teaser.length,
+                            itemBuilder: (context, index) {
+                              return FadeAnimation(
+                                delay: 2,
+                                child: Container(
+                                  width: double.infinity,
+                                  margin: const EdgeInsets.only(
+                                    bottom: 1,
+                                  ),
+                                  //padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.grey,
+                                          offset: Offset(0.0, 2.0),
+                                          blurRadius: 1.5,
+                                          spreadRadius: 0,
+                                        ),
+                                      ],
+                                      border: const Border(
+                                          bottom: BorderSide(
+                                        width: 0.8,
+                                        color: Colors.black12,
+                                      ))),
+                                  child: Row(
+                                    children: [
+                                      if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'marketCommentary') ...{
+                                        MarketCommentaries(
+                                          snapshot.data!.teaser[index],
+                                        ),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'todaysSignals') ...{
+                                        TodaysSignals(
+                                          snapshot.data!.teaser[index],
+                                        ),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'top20') ...{
+                                        TopTwenty(
+                                          snapshot.data!.teaser[index],
+                                        ),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'indicesAnalyses') ...{
+                                        Indices(
+                                          snapshot.data!.teaser[index],
+                                          'analyses',
+                                        ),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'todaysCandidate') ...{
+                                        TodaysCandidate(
+                                          snapshot.data!.teaser[index],
+                                          'case',
+                                        ),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'indicesEvaluations') ...{
+                                        IndicesEvaluation(
+                                            snapshot.data!.teaser[index]),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'barometer') ...{
+                                        BarometerGraph(
+                                            snapshot
+                                                .data!.teaser[index].content,
+                                            snapshot.data!.teaser[index].title),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'webTV') ...{
+                                        WebTVTeaser(
+                                            snapshot.data!.teaser[index]),
+                                      } else if (snapshot.data!.teaser[index]
+                                              .productName ==
+                                          'favourites') ...{
+                                        FavoritesTeaser(
+                                            snapshot.data!.teaser[index]),
+                                      }
 
-                    if (lta == true)
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(.4),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () async {
-                                    SharedPreferences prefs =
-                                        await SharedPreferences.getInstance();
-                                    prefs.setBool(
-                                        PrefKeys.LTA_CONTAINER, false);
-
-                                    setState(() {
-                                      lta = false;
-                                    });
-                                  },
-                                  icon: const Icon(Icons.close),
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 5),
-                                child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      AppLocalizations.of(context)!.lta,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: Colors.white),
-                                    )),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 5),
-                                child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      AppLocalizations.of(context)!.lta,
-                                      style: const TextStyle(
-                                          fontSize: 14, color: Colors.white),
-                                    )),
-                              ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      OpenStore.instance.open(
-                                        //appStoreId: 'com.investtech.investtechapp',
-                                        androidAppBundleId:
-                                            'com.investtech.investtechapp',
-                                      );
-                                    },
-                                    child: Text(
-                                      "Get the app",
-                                      style: TextStyle(color: Colors.orange),
-                                    ),
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.white,
-                                      textStyle:
-                                          const TextStyle(color: Colors.orange),
-                                    ),
+                                      //Text(),
+                                    ],
                                   ),
                                 ),
-                              )
-                            ],
+                              );
+                            },
                           ),
-                        ),
+                          if (lta == true)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(.4),
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: IconButton(
+                                        onPressed: () async {
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          prefs.setBool(
+                                              PrefKeys.LTA_CONTAINER, false);
+
+                                          setState(() {
+                                            lta = false;
+                                          });
+                                        },
+                                        icon: const Icon(Icons.close),
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0, vertical: 5),
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            AppLocalizations.of(context)!.lta,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: Colors.white),
+                                          )),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0, vertical: 5),
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            AppLocalizations.of(context)!.lta,
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.white),
+                                          )),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            OpenStore.instance.open(
+                                              //appStoreId: 'com.investtech.investtechapp',
+                                              androidAppBundleId:
+                                                  'com.investtech.investtechapp',
+                                            );
+                                          },
+                                          child: Text(
+                                            "Get the app",
+                                            style:
+                                                TextStyle(color: Colors.orange),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.white,
+                                            textStyle: const TextStyle(
+                                                color: Colors.orange),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('${snapshot.error}'));
+                  }
 
-                  ],
+                  // By default, show a loading spinner.
+                  return const Center(
+                      child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.orange)));
+                },
+              )
+            : Center(
+                child: Text(
+                  'no internet',
+                  style: TextStyle(fontSize: 20, color: Colors.red),
                 ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(child: Text('${snapshot.error}'));
-            }
-
-            // By default, show a loading spinner.
-            return const Center(child: CircularProgressIndicator( valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)));
-          },
-        ),
+              ),
       ),
     );
   }
 
   AppBar buildAppBar(BuildContext context, List<Teaser> teaserList) {
     return AppBar(
-                title: InkWell(
-                  onTap: () {
-                    awaitReturnValueFromSecondScreen(context);
-                  },
-                  child: Row(
-                    children: [
-                      Text(marketName ?? 'National S.E'),
-                      Transform.rotate(
-                        angle: 33, //set the angel
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.orange[800],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return BlocProvider(
-                              create: (BuildContext context) =>
-                                  SearchBloc(ApiRepo()),
-                              child: SearchItemPage(context),
-                            );
-                          },
-                        ));
-                      },
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.orange[800],
-                      )),
-                  PopupMenuButton(
-                      icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-                      color: Theme.of(context).appBarTheme.backgroundColor,
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'Reorder':
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReorderPage(teaserList, reorderString),
-                                )).then(onGoBack);
-                            break;
-                          case 'Settings':
-                            myEvent.broadcast();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SettingsPage(),
-                                )).then((value) {
-                              setState(() {});
-                            });
+      title: InkWell(
+        onTap: () {
+          awaitReturnValueFromSecondScreen(context);
+        },
+        child: Row(
+          children: [
+            Text(marketName ?? 'National S.E'),
+            Transform.rotate(
+              angle: 33, //set the angel
+              child: Icon(
+                Icons.play_arrow,
+                color: Colors.orange[800],
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) {
+                  return BlocProvider(
+                    create: (BuildContext context) => SearchBloc(ApiRepo()),
+                    child: SearchItemPage(context),
+                  );
+                },
+              ));
+            },
+            icon: Icon(
+              Icons.search,
+              color: Colors.orange[800],
+            )),
+        PopupMenuButton(
+            icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+            color: Theme.of(context).appBarTheme.backgroundColor,
+            onSelected: (value) {
+              switch (value) {
+                case 'Reorder':
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ReorderPage(teaserList, reorderString),
+                      )).then(onGoBack);
+                  break;
+                case 'Settings':
+                  myEvent.broadcast();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SettingsPage(),
+                      )).then((value) {
+                    setState(() {});
+                  });
 
-                            break;
-                        }
-                      },
-                      itemBuilder: (ctx) => [
-                            PopupMenuItem(
-                              height: 30,
-                              value: 'Reorder',
-                              child: Text(
-                                'Reorder',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2!
-                                        .color),
-                              ),
-                              onTap: () {},
-                            ),
-                            PopupMenuItem(
-                              height: 30,
-                              value: 'Settings',
-                              child: Text(
-                                'Settings',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText2!
-                                        .color),
-                              ),
-                            ),
-                          ])
-                ],
-              );
+                  break;
+              }
+            },
+            itemBuilder: (ctx) => [
+                  PopupMenuItem(
+                    height: 30,
+                    value: 'Reorder',
+                    child: Text(
+                      'Reorder',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).textTheme.bodyText2!.color),
+                    ),
+                    onTap: () {},
+                  ),
+                  PopupMenuItem(
+                    height: 30,
+                    value: 'Settings',
+                    child: Text(
+                      'Settings',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).textTheme.bodyText2!.color),
+                    ),
+                  ),
+                ])
+      ],
+    );
   }
 
   StreamBuilder<DateTime> buildUpdatedTime() {
@@ -494,17 +513,17 @@ class HomeOverviewState extends State<HomeOverview> {
           int time = snapshot.data?.difference(startTime).inSeconds ?? 0;
           if (time > 60) {
             return Text(
-              '${snapshot.data?.difference(startTime).inMinutes} Minute ago',
+              '${snapshot.data?.difference(startTime).inMinutes} ${AppLocalizations.of(context)!.minutes} ${AppLocalizations.of(context)!.ago}',
               style: getSmallestTextStyle(),
             );
           } else if (time > 3600) {
             return Text(
-              '${snapshot.data?.difference(startTime).inHours} Hours ago',
+              '${snapshot.data?.difference(startTime).inHours} ${AppLocalizations.of(context)!.hour} ${AppLocalizations.of(context)!.ago}',
               style: getSmallestTextStyle(),
             );
           } else {
             return Text(
-              'Just Now',
+              AppLocalizations.of(context)!.just_now,
               style: getSmallestTextStyle(),
             );
           }

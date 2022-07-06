@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hidable/hidable.dart';
 import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/home_page.dart';
@@ -40,12 +41,19 @@ void main() async {
   connectionStatus.initialize();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  print(WidgetsBinding.instance.window.locale.countryCode);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
   bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
   globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
+
+  if (prefs.getString(PrefKeys.SELECTED_MARKET) == null) {
+    String countryCode = WidgetsBinding.instance.window.locale.countryCode
+        .toString()
+        .toLowerCase();
+    await DatabaseHelper().setUserMarketPref(countryCode);
+    print(countryCode);
+  }
 
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);

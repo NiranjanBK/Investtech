@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/evaluation.dart';
 import 'package:investtech_app/ui/blocs/indices_eval_bloc.dart';
 import 'package:investtech_app/widgets/evaluation_head.dart';
 import 'package:investtech_app/widgets/indices_list.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class IndicesEvalDetailPage extends StatefulWidget {
   final String title;
@@ -32,32 +35,38 @@ class _IndicesEvalDetailPageState extends State<IndicesEvalDetailPage> {
             )..add(IndicesEvalBlocEvents.LOAD_INDICES),
             child: BlocBuilder<IndicesEvalBloc, IndicesEvalBlocState>(
                 builder: (context, state) {
-                  if (state is IndicesEvalLoadedState) {
-                    indices = state.IndicesEval;
-                  }
-                  return indices == null
-                      ? Center(child: CircularProgressIndicator())
-                      : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Analysis: ${indices!.analysesDate.toString()}'),
-                        const SizedBox(
-                          height: 2,
-                        ),
-                        IndicesEvalTableHead(
-                          indicesEvaluation: indices!,
-                          page: 'detail',
-                        ),
-                        IndicesList(
-                          indices!.content!,
-                          indices!.content!.length,
-                          page: 'detail',
-                        ),
-                      ],
-                    ),
-                  );
-                }),
+              if (state is IndicesEvalLoadedState) {
+                indices = state.IndicesEval;
+              }
+              return indices == null
+                  ? Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!
+                                .analysis_home_header_template(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(analysisDate) * 1000)),
+                            style: getSmallTextStyle(),
+                          ),
+                          const SizedBox(
+                            height: 2,
+                          ),
+                          IndicesEvalTableHead(
+                            indicesEvaluation: indices!,
+                            page: 'detail',
+                          ),
+                          IndicesList(
+                            indices!.content!,
+                            indices!.content!.length,
+                            page: 'detail',
+                          ),
+                        ],
+                      ),
+                    );
+            }),
           ),
         ));
   }
