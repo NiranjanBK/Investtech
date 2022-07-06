@@ -64,7 +64,7 @@ class HomeOverviewState extends State<HomeOverview> {
   String? marketCode;
   String? marketId;
   String? marketName;
-  bool isOffline = false;
+  bool isOffline = true;
   bool? lta;
   StreamSubscription? _reloadStreamSub;
   ScrollController controller = ScrollController();
@@ -83,7 +83,7 @@ class HomeOverviewState extends State<HomeOverview> {
   @override
   void initState() {
     super.initState();
-    checkInternet();
+
     controller.addListener(() {
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
@@ -100,12 +100,8 @@ class HomeOverviewState extends State<HomeOverview> {
     // Subscribe to the custom event
   }
 
-  void checkInternet() async {
-    isOffline = await ApiRepo().hasNetwork();
-    print(('network : $isOffline'));
-  }
-
   Future<Home> fetchData() async {
+    isOffline = await ApiRepo().hasNetwork();
     await getListValuesSF();
     http.Response response = await ApiRepo().getHomePgae(marketCode);
     if (response.statusCode == 200) {
@@ -144,6 +140,7 @@ class HomeOverviewState extends State<HomeOverview> {
   getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     reorderString = prefs.getString('items') ?? '';
+
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
@@ -295,8 +292,10 @@ class HomeOverviewState extends State<HomeOverview> {
                                                 .data!.teaser[index].content,
                                             snapshot.data!.teaser[index].title),
                                       } else if (snapshot.data!.teaser[index]
-                                              .productName ==
-                                          'webTV') ...{
+                                                  .productName ==
+                                              'webTV' &&
+                                          ["ose", "se_sse", "dk_kfx", "dk_inv"]
+                                              .contains(marketCode)) ...{
                                         WebTVTeaser(
                                             snapshot.data!.teaser[index]),
                                       } else if (snapshot.data!.teaser[index]
@@ -462,8 +461,8 @@ class HomeOverviewState extends State<HomeOverview> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ReorderPage(teaserList, reorderString),
+                        builder: (context) => ReorderPage(
+                            teaserList, reorderString, marketCode.toString()),
                       )).then(onGoBack);
                   break;
                 case 'Settings':

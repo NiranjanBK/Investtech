@@ -1,3 +1,4 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -129,11 +130,14 @@ class _ChooseThemeState extends State<ChooseTheme> {
                           prefs.setString(PrefKeys.SELECTED_THEME, 'Light');
                           selectedTheme = 'Light';
                         }
-
+                        PendingDynamicLinkData? initialLink =
+                            await FirebaseDynamicLinks.instance
+                                .getInitialLink();
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const MainPage(false),
+                              builder: (context) =>
+                                  MainPage(false, initialLink),
                             ));
                         AppTheme selectedAppTheme = selectedTheme == 'Dark'
                             ? AppTheme.darkTheme

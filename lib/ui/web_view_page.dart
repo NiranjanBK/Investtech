@@ -22,6 +22,8 @@ class WebViewPage extends StatefulWidget {
   final String pwd;
   bool isLoading = true;
   bool isLoggedOut = false;
+  bool canGoBack = false;
+  bool canGoForward = false;
   WebViewPage(this.title, this.url, this.uid, this.pwd, {Key? key})
       : super(key: key);
 
@@ -30,7 +32,7 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  late InAppWebViewController _webViewController;
+  InAppWebViewController? _webViewController;
   @override
   void initState() {
     super.initState();
@@ -51,7 +53,7 @@ class _WebViewPageState extends State<WebViewPage> {
         ? WebLoginPage(ApiRepo(), true, false)
         : Scaffold(
             appBar: AppBar(
-              iconTheme: IconThemeData(color: Colors.grey[800]),
+              //iconTheme: IconThemeData(color: Colors.grey[800]),
               bottom: PreferredSize(
                   preferredSize: const Size(double.infinity, 1),
                   child: SizedBox(
@@ -67,24 +69,23 @@ class _WebViewPageState extends State<WebViewPage> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    _webViewController.goBack();
+                    _webViewController?.goBack();
                   },
                   icon: Icon(
                     Icons.arrow_back_ios,
-                    // color: _webViewController.canGoBack() == Future.value(true)
-                    //     ? Colors.orange[800]
-                    //     : Colors.grey,
-                    size: 12,
+                    color: widget.canGoBack ? Colors.orange[800] : Colors.grey,
+                    size: 14,
                   ),
                 ),
                 IconButton(
                   onPressed: () {
-                    _webViewController.goForward();
+                    _webViewController?.goForward();
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.grey,
-                    size: 12,
+                    color:
+                        widget.canGoForward ? Colors.orange[800] : Colors.grey,
+                    size: 14,
                   ),
                 ),
                 IconButton(
@@ -92,11 +93,11 @@ class _WebViewPageState extends State<WebViewPage> {
                   icon: Icon(
                     Icons.fullscreen,
                     color: Colors.orange[800],
-                    size: 14,
+                    size: 16,
                   ),
                 ),
                 PopupMenuButton(
-                    iconSize: 14,
+                    iconSize: 16,
                     onSelected: (value) {
                       switch (value) {
                         case 'Search':
@@ -119,7 +120,7 @@ class _WebViewPageState extends State<WebViewPage> {
                           break;
 
                         case 'Logout':
-                          _webViewController.loadUrl(
+                          _webViewController?.loadUrl(
                             urlRequest: URLRequest(
                                 url: Uri.parse('${widget.url}?Logout=1')),
                           );
@@ -133,7 +134,7 @@ class _WebViewPageState extends State<WebViewPage> {
                             value: 'Search',
                             child: Text(
                               AppLocalizations.of(context)!.search,
-                              style: TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12),
                             ),
                             onTap: () {},
                           ),
@@ -142,7 +143,7 @@ class _WebViewPageState extends State<WebViewPage> {
                             value: 'Logout',
                             child: Text(
                               AppLocalizations.of(context)!.logout,
-                              style: TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12),
                             ),
                             onTap: () {},
                           ),
@@ -173,6 +174,9 @@ class _WebViewPageState extends State<WebViewPage> {
                     _webViewController = controller;
                   },
                   onLoadStop: (controller, url) async {
+                    widget.canGoBack = await controller.canGoBack();
+                    widget.canGoForward = await controller.canGoForward();
+
                     setState(
                       () {
                         widget.isLoading = false;

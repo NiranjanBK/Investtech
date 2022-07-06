@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ReorderPage extends StatefulWidget {
   final List<Teaser> products;
   late String reorderString;
+  final String marketCode;
   List<Teaser> excludedProducts = [];
   List<Teaser> includedProducts = [];
   List<String> reoderList = [];
@@ -21,7 +22,8 @@ class ReorderPage extends StatefulWidget {
 
   ReorderPage(
     this.products,
-    this.reorderString, {
+    this.reorderString,
+    this.marketCode, {
     Key? key,
   }) : super(key: key);
 
@@ -58,7 +60,13 @@ class _ReorderPageState extends State<ReorderPage> {
 
     if (widget.reorderString == '') {
       widget.products.map((product) {
-        widget.includedProdList.add(product.id);
+        if (product.id == "8" &&
+            ["ose", "se_sse", "dk_kfx", "dk_inv"].contains(widget.marketCode)) {
+          widget.includedProdList.add(product.id);
+        }
+        if (product.id != "8") {
+          widget.includedProdList.add(product.id);
+        }
       }).toList();
     } else {
       widget.reoderList = widget.reorderString.split(',');
@@ -69,14 +77,19 @@ class _ReorderPageState extends State<ReorderPage> {
 
     widget.productMap.forEach((element) {
       if (widget.includedProdList.contains(element) == false) {
-        widget.excludedProdList.add(element);
+        if (element == "8" &&
+            ["ose", "se_sse", "dk_kfx", "dk_inv"].contains(widget.marketCode)) {
+          widget.excludedProdList.add(element);
+        }
+        if (element != "8") {
+          widget.excludedProdList.add(element);
+        }
       }
     });
   }
 
   addListToSF(key, value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     prefs.setString(key, value);
   }
 

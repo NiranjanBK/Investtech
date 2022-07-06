@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +14,7 @@ import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
+import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/intro_page.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
@@ -36,12 +39,17 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Get any initial links
+  final PendingDynamicLinkData? initialLink =
+      await FirebaseDynamicLinks.instance.getInitialLink();
+
   ConnectionStatusSingleton connectionStatus =
       ConnectionStatusSingleton.getInstance();
   connectionStatus.initialize();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove('items');
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
   bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
@@ -74,16 +82,18 @@ void main() async {
       );
     }
   }
-  runApp(MyApp(prefTheme, locale, introSlides));
+  runApp(MyApp(prefTheme, locale, introSlides, initialLink));
 }
 
 class MyApp extends StatelessWidget {
   final String? prefTheme;
   final String locale;
   final bool introSlides;
+  final PendingDynamicLinkData? initialLink;
   ThemeData? themeData;
   Locale? newLocale;
-  MyApp(this.prefTheme, this.locale, this.introSlides, {Key? key})
+  MyApp(this.prefTheme, this.locale, this.introSlides, this.initialLink,
+      {Key? key})
       : super(key: key);
 
   static const String _title = 'Flutter Code Sample';
@@ -127,7 +137,7 @@ class MyApp extends StatelessWidget {
               Locale('da', ''), // Norweign, no country code
               Locale('de', ''), // Norweign, no country code
             ],
-            home: MainPage(introSlides),
+            home: MainPage(introSlides, initialLink),
           );
         },
       ),
@@ -137,7 +147,9 @@ class MyApp extends StatelessWidget {
 
 class MainPage extends StatefulWidget {
   final bool introSlides;
-  const MainPage(this.introSlides, {Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
+  const MainPage(this.introSlides, this.initialLink, {Key? key})
+      : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -180,6 +192,33 @@ class _MainPageState extends State<MainPage> {
       setLTA();
     }
     FlutterNativeSplash.remove();
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      print(
+          'debug dynamic ${jsonDecode(jsonEncode(dynamicLinkData.link.queryParameters))['CompanyID']}');
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CompanyPage(
+              jsonDecode(jsonEncode(dynamicLinkData.link.queryParameters))[
+                  'CompanyID'],
+              4,
+            ),
+          ));
+      //('debug dynamic ${widget.initialLink!.link.queryParameters}');
+      //print(widget.initialLink!.link.pathSegments);
+      // Navigator.pushNamed(context, dynamicLinkData.link.path);
+    }).onError((error) {
+      // Handle errors
+    });
+
+    if (widget.initialLink != null) {
+      final Uri deepLink = widget.initialLink!.link;
+      // Example of using the dynamic link to push the user to a different screen
+      //Navigator.pushNamed(context, deepLink.path);
+
+      print('debug dynamic ${widget.initialLink!.link.queryParameters}');
+      print(widget.initialLink!.link.pathSegments);
+    }
     super.initState();
   }
 

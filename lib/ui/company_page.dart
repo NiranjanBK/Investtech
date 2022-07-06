@@ -245,7 +245,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                   horizontal: 24, vertical: 0),
                               actionsPadding: EdgeInsets.zero,
                               title: Text(
-                                '${widget.companyName} (${widget.ticker})',
+                                '${cmpData!.name.toString()} (${widget.ticker})',
                               ),
                               content: SingleChildScrollView(
                                 child: Column(
@@ -388,7 +388,7 @@ class _CompanyPageState extends State<CompanyPage> {
                         var shareText = interpolate(
                             AppLocalizations.of(context)!
                                 .share_message_template,
-                            [widget.companyName.toString(), mylink]);
+                            [cmpData!.name.toString(), mylink]);
 
                         await FlutterShare.share(
                           title: shareText,
