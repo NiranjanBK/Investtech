@@ -4,6 +4,7 @@ class PrefKeys {
   static String SELECTED_MARKET = "selectedMarket";
   static String SELECTED_MARKET_CODE = "selectedMarketCode";
   static String SELECTED_MARKET_ID = "selectedMarketId";
+  static String SELECTED_COUNTRY_ID = "selectedCountryId";
   static String SELECTED_THEME = "selectedTheme";
   static String TOP_20 = "top20";
   static String SUBSCRIBED_USER = "subscribedUser";

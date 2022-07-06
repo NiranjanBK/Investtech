@@ -47,6 +47,7 @@ class _CompanyPageState extends State<CompanyPage> {
   TextEditingController notesController = TextEditingController();
   late Future future;
   Company? cmpData;
+  Color? swtichChartThemeColor;
   bool subscribedUser = false;
   bool hideAppBar = false;
   int type = CHART_STYLE_NORMAL;
@@ -425,23 +426,27 @@ class _CompanyPageState extends State<CompanyPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      CachedNetworkImage(
-                        imageUrl: ApiRepo().getChartUrl(
-                            subscribedUser
-                                ? CHART_TYPE_ADVANCED
-                                : CHART_TYPE_FREE,
-                            widget.chartId,
-                            CHART_STYLE_NORMAL,
-                            widget.cmpId),
-                        placeholder: (context, url) => Container(
-                            height: 275,
-                            width: double.infinity,
-                            child: const Center(
-                                child: CircularProgressIndicator(
-                                    color: Color(
-                              ColorHex.ACCENT_COLOR,
-                            )))),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: CachedNetworkImage(
+                          imageUrl: ApiRepo().getChartUrl(
+                              subscribedUser
+                                  ? CHART_TYPE_ADVANCED
+                                  : CHART_TYPE_FREE,
+                              widget.chartId,
+                              CHART_STYLE_NORMAL,
+                              widget.cmpId),
+                          placeholder: (context, url) => Container(
+                              height: 275,
+                              width: double.infinity,
+                              child: const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Color(
+                                ColorHex.ACCENT_COLOR,
+                              )))),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
                       ),
                       subscribedUser
                           ? Text(
@@ -478,6 +483,7 @@ class _CompanyPageState extends State<CompanyPage> {
                       const SizedBox(
                         height: 10,
                       ),
+
                       Text(
                         'Market: ${cmpData!.marketName}',
                         style: const TextStyle(
@@ -487,6 +493,7 @@ class _CompanyPageState extends State<CompanyPage> {
                       const SizedBox(
                         height: 10,
                       ),
+
                       Text(
                         AppLocalizations.of(context)!.short_disclaimer,
                         style: getSmallestTextStyle(),
@@ -500,15 +507,18 @@ class _CompanyPageState extends State<CompanyPage> {
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           } else {
-            return const CircularProgressIndicator();
+            return const CircularProgressIndicator(
+              color: Color(ColorHex.ACCENT_COLOR),
+            );
           }
         },
       );
     }
 
     Widget LandscapeMode(cmpData, subscribedUser) {
-      var _width = 50;
-      var _height = 50;
+      double _width = 50;
+      double _height = 50;
+
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
       if (!hideAppBar) {
         Future.delayed(const Duration(seconds: 10), () {
@@ -537,12 +547,12 @@ class _CompanyPageState extends State<CompanyPage> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: imageProvider,
-                          fit: BoxFit.fitWidth,
+                          fit: BoxFit.fill,
                         ),
                       ),
                     ),
                     placeholder: (context, url) => Container(
-                        height: 275,
+                        //height: 275,
                         width: double.infinity,
                         child: const Center(
                             child: CircularProgressIndicator(
@@ -560,16 +570,21 @@ class _CompanyPageState extends State<CompanyPage> {
                           child: InkWell(
                             onTap: () {
                               setState(() {
-                                type = CHART_STYLE_BLACK;
+                                if (type == CHART_STYLE_BLACK) {
+                                  type = CHART_STYLE_NORMAL;
+                                  swtichChartThemeColor = Colors.black;
+                                } else {
+                                  type = CHART_STYLE_BLACK;
+                                  swtichChartThemeColor = Colors.white;
+                                }
                               });
                             },
-                            child: AnimatedContainer(
-                              height: 50,
-                              width: 50,
-                              duration: const Duration(seconds: 5),
-                              decoration: const BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.only(
+                            child: Container(
+                              height: _height,
+                              width: _width,
+                              decoration: BoxDecoration(
+                                color: swtichChartThemeColor ?? Colors.black,
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(100.0),
                                 ),
                               ),
