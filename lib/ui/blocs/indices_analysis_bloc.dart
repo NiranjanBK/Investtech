@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:equatable/equatable.dart';
@@ -41,14 +42,15 @@ class IndicesAnalysesBloc
       IndicesAnalysesBlocEvents event) async* {
     switch (event) {
       case IndicesAnalysesBlocEvents.LOAD_INDICES:
-        http.Response response = await apiRepo.getIndicesAnalysesDetailPage();
+        Response response = await apiRepo.getIndicesAnalysesDetailPage();
         if (response.statusCode == 200) {
-          var _indicesAnalyses = jsonDecode(response.body)['analyses'] as List;
+          var _indicesAnalyses =
+              jsonDecode(jsonEncode(response.data))['analyses'] as List;
           List<Company> indicesAnalysis = _indicesAnalyses
               .map((indice) => Company.fromJson(indice))
               .toList();
-          yield IndicesAnalysesLoadedState(
-              indicesAnalysis, jsonDecode(response.body)['analysesDate']);
+          yield IndicesAnalysesLoadedState(indicesAnalysis,
+              jsonDecode(jsonEncode(response.data))['analysesDate']);
         } else {
           yield IndicesAnalysesErrorState(response.statusCode.toString());
         }

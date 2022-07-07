@@ -35,8 +35,8 @@ dependencies:
   equatable: ^2.0.2
   provider: ^5.0.0
   flutter_bloc: ^7.0.1
-  json_serializable: ^6.1.4
-  json_annotation: ^4.4.0
+  json_serializable: ^4.1.4
+  json_annotation: ^4.0.1
   syncfusion_flutter_charts: ^19.4.55
   drag_and_drop_lists: ^0.3.2+2
   shared_preferences: ^2.0.13
@@ -70,6 +70,8 @@ dependencies:
   connectivity: ^3.0.6
   flutter_native_splash: ^2.2.3+1
   intl_phone_number_input: ^0.7.0+2
+  dio: ^4.0.6
+  dio_http_cache: any
  
   
 flutter_native_splash:

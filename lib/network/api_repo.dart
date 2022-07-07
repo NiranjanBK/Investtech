@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:http/http.dart' as http;
 import 'package:investtech_app/const/pref_keys.dart';
@@ -60,7 +62,27 @@ class ApiRepo {
     }
   }
 
-  Future<http.Response> getHomePgae(market) async {
+  getDio() {
+    DioCacheManager dioCacheManager = DioCacheManager(CacheConfig());
+
+    Dio dio = Dio();
+    dio.options.headers['content-Type'] = 'application/json; charset=UTF-8';
+    dio.interceptors.add(dioCacheManager.interceptor);
+
+    dio.interceptors.add(LogInterceptor(
+        responseBody: true,
+        logPrint: (object) {
+          LoggingInterceptor.longLogPrint(object);
+        }));
+
+    return dio;
+  }
+
+  Future<Response> getHomePgae(market) async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     await getListValuesSF();
     companyIds = await DatabaseHelper().getNoteAndFavoriteCompanyIds();
     var top20Flag = '0';
@@ -73,14 +95,13 @@ class ApiRepo {
 
     String CompanyIDs = companyIds!.join(",");
     // SharedPreferences prefs = await SharedPreferences.getInstance();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$marketCode&countryID=$countryId&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}'),
+
+      'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$marketCode&countryID=$countryId&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+
+      options: cacheOptions,
     );
   }
 
@@ -130,81 +151,94 @@ class ApiRepo {
     return '$url&size=1080,648&style=$style&variant=mobile&density=2.75';
   }
 
-  Future<http.Response> getTop20DetailPage() async {
+  Future<Response> getTop20DetailPage() async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     await getListValuesSF();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=top20&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'),
+
+      'https://www.investtech.com/mobile/api.php?page=top20&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 
-  Future<http.Response> getWebTVList() async {
+  Future<Response> getWebTVList() async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     await getListValuesSF();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=webTV&market=$marketCode&lang=${languageCodeMap![lang]}&countryID=91'),
+
+      'https://www.investtech.com/mobile/api.php?page=webTV&market=$marketCode&lang=${languageCodeMap![lang]}&countryID=91',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 
-  Future<http.Response> getMCDetailPage() async {
+  Future<Response> getMCDetailPage() async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     await getListValuesSF();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=marketCommentary&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'),
+
+      'https://www.investtech.com/mobile/api.php?page=marketCommentary&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 
-  Future<http.Response> getIndicesEvalDetailPage() async {
+  Future<Response> getIndicesEvalDetailPage() async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     await getListValuesSF();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=indicesEvaluations&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'),
+
+      'https://www.investtech.com/mobile/api.php?page=indicesEvaluations&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 
-  Future<http.Response> getIndicesAnalysesDetailPage() async {
+  Future<Response> getIndicesAnalysesDetailPage() async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
+    dio.interceptors.add(CustomInterceptors());
     await getListValuesSF();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=indicesAnalyses&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'),
+
+      'https://www.investtech.com/mobile/api.php?page=indicesAnalyses&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 
-  Future<http.Response> getTodaysSignalDetailPage() async {
+  Future<Response> getTodaysSignalDetailPage() async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     await getListValuesSF();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'),
+
+      'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 
@@ -221,18 +255,19 @@ class ApiRepo {
     );
   }
 
-  Future<http.Response> getCompanyData(chartId, companyId) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<Response> getCompanyData(chartId, companyId) async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
     chartId = chartId.toString();
-    return client.get(
+    return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=in_nse&countryID=91&lang=${languageCodeMap![lang]}'),
+
+      'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=in_nse&countryID=91&lang=${languageCodeMap![lang]}',
 
       //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      options: cacheOptions,
     );
   }
 }
@@ -284,5 +319,30 @@ class LoggingInterceptor implements InterceptorContract {
         print(log.substring(start, logLength));
       }
     }
+  }
+}
+
+class CustomInterceptors extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    //print('REQUEST[${options.method}] => PATH: ${options.path}');
+
+    return super.onRequest(options, handler);
+  }
+
+  @override
+  onResponse(Response response, ResponseInterceptorHandler handler) {
+    //print(
+    //'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
+
+    return super.onResponse(response, handler);
+  }
+
+  @override
+  onError(DioError err, ErrorInterceptorHandler handler) {
+    // print(
+    // 'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+
+    return super.onError(err, handler);
   }
 }

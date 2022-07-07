@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,11 +48,12 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
     bool user = prefs.getBool(PrefKeys.SUBSCRIBED_USER) ?? false;
     switch (event) {
       case CompanyBlocEvents.LOAD_COMPANY:
-        http.Response response =
-            await apiRepo.getCompanyData(chartId, companyId);
+        Response response = await apiRepo.getCompanyData(chartId, companyId);
         if (response.statusCode == 200) {
           yield CompanyLoadedState(
-              Company.fromJson(jsonDecode(response.body)['company']), user);
+              Company.fromJson(
+                  jsonDecode(jsonEncode(response.data))['company']),
+              user);
         } else {
           yield CompanyErrorState(response.statusCode.toString());
         }

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/widgets/fade_animation.dart';
 import 'package:open_store/open_store.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -83,43 +86,48 @@ class HomeOverviewState extends State<HomeOverview> {
   @override
   void initState() {
     super.initState();
+
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CompanyPage(
+              jsonDecode(jsonEncode(dynamicLinkData.link.queryParameters))[
+                  'CompanyID'],
+              4,
+            ),
+          ));
+    }).onError((error) {
+      // Handle errors
+    });
     controller.addListener(() {
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
     });
-    /*final subscription = controller.stream.listen((String data) {
-      print(data);
-    });*/
 
     Timer.periodic(Duration(seconds: 2), (timer) {
       if (!streamController.isClosed) streamController.add(DateTime.now());
     });
-    // streamController.stream.listen((event) {
-    //   final time = event.difference(startTime);
-    //   updatedTime = time;
-    //   print(time.inSeconds);
-    // });
-
     myEvent.subscribe((args) => print('myEvent occured'));
     _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
       print(event);
       setState(() {});
     });
-
     // Subscribe to the custom event
   }
 
   Future<Home> fetchData() async {
     isOffline = await ApiRepo().hasNetwork();
     await getListValuesSF();
-    http.Response response = await ApiRepo().getHomePgae(marketCode);
+    Response response = await ApiRepo().getHomePgae(marketCode);
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
       //print(response.body);
       //reorderString = await getListValuesSF();
       startTime = DateTime.now();
-      return Home.fromJson(jsonDecode(response.body));
+
+      return Home.fromJson(jsonDecode(jsonEncode(response.data)));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -149,6 +157,7 @@ class HomeOverviewState extends State<HomeOverview> {
   getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     reorderString = prefs.getString('items') ?? '';
+
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';

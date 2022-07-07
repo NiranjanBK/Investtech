@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:equatable/equatable.dart';
@@ -40,10 +41,10 @@ class IndicesEvalBloc
       IndicesEvalBlocEvents event) async* {
     switch (event) {
       case IndicesEvalBlocEvents.LOAD_INDICES:
-        http.Response response = await apiRepo.getIndicesEvalDetailPage();
+        Response response = await apiRepo.getIndicesEvalDetailPage();
         if (response.statusCode == 200) {
           yield IndicesEvalLoadedState(
-              Evaluation.fromJson(jsonDecode(response.body)));
+              Evaluation.fromJson(jsonDecode(jsonEncode(response.data))));
         } else {
           yield IndicesEvalErrorState(response.statusCode.toString());
         }

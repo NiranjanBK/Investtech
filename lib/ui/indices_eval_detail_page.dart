@@ -44,15 +44,15 @@ class _IndicesEvalDetailPageState extends State<IndicesEvalDetailPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            AppLocalizations.of(context)!
-                                .analysis_home_header_template(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.parse(analysisDate) * 1000)),
-                            style: getSmallTextStyle(),
-                          ),
-                          const SizedBox(
-                            height: 2,
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Text(
+                              AppLocalizations.of(context)!
+                                  .analysis_home_header_template(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          int.parse(analysisDate) * 1000)),
+                              style: getSmallTextStyle(),
+                            ),
                           ),
                           IndicesEvalTableHead(
                             indicesEvaluation: indices!,

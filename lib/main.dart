@@ -193,8 +193,6 @@ class _MainPageState extends State<MainPage> {
     }
     FlutterNativeSplash.remove();
     FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
-      print(
-          'debug dynamic ${jsonDecode(jsonEncode(dynamicLinkData.link.queryParameters))['CompanyID']}');
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -204,9 +202,6 @@ class _MainPageState extends State<MainPage> {
               4,
             ),
           ));
-      //('debug dynamic ${widget.initialLink!.link.queryParameters}');
-      //print(widget.initialLink!.link.pathSegments);
-      // Navigator.pushNamed(context, dynamicLinkData.link.path);
     }).onError((error) {
       // Handle errors
     });

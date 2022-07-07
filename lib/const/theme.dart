@@ -39,7 +39,7 @@ class AppThemes {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedIconTheme: IconThemeData(color: Color(0xFFFF6600)),
-        selectedLabelStyle: TextStyle(color: Color(0xFFFF6600)),
+        selectedItemColor: Color(0xFFFF6600),
         unselectedIconTheme: IconThemeData(color: Color(0xFF6e6e6e)),
         //unselectedLabelStyle: TextStyle(color: Colors.blue),
       ),

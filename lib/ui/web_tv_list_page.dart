@@ -1,20 +1,20 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/web_tv.dart';
-import 'package:http/http.dart' as http;
-import 'package:investtech_app/ui/web_tv_youTube_page.dart';
+
 import 'package:investtech_app/widgets/web_tv_item.dart';
 
 class WebTVList extends StatelessWidget {
   const WebTVList({Key? key}) : super(key: key);
 
   Future<WebLinkDetail> fetchData() async {
-    http.Response response = await ApiRepo().getWebTVList();
+    Response response = await ApiRepo().getWebTVList();
     if (response.statusCode == 200) {
-      return WebLinkDetail.fromJson(jsonDecode(response.body));
+      return WebLinkDetail.fromJson(jsonDecode(jsonEncode(response.data)));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.

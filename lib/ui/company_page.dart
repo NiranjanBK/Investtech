@@ -441,7 +441,7 @@ class _CompanyPageState extends State<CompanyPage> {
                                 ColorHex.ACCENT_COLOR,
                               )))),
                           errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                              Image.asset('assets/images/no_thumbnail.png'),
                         ),
                       ),
                       subscribedUser
