@@ -46,8 +46,8 @@ void main() async {
   ConnectionStatusSingleton connectionStatus =
       ConnectionStatusSingleton.getInstance();
   connectionStatus.initialize();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  print(WidgetsBinding.instance.window.locale.countryCode);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.remove('items');
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';

@@ -57,7 +57,6 @@ class _CompanyPageState extends State<CompanyPage> {
   void initState() {
     // TODO: implement initState
     future = DatabaseHelper().checkNoteAndFavorite(widget.cmpId);
-
     super.initState();
   }
 
@@ -198,197 +197,193 @@ class _CompanyPageState extends State<CompanyPage> {
                             .deleteNoteAndFavourite(widget.cmpId);
                         print(deleteFlag);
 
-                        setState(() {
-                          future = DatabaseHelper()
-                              .checkNoteAndFavorite(widget.cmpId);
-                        });
-                        eventBus.fire(ReloadEvent());
-                        myEvent.broadcast(Reload(true));
-                      } else {
-                        var favorite = Favorites(
-                            companyName: widget.companyName ?? "",
-                            companyId: int.parse(widget.cmpId),
-                            ticker: widget.ticker ?? "",
-                            note: notesController.text,
-                            noteTimestamp: DateTime.now()
-                                .millisecondsSinceEpoch
-                                .toString());
-                        await DatabaseHelper().addNoteAndFavorite(favorite);
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        eventBus.fire(ReloadEvent());
-                        setState(() {
-                          future = DatabaseHelper()
-                              .checkNoteAndFavorite(widget.cmpId);
-                          print('adding');
-                        });
-                      }
-                    },
-                    child: Icon(
-                      widget.isFavourite
-                          ? Icons.star_outlined
-                          : Icons.star_border_outlined,
-                      color: Colors.orange[500],
-                    ),
+                      setState(() {
+                        future =
+                            DatabaseHelper().checkNoteAndFavorite(widget.cmpId);
+                      });
+                      eventBus.fire(ReloadEvent());
+                      myEvent.broadcast(Reload(true));
+                    } else {
+                      var favorite = Favorites(
+                          companyName: widget.companyName ?? "",
+                          companyId: int.parse(widget.cmpId),
+                          ticker: widget.ticker ?? "",
+                          note: notesController.text,
+                          noteTimestamp:
+                              DateTime.now().millisecondsSinceEpoch.toString());
+                      await DatabaseHelper().addNoteAndFavorite(favorite);
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      eventBus.fire(ReloadEvent());
+                      setState(() {
+                        future =
+                            DatabaseHelper().checkNoteAndFavorite(widget.cmpId);
+                        print('adding');
+                      });
+                    }
+                  },
+                  child: Icon(
+                    widget.isFavourite
+                        ? Icons.star_outlined
+                        : Icons.star_border_outlined,
+                    color: Colors.orange[500],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          // dialog is dismissible with a tap on the barrier
-                          useSafeArea: true,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 0),
-                              actionsPadding: EdgeInsets.zero,
-                              title: Text(
-                                '${cmpData!.name.toString()} (${widget.ticker})',
-                              ),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Text(
-                                      'Notes',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 20),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        // dialog is dismissible with a tap on the barrier
+                        useSafeArea: true,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 0),
+                            actionsPadding: EdgeInsets.zero,
+                            title: Text(
+                              '${widget.companyName} (${widget.ticker})',
+                            ),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    'Notes',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: TextField(
+                                        controller: notesController,
+                                        style: const TextStyle(fontSize: 12),
+                                        cursorColor: const Color(0xFFEF6C00),
+                                        maxLines: 8,
+                                        //autofocus: true,
+                                        decoration: InputDecoration(
+                                            isDense: true,
+                                            contentPadding:
+                                                const EdgeInsets.all(5),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: (Colors.grey[600])!),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: (Colors.grey[600])!),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                            )),
+                                        onChanged: (value) {
+                                          //teamName = value;
+                                        },
+                                      ))
+                                    ],
+                                  ),
+                                  if (widget.hasTimestamp)
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Expanded(
-                                            child: TextField(
-                                          controller: notesController,
-                                          style: const TextStyle(fontSize: 12),
-                                          cursorColor: const Color(0xFFEF6C00),
-                                          maxLines: 8,
-                                          //autofocus: true,
-                                          decoration: InputDecoration(
-                                              isDense: true,
-                                              contentPadding:
-                                                  const EdgeInsets.all(5),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: (Colors.grey[600])!),
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: (Colors.grey[600])!),
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                              )),
-                                          onChanged: (value) {
-                                            //teamName = value;
-                                          },
-                                        ))
+                                        Text(
+                                          widget.hasTimestamp
+                                              ? jsonDecode(snapshot.data!
+                                                                  .toString())[
+                                                              'timeStamp']
+                                                          .toString() ==
+                                                      "false"
+                                                  ? ''
+                                                  : '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
+                                              : '',
+                                          style: getSmallestTextStyle(),
+                                        ),
                                       ],
                                     ),
-                                    if (widget.hasTimestamp)
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            widget.hasTimestamp
-                                                ? jsonDecode(snapshot.data!
-                                                                    .toString())[
-                                                                'timeStamp']
-                                                            .toString() ==
-                                                        "false"
-                                                    ? ''
-                                                    : '${AppLocalizations.of(context)!.last_modified} : ${AppLocalizations.of(context)!.note_timestamp(DateTime.fromMillisecondsSinceEpoch(int.parse(jsonDecode(snapshot.data!.toString())['timeStamp'])))}'
-                                                : '',
-                                            style: getSmallestTextStyle(),
-                                          ),
-                                        ],
-                                      ),
-                                  ],
-                                ),
+                                ],
                               ),
-                              actions: [
-                                Column(
-                                  children: [
-                                    SizedBox(
-                                      height: 25,
-                                      child: TextButton(
-                                        style: ButtonStyle(
-                                          fixedSize: MaterialStateProperty.all(
-                                              const Size(50, 25)),
-                                          padding: MaterialStateProperty.all(
-                                              const EdgeInsets.all(5)),
-                                        ),
-                                        child: SizedBox(
-                                          height: 25,
-                                          child: Text(
-                                            AppLocalizations.of(context)!.save,
-                                            style: TextStyle(
-                                                color: Colors.orange[800]),
-                                          ),
-                                        ),
-                                        onPressed: () async {
-                                          var favorite = Favorites(
-                                              companyName:
-                                                  widget.companyName ?? "",
-                                              companyId:
-                                                  int.parse(widget.cmpId),
-                                              ticker: widget.ticker ?? "",
-                                              note: notesController.text,
-                                              noteTimestamp: DateTime.now()
-                                                  .millisecondsSinceEpoch
-                                                  .toString());
-                                          await DatabaseHelper()
-                                              .addNoteAndFavorite(favorite);
-                                          setState(() {
-                                            widget.isFavourite = true;
-                                            print('adding notes');
-                                          });
-                                          Navigator.of(context).pop();
-                                        },
+                            ),
+                            actions: [
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    height: 25,
+                                    child: TextButton(
+                                      style: ButtonStyle(
+                                        fixedSize: MaterialStateProperty.all(
+                                            const Size(50, 25)),
+                                        padding: MaterialStateProperty.all(
+                                            const EdgeInsets.all(5)),
                                       ),
-                                    ),
-                                    TextButton(
-                                      //height: 25,
-                                      child: Text(
-                                        AppLocalizations.of(context)!.cancel,
-                                        style: TextStyle(
-                                            color: Colors.orange[800]),
+                                      child: SizedBox(
+                                        height: 25,
+                                        child: Text(
+                                          AppLocalizations.of(context)!.save,
+                                          style: TextStyle(
+                                              color: Colors.orange[800]),
+                                        ),
                                       ),
-                                      onPressed: () {
+                                      onPressed: () async {
+                                        var favorite = Favorites(
+                                            companyName:
+                                                widget.companyName ?? "",
+                                            companyId: int.parse(widget.cmpId),
+                                            ticker: widget.ticker ?? "",
+                                            note: notesController.text,
+                                            noteTimestamp: DateTime.now()
+                                                .millisecondsSinceEpoch
+                                                .toString());
+                                        await DatabaseHelper()
+                                            .addNoteAndFavorite(favorite);
+                                        setState(() {
+                                          widget.isFavourite = true;
+                                          print('adding notes');
+                                        });
                                         Navigator.of(context).pop();
                                       },
                                     ),
-                                  ],
-                                )
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Icon(
-                        widget.hasNote
-                            ? Icons.mode_comment
-                            : Icons.mode_comment_outlined,
-                        color: Colors.orange[500],
-                      ),
+                                  ),
+                                  TextButton(
+                                    //height: 25,
+                                    child: Text(
+                                      AppLocalizations.of(context)!.cancel,
+                                      style:
+                                          TextStyle(color: Colors.orange[800]),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Icon(
+                      widget.hasNote
+                          ? Icons.mode_comment
+                          : Icons.mode_comment_outlined,
+                      color: Colors.orange[500],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: InkWell(
-                      onTap: () async {
-                        String mylink = await createDynamicLink(
-                            widget.cmpId, widget.companyName);
-                        var shareText = interpolate(
-                            AppLocalizations.of(context)!
-                                .share_message_template,
-                            [cmpData!.name.toString(), mylink]);
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: InkWell(
+                    onTap: () async {
+                      String mylink = await createDynamicLink(
+                          widget.cmpId, widget.companyName);
+                      var shareText = interpolate(
+                          AppLocalizations.of(context)!.share_message_template,
+                          [widget.companyName.toString(), mylink]);
 
                         await FlutterShare.share(
                           title: shareText,

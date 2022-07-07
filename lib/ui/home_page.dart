@@ -83,20 +83,29 @@ class HomeOverviewState extends State<HomeOverview> {
   @override
   void initState() {
     super.initState();
-
     controller.addListener(() {
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
     });
+    /*final subscription = controller.stream.listen((String data) {
+      print(data);
+    });*/
 
     Timer.periodic(Duration(seconds: 2), (timer) {
       if (!streamController.isClosed) streamController.add(DateTime.now());
     });
+    // streamController.stream.listen((event) {
+    //   final time = event.difference(startTime);
+    //   updatedTime = time;
+    //   print(time.inSeconds);
+    // });
+
     myEvent.subscribe((args) => print('myEvent occured'));
     _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
       print(event);
       setState(() {});
     });
+
     // Subscribe to the custom event
   }
 
@@ -140,7 +149,6 @@ class HomeOverviewState extends State<HomeOverview> {
   getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     reorderString = prefs.getString('items') ?? '';
-
     marketName = prefs.getString(PrefKeys.SELECTED_MARKET) ?? 'National S.E';
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
