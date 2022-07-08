@@ -47,9 +47,7 @@ void main() async {
       ConnectionStatusSingleton.getInstance();
   connectionStatus.initialize();
 
-  print(WidgetsBinding.instance.window.locale.countryCode);
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.remove('items');
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
   bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
@@ -59,8 +57,8 @@ void main() async {
     String countryCode = WidgetsBinding.instance.window.locale.countryCode
         .toString()
         .toLowerCase();
-    await DatabaseHelper().setUserMarketPref(countryCode);
     print(countryCode);
+    await DatabaseHelper().setUserMarketPref(countryCode);
   }
 
   if (Platform.isAndroid) {
@@ -82,6 +80,7 @@ void main() async {
       );
     }
   }
+
   runApp(MyApp(prefTheme, locale, introSlides, initialLink));
 }
 
@@ -211,8 +210,16 @@ class _MainPageState extends State<MainPage> {
       // Example of using the dynamic link to push the user to a different screen
       //Navigator.pushNamed(context, deepLink.path);
 
-      print('debug dynamic ${widget.initialLink!.link.queryParameters}');
-      print(widget.initialLink!.link.pathSegments);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CompanyPage(
+                jsonDecode(jsonEncode(deepLink.queryParameters))['CompanyID'],
+                4,
+              ),
+            ));
+      });
     }
     super.initState();
   }

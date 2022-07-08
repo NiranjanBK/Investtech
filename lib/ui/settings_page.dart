@@ -90,11 +90,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState((){
+    setState(() {
       version = packageInfo.version;
       print('debug $version');
     });
-
   }
 
   @override

@@ -68,10 +68,10 @@ class _SearchItemPageState extends State<SearchItemPage> {
 
     return Scaffold(
       appBar: AppBar(
-          iconTheme: const IconThemeData(
-            color: Colors.black, //change your color here
-          ),
-          backgroundColor: Colors.white,
+          // iconTheme: const IconThemeData(
+          //   color: Colors.black, //change your color here
+          // ),
+          // backgroundColor: Colors.white,
           bottom: PreferredSize(
               preferredSize: const Size(double.infinity, 1),
               child: SizedBox(
@@ -87,8 +87,7 @@ class _SearchItemPageState extends State<SearchItemPage> {
           title: Container(
             width: double.infinity,
             height: 50,
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(5)),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5)),
             child: Center(
               child: TextField(
                 cursorColor: Colors.orange[800],
@@ -116,125 +115,133 @@ class _SearchItemPageState extends State<SearchItemPage> {
         if (state is SearchLoadingState) {
           //linearProgressIndicator.setVisibility(true);
         }
-        return searchResult == null
-            ? const RecentSearchList()
-            : ListView(
-                children: [
-                  ListTile(
-                    leading: Text(AppLocalizations.of(context)!.search_results),
-                    trailing: DropdownButton<String>(
-                      //value: selectedDropdownVal,
-                      hint: Text(
-                        dropdownVal[bloc!.selectedDropdwonVal ?? globalMarketId]
-                            .toString(),
-                        style: getSmallTextStyle(),
+        return Container(
+          height: double.infinity,
+          color: Theme.of(context).primaryColor,
+          child: searchResult == null
+              ? const RecentSearchList()
+              : ListView(
+                  children: [
+                    ListTile(
+                      leading:
+                          Text(AppLocalizations.of(context)!.search_results),
+                      trailing: DropdownButton<String>(
+                        dropdownColor:
+                            Theme.of(context).appBarTheme.backgroundColor,
+                        hint: Text(
+                          dropdownVal[
+                                  bloc!.selectedDropdwonVal ?? globalMarketId]
+                              .toString(),
+                          style: DefaultTextStyle.of(context).style,
+                        ),
+                        items: list,
+                        onChanged: (value) {
+                          bloc!.marketId = value;
+                          bloc!.selectedDropdwonVal = value;
+                          bloc!.add(SearchBlocEvents.LOAD_SEARCH);
+                          linearProgressIndicator.setVisibility(true);
+                        },
                       ),
-                      items: list,
-                      onChanged: (value) {
-                        bloc!.marketId = value;
-                        bloc!.selectedDropdwonVal = value;
-                        bloc!.add(SearchBlocEvents.LOAD_SEARCH);
-                        linearProgressIndicator.setVisibility(true);
-                      },
                     ),
-                  ),
-                  ListView.separated(
-                    itemCount: searchResult!.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(
-                      height: 0,
-                    ),
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: (Colors.grey[400])!, width: 0.5))),
-                        child: InkWell(
-                          onTap: () async {
-                            var recentSearch = RecentSearch(
-                                ticker: searchResult![index].ticker,
-                                companyId: searchResult![index].companyId,
-                                countryCode: searchResult![index].countryCode,
-                                companyName: searchResult![index].companyName,
-                                timestamp: DateTime.now()
-                                    .millisecondsSinceEpoch
-                                    .toString());
-                            DatabaseHelper().addRecentSearch(recentSearch);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CompanyPage(
-                                      searchResult![index].companyId, 4,
-                                      companyName:
-                                          searchResult![index].companyName,
-                                      ticker: searchResult![index].ticker),
-                                ));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Image.asset(
-                                    'assets/images/flags/h20/${searchResult![index].countryCode}.png',
+                    ListView.separated(
+                      itemCount: searchResult!.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(
+                        height: 0,
+                      ),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: (Colors.grey[400])!, width: 0.5))),
+                          child: InkWell(
+                            onTap: () async {
+                              var recentSearch = RecentSearch(
+                                  ticker: searchResult![index].ticker,
+                                  companyId: searchResult![index].companyId,
+                                  countryCode: searchResult![index].countryCode,
+                                  companyName: searchResult![index].companyName,
+                                  timestamp: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString());
+                              DatabaseHelper().addRecentSearch(recentSearch);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompanyPage(
+                                        searchResult![index].companyId, 4,
+                                        companyName:
+                                            searchResult![index].companyName,
+                                        ticker: searchResult![index].ticker),
+                                  ));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5),
+                                    child: Image.asset(
+                                      'assets/images/flags/h20/${searchResult![index].countryCode}.png',
+                                    ),
                                   ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      searchResult![index].ticker,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 12),
-                                    ),
-                                    Text(
-                                      searchResult![index].companyName,
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                                const Spacer(),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      double.parse(
-                                              (searchResult![index].lastClose))
-                                          .toStringAsFixed(2),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 12),
-                                    ),
-                                    Text(
-                                      '${double.parse((searchResult![index].changeVal))}(${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: double.parse(
-                                                      (searchResult![index]
-                                                          .changeVal)) >
-                                                  0
-                                              ? Colors.green[900]
-                                              : Colors.red[900]),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        searchResult![index].ticker,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 12),
+                                      ),
+                                      Text(
+                                        searchResult![index].companyName,
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        double.parse((searchResult![index]
+                                                .lastClose))
+                                            .toStringAsFixed(2),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 12),
+                                      ),
+                                      Text(
+                                        '${double.parse((searchResult![index].changeVal))}(${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: double.parse(
+                                                        (searchResult![index]
+                                                            .changeVal)) >
+                                                    0
+                                                ? Colors.green[900]
+                                                : Colors.red[900]),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              );
+                        );
+                      },
+                    ),
+                  ],
+                ),
+        );
       }),
     );
   }

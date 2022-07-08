@@ -39,9 +39,13 @@ class _WebLoginPageState extends State<WebLoginPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  addListToSF(key, value) async {
+  addToSF(key, value, type) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
+    if (type == "string") {
+      prefs.setString(key, value);
+    } else {
+      prefs.setBool(key, value);
+    }
   }
 
   @override
@@ -297,8 +301,10 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                       uid = nameController.text;
                                       pwd = passwordController.text.toString();
                                       isVerifiedUser = true;
-                                      addListToSF(PrefKeys.uid, uid);
-                                      addListToSF(PrefKeys.pwd, pwd);
+                                      addToSF(PrefKeys.uid, uid, 'string');
+                                      addToSF(PrefKeys.pwd, pwd, 'string');
+                                      addToSF(PrefKeys.SUBSCRIBED_USER, true,
+                                          'bool');
                                     });
                                   } else {
                                     setState(() {

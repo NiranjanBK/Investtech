@@ -44,6 +44,7 @@ class _WebViewPageState extends State<WebViewPage> {
   void _logout() async {
     var prefs = await SharedPreferences.getInstance();
     prefs.remove(PrefKeys.pwd);
+    prefs.remove(PrefKeys.SUBSCRIBED_USER);
     widget.isLoggedOut = true;
   }
 
@@ -124,6 +125,7 @@ class _WebViewPageState extends State<WebViewPage> {
                             urlRequest: URLRequest(
                                 url: Uri.parse('${widget.url}?Logout=1')),
                           );
+
                           //widget.isLoggedOut = true;
                           break;
                       }

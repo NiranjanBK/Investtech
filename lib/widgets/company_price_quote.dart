@@ -34,7 +34,7 @@ class CompanyPriceQuote extends StatelessWidget {
                       : Colors.red[900],
                   fontSize: 12),
             ),
-            Text(', ${cmpData.priceDate.toString()} ',
+            Text(' ${cmpData.priceDate.toString()} ',
                 style: getSmallTextStyle()),
           ],
         ),

@@ -23,7 +23,7 @@ class RecentSearchList extends StatelessWidget {
               ),
               ListView.separated(
                 shrinkWrap: true,
-                physics: const ScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: snapshot.data!.length,
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(
@@ -45,7 +45,7 @@ class RecentSearchList extends StatelessWidget {
                     horizontalTitleGap: 1.0,
                     leading: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         Icon(Icons.update),
                       ],
                     ),

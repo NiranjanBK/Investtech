@@ -104,10 +104,10 @@ class _ReorderPageState extends State<ReorderPage> {
     Map<String, String> productMap = {
       '0': AppLocalizations.of(context)!.stock_exchange_barometer,
       '1': AppLocalizations.of(context)!.market_commentary,
-      '2': AppLocalizations.of(context)!.todays_signals,
+      '2': AppLocalizations.of(context)!.todays_signals.replaceAll('\\', ''),
       '3': AppLocalizations.of(context)!.indices_analysis,
       '4': AppLocalizations.of(context)!.indices_evaluation,
-      '5': AppLocalizations.of(context)!.todays_candidate,
+      '5': AppLocalizations.of(context)!.todays_candidate.replaceAll('\\', ''),
       '6': AppLocalizations.of(context)!.top20,
       '7': AppLocalizations.of(context)!.favourite,
       '8': AppLocalizations.of(context)!.web_tv,
@@ -118,11 +118,6 @@ class _ReorderPageState extends State<ReorderPage> {
         actions: [
           InkWell(
             onTap: () {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => HomeOverview()),
-              //   (Route<dynamic> route) => false,
-              // );
               String prodId = '';
 
               int i;

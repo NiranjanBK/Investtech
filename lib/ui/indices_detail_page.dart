@@ -4,27 +4,43 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/indices_analysis_bloc.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/widgets/company_header.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // ignore: must_be_immutable
-class IndicesDetailPage extends StatelessWidget {
+class IndicesDetailPage extends StatefulWidget {
   final String title;
+
+  const IndicesDetailPage(this.title, {Key? key}) : super(key: key);
+
+  @override
+  State<IndicesDetailPage> createState() => _IndicesDetailPageState();
+}
+
+class _IndicesDetailPageState extends State<IndicesDetailPage> {
   List<Company>? indicesAnalysis;
   String? analysesDate;
+  ThemeBloc? bloc;
 
-  IndicesDetailPage(this.title, {Key? key}) : super(key: key);
+  @override
+  void initState() {
+    // TODO: implement initState
+    bloc = context.read<ThemeBloc>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
       ),
       body: BlocProvider<IndicesAnalysesBloc>(
         create: (BuildContext ctx) => IndicesAnalysesBloc(
@@ -106,7 +122,9 @@ class IndicesDetailPage extends StatelessWidget {
                                     imageUrl: ApiRepo().getChartUrl(
                                         CHART_TYPE_ADVANCED,
                                         4,
-                                        CHART_STYLE_NORMAL,
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? CHART_STYLE_NORMAL
+                                            : CHART_STYLE_BLACK,
                                         indicesAnalysis![index].companyId),
                                     placeholder: (context, url) => Container(
                                         height: 275,

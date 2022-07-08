@@ -72,6 +72,7 @@ dependencies:
   intl_phone_number_input: ^0.7.0+2
   dio: ^4.0.6
   dio_http_cache: any
+  flutter_linkify: ^5.0.2
  
   
 flutter_native_splash:
