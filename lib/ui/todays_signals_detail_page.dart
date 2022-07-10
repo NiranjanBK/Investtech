@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/api_repo.dart';
@@ -124,9 +125,30 @@ class TodaysSignalDetailPage extends StatelessWidget {
                     ),
                   );
           } else if (state is TodaysSignalErrorState) {
-            return NoInternet();
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const NoInternet(),
+                ElevatedButton(
+                  onPressed: () {
+                    context
+                        .read<TodaysSignalBloc>()
+                        .add(TodaysSignalBlocEvents.LOAD_SIGNALS);
+                  },
+                  child: Text(AppLocalizations.of(context)!.refresh),
+                  style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all<Color>(
+                          const Color(ColorHex.ACCENT_COLOR)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white)),
+                ),
+              ],
+            );
           } else {
-            return NoInternet();
+            return const Align(
+                alignment: Alignment.topCenter,
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)));
           }
         }),
       ),

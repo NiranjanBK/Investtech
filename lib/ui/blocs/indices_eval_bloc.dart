@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,13 +40,17 @@ class IndicesEvalBloc
       IndicesEvalBlocEvents event) async* {
     switch (event) {
       case IndicesEvalBlocEvents.LOAD_INDICES:
-        Response response = await apiRepo.getIndicesEvalDetailPage();
-        if (response.statusCode == 200) {
-          yield IndicesEvalLoadedState(
-              Evaluation.fromJson(jsonDecode(jsonEncode(response.data))));
-        } else {
-          yield IndicesEvalErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getIndicesEvalDetailPage();
+          if (response.statusCode == 200) {
+            yield IndicesEvalLoadedState(
+                Evaluation.fromJson(jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield IndicesEvalErrorState(e.toString());
         }
+
         break;
     }
   }

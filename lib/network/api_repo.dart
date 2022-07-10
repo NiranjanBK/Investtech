@@ -68,7 +68,7 @@ class ApiRepo {
     Dio dio = Dio();
     dio.options.headers['content-Type'] = 'application/json; charset=UTF-8';
     dio.interceptors.add(dioCacheManager.interceptor);
-    dio.interceptors.add(CustomInterceptors());
+    //dio.interceptors.add(CustomInterceptors());
 
     dio.interceptors.add(LogInterceptor(
         responseBody: true,
@@ -155,13 +155,17 @@ class ApiRepo {
     Dio dio = getDio();
 
     await getListValuesSF();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=top20&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        'https://www.investtech.com/mobile/api.php?page=top20&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Response> getWebTVList() async {
@@ -185,13 +189,17 @@ class ApiRepo {
     Dio dio = getDio();
 
     await getListValuesSF();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=marketCommentary&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        'https://www.investtech.com/mobile/api.php?page=marketCommentary&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Response> getIndicesEvalDetailPage() async {
@@ -200,29 +208,37 @@ class ApiRepo {
     Dio dio = getDio();
 
     await getListValuesSF();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=indicesEvaluations&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        'https://www.investtech.com/mobile/api.php?page=indicesEvaluations&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
-  Future<Response> getIndicesAnalysesDetailPage() async {
+  Future<Response?> getIndicesAnalysesDetailPage() async {
     Options cacheOptions =
         buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
     Dio dio = getDio();
 
-    dio.interceptors.add(CustomInterceptors());
+    //dio.interceptors.add(CustomInterceptors());
     await getListValuesSF();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=indicesAnalyses&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        'https://www.investtech.com/mobile/api.php?page=indicesAnalyses&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Response> getTodaysSignalDetailPage() async {
@@ -231,13 +247,17 @@ class ApiRepo {
     Dio dio = getDio();
 
     await getListValuesSF();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<http.Response> getSearchTerm(term, marketId) async {
@@ -333,6 +353,67 @@ class CustomInterceptors extends Interceptor {
 
   @override
   onError(DioError err, ErrorInterceptorHandler handler) {
+    final errorMessage = DioExceptions.fromDioError(err).toString();
+    throw errorMessage;
     //return super.onError(err, handler);
   }
+}
+
+class DioExceptions implements Exception {
+  late String message;
+
+  DioExceptions.fromDioError(DioError dioError) {
+    switch (dioError.type) {
+      case DioErrorType.cancel:
+        message = "Request to API server was cancelled";
+        break;
+      case DioErrorType.connectTimeout:
+        message = "Connection timeout with API server";
+        break;
+      case DioErrorType.receiveTimeout:
+        message = "Receive timeout in connection with API server";
+        break;
+      case DioErrorType.response:
+        message = _handleError(
+          dioError.response?.statusCode,
+          dioError.response?.data,
+        );
+        break;
+      case DioErrorType.sendTimeout:
+        message = "Send timeout in connection with API server";
+        break;
+      case DioErrorType.other:
+        if (dioError.message.contains("SocketException")) {
+          message = 'No Internet';
+          break;
+        }
+        message = "Unexpected error occurred";
+        break;
+      default:
+        message = "Something went wrong";
+        break;
+    }
+  }
+
+  String _handleError(int? statusCode, dynamic error) {
+    switch (statusCode) {
+      case 400:
+        return 'Bad request';
+      case 401:
+        return 'Unauthorized';
+      case 403:
+        return 'Forbidden';
+      case 404:
+        return error['message'];
+      case 500:
+        return 'Internal server error';
+      case 502:
+        return 'Bad gateway';
+      default:
+        return 'Oops something went wrong';
+    }
+  }
+
+  @override
+  String toString() => message;
 }

@@ -6,15 +6,20 @@ import 'package:investtech_app/widgets/indices_list.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import '../network/models/evaluation.dart';
 
-class IndicesEvaluation extends StatelessWidget {
+class IndicesEvaluation extends StatefulWidget {
   final dynamic _evaluationData;
 
   IndicesEvaluation(this._evaluationData);
 
   @override
+  State<IndicesEvaluation> createState() => _IndicesEvaluationState();
+}
+
+class _IndicesEvaluationState extends State<IndicesEvaluation> {
+  @override
   Widget build(BuildContext context) {
-    Evaluation _indicesEvaluation =
-        Evaluation.fromJson(jsonDecode(jsonEncode(_evaluationData))['content']);
+    Evaluation _indicesEvaluation = Evaluation.fromJson(
+        jsonDecode(jsonEncode(widget._evaluationData))['content']);
 
     // _indicesEvaluation.evaluation.insert(0, _indicesEvaluation.title);
 
@@ -26,12 +31,12 @@ class IndicesEvaluation extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => IndicesEvalDetailPage(
-                        jsonDecode(jsonEncode(_evaluationData))['title'])),
+                    builder: (context) => IndicesEvalDetailPage(jsonDecode(
+                        jsonEncode(widget._evaluationData))['title'])),
               );
             },
             child: ProductHeader(
-                jsonDecode(jsonEncode(_evaluationData))['title'], 1),
+                jsonDecode(jsonEncode(widget._evaluationData))['title'], 1),
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),

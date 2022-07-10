@@ -39,13 +39,17 @@ class Top20Bloc extends Bloc<Top20BlocEvents, Top20BlocState> {
   Stream<Top20BlocState> mapEventToState(Top20BlocEvents event) async* {
     switch (event) {
       case Top20BlocEvents.LOAD_TOP20:
-        Response response = await apiRepo.getTop20DetailPage();
-        if (response.statusCode == 200) {
-          yield Top20LoadedState(
-              Top20Detail.fromJson(jsonDecode(jsonEncode(response.data))));
-        } else {
-          yield Top20ErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getTop20DetailPage();
+          if (response.statusCode == 200) {
+            yield Top20LoadedState(
+                Top20Detail.fromJson(jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield Top20ErrorState(e.toString());
         }
+
         break;
     }
   }

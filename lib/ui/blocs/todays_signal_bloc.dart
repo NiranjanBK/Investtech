@@ -42,13 +42,16 @@ class TodaysSignalBloc
       TodaysSignalBlocEvents event) async* {
     switch (event) {
       case TodaysSignalBlocEvents.LOAD_SIGNALS:
-        Response response = await apiRepo.getTodaysSignalDetailPage();
-        if (response.statusCode == 200) {
-          yield TodaysSignalLoadedState(TodaysSignalDetail.fromJson(
-              jsonDecode(jsonEncode(response.data))));
-        } else {
-          yield TodaysSignalErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getTodaysSignalDetailPage();
+          if (response.statusCode == 200) {
+            yield TodaysSignalLoadedState(TodaysSignalDetail.fromJson(
+                jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          yield TodaysSignalErrorState(e.toString());
         }
+
         break;
     }
   }

@@ -25,6 +25,7 @@ import 'package:investtech_app/widgets/company_body.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:investtech_app/widgets/company_header.dart';
 import 'package:investtech_app/widgets/company_price_quote.dart';
+import 'package:investtech_app/widgets/no_internet.dart';
 
 import '../widgets/progress_indicator.dart';
 
@@ -671,15 +672,20 @@ class _CompanyPageState extends State<CompanyPage> {
               cmpData = state.cmpData;
               subscribedUser = state.scuscribedUser;
               print('object : $subscribedUser');
+
+              return cmpData == null
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                      color: Color(ColorHex.ACCENT_COLOR),
+                    ))
+                  : orientation == Orientation.landscape
+                      ? LandscapeMode(cmpData, subscribedUser)
+                      : PortraitMode(cmpData, subscribedUser);
+            } else if (state is CompanyErrorState) {
+              return NoInternet();
+            } else {
+              return NoInternet();
             }
-            return cmpData == null
-                ? const Center(
-                    child: CircularProgressIndicator(
-                    color: Color(ColorHex.ACCENT_COLOR),
-                  ))
-                : orientation == Orientation.landscape
-                    ? LandscapeMode(cmpData, subscribedUser)
-                    : PortraitMode(cmpData, subscribedUser);
           },
         ),
       );

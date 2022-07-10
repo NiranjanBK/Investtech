@@ -43,13 +43,17 @@ class MarketCommentaryBloc
     switch (event) {
       case MarketCommentaryBlocEvents.LOAD_MC:
         // TODO: Handle this case.
-        Response response = await apiRepo.getMCDetailPage();
-        if (response.statusCode == 200) {
-          yield MarketCommentaryLoadedState(MarketCommentaryDetail.fromJson(
-              jsonDecode(jsonEncode(response.data))));
-        } else {
-          yield MarketCommentaryErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getMCDetailPage();
+          if (response.statusCode == 200) {
+            yield MarketCommentaryLoadedState(MarketCommentaryDetail.fromJson(
+                jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield MarketCommentaryErrorState(e.toString());
         }
+
         break;
     }
   }
