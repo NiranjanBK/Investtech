@@ -41,7 +41,7 @@ class Top20ListPage extends StatelessWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const NoInternet(),
+                  NoInternet(state.error),
                   ElevatedButton(
                     onPressed: () {
                       context.read<Top20Bloc>().add(Top20BlocEvents.LOAD_TOP20);

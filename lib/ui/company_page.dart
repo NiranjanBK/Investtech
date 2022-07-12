@@ -682,9 +682,11 @@ class _CompanyPageState extends State<CompanyPage> {
                       ? LandscapeMode(cmpData, subscribedUser)
                       : PortraitMode(cmpData, subscribedUser);
             } else if (state is CompanyErrorState) {
-              return NoInternet();
+              return NoInternet(state.error);
             } else {
-              return NoInternet();
+              return const CircularProgressIndicator(
+                color: Color(ColorHex.ACCENT_COLOR),
+              );
             }
           },
         ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -67,8 +68,9 @@ class ApiRepo {
 
     Dio dio = Dio();
     dio.options.headers['content-Type'] = 'application/json; charset=UTF-8';
+    // dio.options.connectTimeout = 2000;
     dio.interceptors.add(dioCacheManager.interceptor);
-    //dio.interceptors.add(CustomInterceptors());
+    dio.interceptors.add(CustomInterceptors());
 
     dio.interceptors.add(LogInterceptor(
         responseBody: true,
@@ -174,13 +176,17 @@ class ApiRepo {
     Dio dio = getDio();
 
     await getListValuesSF();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=webTV&market=$marketCode&lang=${languageCodeMap![lang]}&countryID=91',
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        'https://www.investtech.com/mobile/api.php?page=webTV&market=$marketCode&lang=${languageCodeMap![lang]}&countryID=91',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Response> getMCDetailPage() async {
@@ -255,7 +261,13 @@ class ApiRepo {
         //body: json.encode(body.toJson()),
         options: cacheOptions,
       );
+      // throw DioError(
+      //     type: DioErrorType.other,
+      //     requestOptions: RequestOptions(
+      //         path:
+      //             'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'));
     } catch (e) {
+      //print(e);
       rethrow;
     }
   }
@@ -279,14 +291,18 @@ class ApiRepo {
     Dio dio = getDio();
 
     chartId = chartId.toString();
-    return dio.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=in_nse&countryID=91&lang=${languageCodeMap![lang]}',
+        'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=in_nse&countryID=91&lang=${languageCodeMap![lang]}',
 
-      //body: json.encode(body.toJson()),
-      options: cacheOptions,
-    );
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 
@@ -354,6 +370,7 @@ class CustomInterceptors extends Interceptor {
   @override
   onError(DioError err, ErrorInterceptorHandler handler) {
     final errorMessage = DioExceptions.fromDioError(err).toString();
+    // //print(errorMessage);
     throw errorMessage;
     //return super.onError(err, handler);
   }

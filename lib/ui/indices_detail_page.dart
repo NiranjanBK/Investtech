@@ -151,7 +151,7 @@ class _IndicesDetailPageState extends State<IndicesDetailPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const NoInternet(),
+                NoInternet(state.error),
                 ElevatedButton(
                   onPressed: () {
                     context

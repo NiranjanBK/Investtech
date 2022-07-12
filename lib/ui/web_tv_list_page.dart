@@ -64,7 +64,7 @@ class _WebTVListState extends State<WebTVList> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const NoInternet(),
+                  NoInternet(snapshot.error.runtimeType.toString()),
                   ElevatedButton(
                     onPressed: () {
                       setState(() {

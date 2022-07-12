@@ -49,7 +49,8 @@ class TodaysSignalBloc
                 jsonDecode(jsonEncode(response.data))));
           }
         } on DioError catch (e) {
-          yield TodaysSignalErrorState(e.toString());
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield TodaysSignalErrorState(errorMessage);
         }
 
         break;

@@ -48,14 +48,17 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
     bool user = prefs.getBool(PrefKeys.SUBSCRIBED_USER) ?? false;
     switch (event) {
       case CompanyBlocEvents.LOAD_COMPANY:
-        Response response = await apiRepo.getCompanyData(chartId, companyId);
-        if (response.statusCode == 200) {
-          yield CompanyLoadedState(
-              Company.fromJson(
-                  jsonDecode(jsonEncode(response.data))['company']),
-              user);
-        } else {
-          yield CompanyErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getCompanyData(chartId, companyId);
+          if (response.statusCode == 200) {
+            yield CompanyLoadedState(
+                Company.fromJson(
+                    jsonDecode(jsonEncode(response.data))['company']),
+                user);
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield CompanyErrorState(errorMessage);
         }
         break;
     }

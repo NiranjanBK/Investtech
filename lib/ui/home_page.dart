@@ -185,7 +185,7 @@ class HomeOverviewState extends State<HomeOverview> {
       child: Container(
           padding: const EdgeInsets.only(top: 5),
           child: isOffline
-              ? const NoInternet()
+              ? NoInternet('rtrr')
               : FutureBuilder<Home>(
                   future: fetchData(),
                   builder: (context, snapshot) {
