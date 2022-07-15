@@ -8,42 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1039841495298:android:4f87df8b400075cb929a1b",
-        "android_client_info": {
-          "package_name": "com.example.investtech_app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1039841495298-7akrbh1fnphfup6fkfir39es59bftn67.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDZ2budyHwbHM9R02GXrqX7pcSEFiyJd_Q"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1039841495298-7akrbh1fnphfup6fkfir39es59bftn67.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "1039841495298-4vsmteitj5b7ggchvsrvq1kkpjcteag7.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.investtechApp"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:1039841495298:android:235b4602b0f6aaf5",
         "android_client_info": {
           "package_name": "com.investtech.investtechapp"

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/discalimer/disclaimer_page.dart';
+import 'package:investtech_app/ui/home/home_page.dart';
 import 'package:investtech_app/ui/newsletter/news_letter_page.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
 import 'package:investtech_app/ui/web/web_view_privacy_page.dart';
@@ -257,6 +258,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         BlocProvider.of<ThemeBloc>(context)
                                           ..add(ThemeBlocEvents.localeChanged)
                                           ..locale = selectedLocale;
+                                        eventBus.fire(ReloadEvent());
                                         Navigator.pop(context, 'Cancel');
                                       },
                                     ),

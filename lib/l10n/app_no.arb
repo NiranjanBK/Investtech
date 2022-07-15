@@ -97,7 +97,7 @@
     "ago_template": "%1$s siden",
     "got_it": "OK",
     "web": "Web",
-    "last_updated_home_header_template": "Sist oppdatert: %1$s",
+    "last_updated_home_header_template": "Sist oppdatert: ",
     "webview_footer_info": "Kun for abonnenter på våre analysetjenester på web.",
     "subscribed": "Kjøpt",
     "restoring_purchases": "Gjenoppretter kjøp…",

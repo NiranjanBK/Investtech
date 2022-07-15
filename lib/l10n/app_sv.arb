@@ -96,7 +96,7 @@
     "ago": "sedan",
     "ago_template": "%1$s sedan",
     "web": "Web",
-    "last_updated_home_header_template": "Sist oppdatert: %1$s",
+    "last_updated_home_header_template": "Sist oppdatert: ",
     "webview_footer_info": "Exklusivt för våra webb-abonnenter.",
     "subscribed": "Tecknad",
     "restoring_purchases": "Återställ köp…",
