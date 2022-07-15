@@ -22,8 +22,8 @@ import 'package:investtech_app/ui/blocs/company_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
-import 'package:investtech_app/widgets/company_body.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:investtech_app/widgets/company_body.dart';
 import 'package:investtech_app/widgets/company_header.dart';
 import 'package:investtech_app/widgets/company_price_quote.dart';
 import 'package:investtech_app/widgets/no_internet.dart';
@@ -51,7 +51,8 @@ class CompanyPage extends StatefulWidget {
   State<CompanyPage> createState() => _CompanyPageState();
 }
 
-class _CompanyPageState extends State<CompanyPage> {
+class _CompanyPageState extends State<CompanyPage>
+    with AutomaticKeepAliveClientMixin {
   TextEditingController notesController = TextEditingController();
   //late Future future;
   Company? cmpData;
@@ -132,7 +133,7 @@ class _CompanyPageState extends State<CompanyPage> {
               print('object : $subscribedUser');
               print(
                   'objects : ${jsonDecode(state.favData.toString())['isFavourite']}');
-
+              print('debug: ${cmpData!.commentText}');
               return cmpData == null
                   ? const Center(
                       child: CircularProgressIndicator(
@@ -165,12 +166,28 @@ class _CompanyPageState extends State<CompanyPage> {
                                           itemBuilder: (context, position) {
                                             widget.currentChartTerm =
                                                 chartMap[tabs.indexOf(tab)];
-                                            context.read<CompanyBloc>().add(
-                                                CompanyBlocEvents.LOAD_COMPANY);
+
+                                            if (tabs.indexOf(tab) == 0) {
+                                              context.read<CompanyBloc>().add(
+                                                  CompanyBlocEvents
+                                                      .LOAD_SHORT_TERM);
+                                            } else if (tabs.indexOf(tab) == 1) {
+                                              context.read<CompanyBloc>().add(
+                                                  CompanyBlocEvents
+                                                      .LOAD_MEDIUM_TERM);
+                                            } else {
+                                              context.read<CompanyBloc>().add(
+                                                  CompanyBlocEvents
+                                                      .LOAD_LONG_TERM);
+                                            }
+                                            print(
+                                                'debug: ${cmpData!.commentText}');
                                             return CompanyBody(
+                                                cmpData!,
                                                 widget.cmpId,
                                                 widget.currentChartTerm,
-                                                'paid');
+                                                'paid',
+                                                subscribedUser);
                                           },
                                           itemCount: 1,
                                         );
@@ -238,9 +255,26 @@ class _CompanyPageState extends State<CompanyPage> {
                                 children: tabs.map((Tab tab) {
                                   return PageView.builder(
                                     itemBuilder: (context, position) {
-                                      var chartId = chartMap[tabs.indexOf(tab)];
+                                      widget.currentChartTerm =
+                                          chartMap[tabs.indexOf(tab)];
+
+                                      if (widget.currentChartTerm == 5) {
+                                        context.read<CompanyBloc>().add(
+                                            CompanyBlocEvents.LOAD_SHORT_TERM);
+                                      } else if (widget.currentChartTerm == 4) {
+                                        context.read<CompanyBloc>().add(
+                                            CompanyBlocEvents.LOAD_MEDIUM_TERM);
+                                      } else {
+                                        context.read<CompanyBloc>().add(
+                                            CompanyBlocEvents.LOAD_LONG_TERM);
+                                      }
+
                                       return CompanyBody(
-                                          widget.cmpId, chartId!, 'paid');
+                                          cmpData!,
+                                          widget.cmpId,
+                                          widget.currentChartTerm,
+                                          'paid',
+                                          subscribedUser);
                                     },
                                     itemCount: 1,
                                   );
@@ -833,4 +867,8 @@ class _CompanyPageState extends State<CompanyPage> {
             actions: appBarAction,
           );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

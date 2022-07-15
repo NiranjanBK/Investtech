@@ -6,13 +6,21 @@ import 'package:http/http.dart' as http;
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum CompanyBlocEvents { LOAD_COMPANY, FAVOURITE_LOADED, REFRESH }
+enum CompanyBlocEvents {
+  LOAD_COMPANY,
+  FAVOURITE_LOADED,
+  REFRESH,
+  LOAD_SHORT_TERM,
+  LOAD_LONG_TERM,
+  LOAD_MEDIUM_TERM
+}
 
 abstract class CompanyBlocState extends Equatable {
   @override
@@ -53,13 +61,14 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
   String companyId;
   int? chartId = 4;
   Company? cmpData;
+  bool user = false;
 
   CompanyBloc(this.apiRepo, this.companyId) : super(InitialState());
 
   @override
   Stream<CompanyBlocState> mapEventToState(CompanyBlocEvents event) async* {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool user = prefs.getBool(PrefKeys.UNLOCK_ALL) ?? false;
+    user = prefs.getBool(PrefKeys.UNLOCK_ALL) ?? false;
 
     switch (event) {
       case CompanyBlocEvents.LOAD_COMPANY:
@@ -90,6 +99,85 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
         break;
 
       case CompanyBlocEvents.REFRESH:
+        break;
+
+      case CompanyBlocEvents.LOAD_SHORT_TERM:
+        yield FavouriteRefreshState();
+        try {
+          String favData =
+              await DatabaseHelper().checkNoteAndFavorite(companyId);
+          Response response =
+              await apiRepo.getCompanyData(CHART_TERM_SHORT, companyId);
+          if (response.statusCode == 200) {
+            cmpData = Company.fromJson(
+                jsonDecode(jsonEncode(response.data))['company']);
+            yield CompanyLoadedState(
+                Company.fromJson(
+                    jsonDecode(jsonEncode(response.data))['company']),
+                user,
+                favData);
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          print(errorMessage);
+          yield CompanyErrorState(errorMessage);
+        } on FormatException {
+          yield CompanyErrorState('Format exception');
+        } catch (e) {
+          yield CompanyErrorState(e.toString());
+        }
+        break;
+
+      case CompanyBlocEvents.LOAD_LONG_TERM:
+        try {
+          String favData =
+              await DatabaseHelper().checkNoteAndFavorite(companyId);
+          Response response =
+              await apiRepo.getCompanyData(CHART_TERM_LONG, companyId);
+          if (response.statusCode == 200) {
+            cmpData = Company.fromJson(
+                jsonDecode(jsonEncode(response.data))['company']);
+            yield CompanyLoadedState(
+                Company.fromJson(
+                    jsonDecode(jsonEncode(response.data))['company']),
+                user,
+                favData);
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          print(errorMessage);
+          yield CompanyErrorState(errorMessage);
+        } on FormatException {
+          yield CompanyErrorState('Format exception');
+        } catch (e) {
+          yield CompanyErrorState(e.toString());
+        }
+        break;
+
+      case CompanyBlocEvents.LOAD_MEDIUM_TERM:
+        try {
+          String favData =
+              await DatabaseHelper().checkNoteAndFavorite(companyId);
+          Response response =
+              await apiRepo.getCompanyData(CHART_TERM_MEDIUM, companyId);
+          if (response.statusCode == 200) {
+            cmpData = Company.fromJson(
+                jsonDecode(jsonEncode(response.data))['company']);
+            yield CompanyLoadedState(
+                Company.fromJson(
+                    jsonDecode(jsonEncode(response.data))['company']),
+                user,
+                favData);
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          print(errorMessage);
+          yield CompanyErrorState(errorMessage);
+        } on FormatException {
+          yield CompanyErrorState('Format exception');
+        } catch (e) {
+          yield CompanyErrorState(e.toString());
+        }
         break;
     }
   }

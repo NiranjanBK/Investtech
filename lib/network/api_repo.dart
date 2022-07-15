@@ -304,7 +304,7 @@ class ApiRepo {
       return dio.get(
         //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-        'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=in_nse&countryID=91&lang=${languageCodeMap![lang]}',
+        'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
 
         //body: json.encode(body.toJson()),
         options: cacheOptions,

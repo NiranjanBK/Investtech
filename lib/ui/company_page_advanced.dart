@@ -403,7 +403,7 @@ class _CompanyPageAdvanceState extends State<CompanyPageAdvance> {
                     return PageView.builder(
                       itemBuilder: (context, position) {
                         chartId = chartMap[tabs.indexOf(tab)];
-                        return CompanyBody(widget.companyId, chartId!, 'paid');
+                        return const Text('Not In Use!');
                       },
                       itemCount: 1,
                     );
