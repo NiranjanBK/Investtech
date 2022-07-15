@@ -14,6 +14,7 @@ import 'package:hidable/hidable.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/internet/connection_status.dart';
+import 'package:investtech_app/ui/blocs/home_bloc/home_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/home_page.dart';
@@ -219,9 +220,9 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     widgetOptions = [
-      HomeOverview(
+      BlocProvider(create: (ctx) => HomeBloc(), child: HomeOverview(
         key: homeKey,
-      ),
+      ),),
       WebLoginPage(ApiRepo(), false, false),
       Subscription(),
     ];
