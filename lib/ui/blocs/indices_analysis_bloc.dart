@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 
-enum IndicesAnalysesBlocEvents { LOAD_INDICES }
+enum IndicesAnalysesBlocEvents { LOAD_INDICES, LOADING }
 
 abstract class IndicesAnalysesBlocState extends Equatable {
   @override
@@ -23,6 +23,11 @@ class IndicesAnalysesLoadedState extends IndicesAnalysesBlocState {
   String analysesDate;
 
   IndicesAnalysesLoadedState(this.IndicesAnalyses, this.analysesDate);
+}
+
+class IndicesLoadingState extends IndicesAnalysesBlocState {
+  final bool isLoading;
+  IndicesLoadingState(this.isLoading);
 }
 
 class IndicesAnalysesErrorState extends IndicesAnalysesBlocState {
@@ -41,17 +46,29 @@ class IndicesAnalysesBloc
       IndicesAnalysesBlocEvents event) async* {
     switch (event) {
       case IndicesAnalysesBlocEvents.LOAD_INDICES:
-        http.Response response = await apiRepo.getIndicesAnalysesDetailPage();
-        if (response.statusCode == 200) {
-          var _indicesAnalyses = jsonDecode(response.body)['analyses'] as List;
-          List<Company> indicesAnalysis = _indicesAnalyses
-              .map((indice) => Company.fromJson(indice))
-              .toList();
-          yield IndicesAnalysesLoadedState(
-              indicesAnalysis, jsonDecode(response.body)['analysesDate']);
-        } else {
-          yield IndicesAnalysesErrorState(response.statusCode.toString());
+        yield IndicesLoadingState(true);
+        try {
+          Response? response = await apiRepo.getIndicesAnalysesDetailPage();
+          if (response!.statusCode == 200) {
+            var _indicesAnalyses =
+                jsonDecode(jsonEncode(response.data))['analyses'] as List;
+            List<Company> indicesAnalysis = _indicesAnalyses
+                .map((indice) => Company.fromJson(indice))
+                .toList();
+            yield IndicesAnalysesLoadedState(indicesAnalysis,
+                jsonDecode(jsonEncode(response.data))['analysesDate']);
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield IndicesAnalysesErrorState(errorMessage);
+        } on FormatException {
+          yield IndicesAnalysesErrorState('Format exception');
+        } catch (e) {
+          yield IndicesAnalysesErrorState(e.toString());
         }
+        break;
+
+      case IndicesAnalysesBlocEvents.LOADING:
         break;
     }
   }

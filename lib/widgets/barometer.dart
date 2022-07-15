@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/network/models/barometer.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -36,16 +37,16 @@ class BarometerGraphState extends State<BarometerGraph> {
         int.parse(_barometer.stockBarometer.watch) / totalStocks * 100;
 
     final List<ChartData> chartData = [
-      ChartData(
-          _barometer.stockBarometer.legendBuy, buyPct, (Colors.green[400])!),
+      ChartData(_barometer.stockBarometer.legendBuy, buyPct,
+          (const Color(ColorHex.green))),
       ChartData(_barometer.stockBarometer.legendWatch, watchPct,
-          (Colors.yellow[400])!),
-      ChartData(
-          _barometer.stockBarometer.legendSell, sellPct, (Colors.red[400])!),
+          (const Color(ColorHex.yellow))),
+      ChartData(_barometer.stockBarometer.legendSell, sellPct,
+          (const Color(ColorHex.red))),
     ];
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(top: 0),
         child: Column(
           children: [
             ProductHeader('', 0),
@@ -56,6 +57,9 @@ class BarometerGraphState extends State<BarometerGraph> {
               _barometer.stockBarometer.market,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             SizedBox(
               height: 200,
               child: SfCircularChart(
@@ -65,7 +69,7 @@ class BarometerGraphState extends State<BarometerGraph> {
                       onPointTap: (ChartPointDetails details) {},
                       explode: true,
                       innerRadius: '20.0',
-                      radius: '70',
+                      radius: '100',
                       dataLabelMapper: (ChartData data, _) =>
                           '${data.y.toStringAsFixed(1)} %\n${data.x}',
                       dataLabelSettings:
@@ -79,6 +83,9 @@ class BarometerGraphState extends State<BarometerGraph> {
                 centerY: '50%',
                 margin: const EdgeInsets.all(5),
               ),
+            ),
+            const SizedBox(
+              height: 10,
             ),
           ],
         ),

@@ -1,21 +1,41 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/const/theme.dart';
+import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/indices_detail_page.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import '../network/models/company.dart';
 import '../widgets/company_header.dart';
 
-class Indices extends StatelessWidget {
+class Indices extends StatefulWidget {
   final dynamic _companyData, _product;
 
   Indices(this._companyData, this._product);
 
   @override
+  State<Indices> createState() => _IndicesState();
+}
+
+class _IndicesState extends State<Indices> {
+  ThemeBloc? bloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    bloc = context.read<ThemeBloc>();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var _companyJson =
-        jsonDecode(jsonEncode(_companyData))['content']['analyses'];
+        jsonDecode(jsonEncode(widget._companyData))['content']['analyses'];
 
     Company companyObj = Company.fromJson(_companyJson);
 
@@ -29,11 +49,11 @@ class Indices extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => IndicesDetailPage(
-                        jsonDecode(jsonEncode(_companyData))['title'])),
+                        jsonDecode(jsonEncode(widget._companyData))['title'])),
               );
             },
-            child:
-                ProductHeader(jsonDecode(jsonEncode(_companyData))['title'], 1),
+            child: ProductHeader(
+                jsonDecode(jsonEncode(widget._companyData))['title'], 1),
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -53,8 +73,28 @@ class Indices extends StatelessWidget {
                   access: 'free',
                   subscribedUser: true,
                 ),
-                Image.network(
-                    'https://www.investtech.com/main/img.php?CompanyID=91294651&chartId=4&indicators=80,81,82,83,84,85,87,88&w=451&h=198'),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: CachedNetworkImage(
+                    imageUrl: ApiRepo().getChartUrl(
+                        CHART_TYPE_ADVANCED,
+                        4,
+                        bloc!.loadTheme == AppTheme.lightTheme
+                            ? CHART_STYLE_NORMAL
+                            : CHART_STYLE_BLACK,
+                        companyObj.companyId),
+                    placeholder: (context, url) => Container(
+                        height: 275,
+                        width: double.infinity,
+                        child: const Center(
+                            child: CircularProgressIndicator(
+                                color: Color(
+                          ColorHex.ACCENT_COLOR,
+                        )))),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                ),
                 Text(
                   companyObj.commentary.toString(),
                   style: getDescriptionTextStyle(),

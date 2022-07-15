@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +8,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
+import 'package:investtech_app/const/colors.dart';
+import 'package:investtech_app/const/theme.dart';
 
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
@@ -20,25 +24,42 @@ import 'package:shared_preferences/shared_preferences.dart';
 class WebLoginPage extends StatefulWidget {
   ApiRepo apiRepo;
   bool isLoggedOut;
-  WebLoginPage(this.apiRepo, this.isLoggedOut, {Key? key}) : super(key: key);
+  bool isEmptyAppBarActions;
+  WebLoginPage(this.apiRepo, this.isLoggedOut, this.isEmptyAppBarActions,
+      {Key? key})
+      : super(key: key);
 
   @override
   _WebLoginPageState createState() => _WebLoginPageState();
 }
 
 class _WebLoginPageState extends State<WebLoginPage> {
-  bool _passwordVisible = false;
+  bool _passwordVisible = true;
   bool isVerifiedUser = false;
   bool isLoading = false;
   late String? uid;
   late String? pwd;
+  late String countryId;
+  ThemeBloc? bloc;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  addListToSF(key, value) async {
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    bloc = context.read<ThemeBloc>();
+    super.initState();
+  }
+
+  addToSF(key, value, type) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
+    if (type == "string") {
+      prefs.setString(key, value);
+    } else {
+      prefs.setBool(key, value);
+    }
   }
 
   @override
@@ -55,9 +76,9 @@ class _WebLoginPageState extends State<WebLoginPage> {
       width: 230,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       backgroundColor: const Color(0xFF9E9E9E),
-      content: const Text(
-        'Username/Password not valid',
-        style: TextStyle(color: Colors.white),
+      content: Text(
+        AppLocalizations.of(context)!.web_login_invalid,
+        style: const TextStyle(color: Colors.white),
       ),
       //duration: Duration(seconds: 3),
     );
@@ -70,8 +91,11 @@ class _WebLoginPageState extends State<WebLoginPage> {
           future: SharedPreferences.getInstance(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              uid = snapshot.data?.getString(PrefKeys.uid) ?? '';
-              pwd = snapshot.data?.getString(PrefKeys.pwd) ?? '';
+              uid = snapshot.data!.getString(PrefKeys.uid) ?? '';
+              pwd = snapshot.data!.getString(PrefKeys.pwd) ?? '';
+              countryId =
+                  snapshot.data!.getString(PrefKeys.SELECTED_COUNTRY_ID) ??
+                      '100';
               if (widget.isLoggedOut) {
                 nameController.text = uid ?? '';
               }
@@ -82,81 +106,93 @@ class _WebLoginPageState extends State<WebLoginPage> {
 
             return isVerifiedUser == false
                 ? Scaffold(
-                    appBar: AppBar(
-                      iconTheme: IconThemeData(color: Colors.grey[800]),
-                      backgroundColor: Colors.white,
-                      bottom: PreferredSize(
-                          preferredSize: const Size(double.infinity, 1),
-                          child: SizedBox(
-                            height: 1,
-                            child: isLoading == true
-                                ? LinearProgressIndicator(
-                                    backgroundColor: Colors.white,
-                                    color: Colors.orange[800],
-                                  )
-                                : Container(),
-                          )),
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return BlocProvider(
-                                  create: (BuildContext context) =>
-                                      SearchBloc(ApiRepo()),
-                                  child: SearchItemPage(context),
-                                );
+                    appBar: widget.isEmptyAppBarActions
+                        ? AppBar(
+                            leading: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
                               },
-                            ));
-                          },
-                          icon: Icon(
-                            Icons.search,
-                            color: Colors.orange[800],
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            SystemChrome.setEnabledSystemUIOverlays(
-                                [SystemUiOverlay.bottom]);
-                            if (MediaQuery.of(context).orientation ==
-                                Orientation.portrait) {
-                              SystemChrome.setPreferredOrientations(
-                                  [DeviceOrientation.landscapeLeft]);
-                            } else {
-                              SystemChrome.setPreferredOrientations(
-                                  [DeviceOrientation.portraitUp]);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.fullscreen,
-                            color: Colors.orange[800],
-                          ),
-                        ),
-                        PopupMenuButton(
-                          onSelected: (value) {
-                            switch (value) {
-                              case 'Settings':
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SettingsPage(),
-                                    ));
-                                break;
-                            }
-                          },
-                          itemBuilder: (ctx) => [
-                            const PopupMenuItem(
-                              height: 30,
-                              value: 'Settings',
-                              child: Text(
-                                'Settings',
-                                style: TextStyle(fontSize: 12),
-                              ),
+                              icon: const Icon(Icons.close),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                            title: Text(AppLocalizations.of(context)!.login),
+                          )
+                        : AppBar(
+                            bottom: PreferredSize(
+                                preferredSize: const Size(double.infinity, 1),
+                                child: SizedBox(
+                                  height: 1,
+                                  child: isLoading == true
+                                      ? LinearProgressIndicator(
+                                          backgroundColor: Colors.white,
+                                          color: Colors.orange[800],
+                                        )
+                                      : Container(),
+                                )),
+                            actions: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(
+                                    builder: (context) {
+                                      return BlocProvider(
+                                        create: (BuildContext context) =>
+                                            SearchBloc(ApiRepo()),
+                                        child: SearchItemPage(context),
+                                      );
+                                    },
+                                  ));
+                                },
+                                icon: Icon(
+                                  Icons.search,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  SystemChrome.setEnabledSystemUIOverlays(
+                                      [SystemUiOverlay.bottom]);
+                                  if (MediaQuery.of(context).orientation ==
+                                      Orientation.portrait) {
+                                    SystemChrome.setPreferredOrientations(
+                                        [DeviceOrientation.landscapeLeft]);
+                                  } else {
+                                    SystemChrome.setPreferredOrientations(
+                                        [DeviceOrientation.portraitUp]);
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.fullscreen,
+                                  color: Colors.orange[800],
+                                ),
+                              ),
+                              PopupMenuButton(
+                                color: Theme.of(context)
+                                    .appBarTheme
+                                    .backgroundColor,
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 'Settings':
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                SettingsPage(),
+                                          ));
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (ctx) => [
+                                  const PopupMenuItem(
+                                    height: 30,
+                                    value: 'Settings',
+                                    child: Text(
+                                      'Settings',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                     body: SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
@@ -181,25 +217,37 @@ class _WebLoginPageState extends State<WebLoginPage> {
                               height: 50,
                               child: TextField(
                                 controller: nameController,
-                                cursorColor: Colors.black,
-                                style: const TextStyle(
-                                    color: Colors.black, fontSize: 12),
+                                cursorColor:
+                                    DefaultTextStyle.of(context).style.color,
+                                //style: const TextStyle(),
                                 decoration: InputDecoration(
-                                  floatingLabelStyle:
-                                      const TextStyle(color: Colors.black),
+                                  floatingLabelStyle: const TextStyle(
+                                      color: Color(ColorHex.warmGrey)),
                                   prefixIcon: Icon(
                                     Icons.people,
-                                    color: Colors.grey.shade900,
+                                    color:
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? Colors.grey.shade900
+                                            : const Color(ColorHex.warmGrey),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.grey.shade900,
+                                        color: bloc!.loadTheme ==
+                                                AppTheme.lightTheme
+                                            ? Colors.grey.shade900
+                                            : const Color(ColorHex.warmGrey),
                                         width: 1.5),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
-                                  border: const OutlineInputBorder(),
+                                  enabledBorder: const OutlineInputBorder(
+                                    // width: 0.0 produces a thin "hairline" border
+                                    borderSide: BorderSide(
+                                        color: Colors.grey, width: 0.0),
+                                  ),
                                   labelText:
                                       AppLocalizations.of(context)!.username,
+                                  labelStyle:
+                                      DefaultTextStyle.of(context).style,
                                 ),
                               ),
                             ),
@@ -214,15 +262,19 @@ class _WebLoginPageState extends State<WebLoginPage> {
                               child: TextField(
                                 controller: passwordController,
                                 obscureText: _passwordVisible,
-                                cursorColor: Colors.black,
+                                cursorColor:
+                                    DefaultTextStyle.of(context).style.color,
                                 style: const TextStyle(
                                     color: Colors.black, fontSize: 12),
                                 decoration: InputDecoration(
                                   floatingLabelStyle:
-                                      const TextStyle(color: Colors.black),
+                                      DefaultTextStyle.of(context).style,
                                   prefixIcon: Icon(
                                     Icons.vpn_key,
-                                    color: Colors.grey.shade900,
+                                    color:
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? Colors.grey.shade900
+                                            : const Color(ColorHex.warmGrey),
                                   ),
                                   suffixIcon: IconButton(
                                     icon: Icon(
@@ -230,7 +282,10 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                       _passwordVisible
                                           ? Icons.visibility
                                           : Icons.visibility_off,
-                                      color: Colors.grey.shade900,
+                                      color:
+                                          bloc!.loadTheme == AppTheme.lightTheme
+                                              ? Colors.grey.shade900
+                                              : const Color(ColorHex.warmGrey),
                                     ),
                                     onPressed: () {
                                       // Update the state i.e. toogle the state of passwordVisible variable
@@ -241,13 +296,22 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                        color: Colors.grey.shade900,
+                                        color: bloc!.loadTheme ==
+                                                AppTheme.lightTheme
+                                            ? Colors.grey.shade900
+                                            : const Color(ColorHex.warmGrey),
                                         width: 1.5),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
-                                  border: const OutlineInputBorder(),
+                                  enabledBorder: const OutlineInputBorder(
+                                    // width: 0.0 produces a thin "hairline" border
+                                    borderSide: BorderSide(
+                                        color: Colors.grey, width: 0.0),
+                                  ),
                                   labelText:
                                       AppLocalizations.of(context)!.password,
+                                  labelStyle:
+                                      DefaultTextStyle.of(context).style,
                                 ),
                               ),
                             ),
@@ -270,21 +334,30 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                 setState(() {
                                   isLoading = true;
                                 });
-                                http.Response response = await widget.apiRepo
-                                    .login(
-                                        nameController.text,
-                                        md5
-                                            .convert(utf8.encode(
-                                                passwordController.text))
-                                            .toString());
+                                Response response = await widget.apiRepo.login(
+                                    nameController.text,
+                                    md5
+                                        .convert(utf8
+                                            .encode(passwordController.text))
+                                        .toString());
                                 if (response.statusCode == 200) {
-                                  if (jsonDecode(response.body) == 1) {
+                                  if (jsonDecode(jsonEncode(response.data)) ==
+                                      1) {
                                     setState(() {
                                       uid = nameController.text;
                                       pwd = passwordController.text.toString();
-                                      isVerifiedUser = true;
-                                      addListToSF(PrefKeys.uid, uid);
-                                      addListToSF(PrefKeys.pwd, pwd);
+
+                                      print('uid: ${nameController.text}');
+                                      addToSF(PrefKeys.uid, uid, 'string');
+                                      addToSF(PrefKeys.pwd, pwd, 'string');
+                                      addToSF(
+                                          PrefKeys.UNLOCK_ALL, true, 'bool');
+
+                                      if (widget.isEmptyAppBarActions) {
+                                        Navigator.pop(context, true);
+                                      } else {
+                                        isVerifiedUser = true;
+                                      }
                                     });
                                   } else {
                                     setState(() {
@@ -322,7 +395,7 @@ class _WebLoginPageState extends State<WebLoginPage> {
                   )
                 : WebViewPage(
                     '',
-                    'https://www.investtech.com/main/market.php?CountryID=1',
+                    'https://www.investtech.com/main/market.php?CountryID=$countryId',
                     uid!,
                     pwd!);
           }),

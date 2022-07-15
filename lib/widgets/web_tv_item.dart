@@ -1,10 +1,10 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/network/models/web_tv.dart';
 import 'package:investtech_app/ui/web_tv_youTube_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 
 class WebTVItem extends StatelessWidget {
   final Video videoContent;
@@ -12,10 +12,6 @@ class WebTVItem extends StatelessWidget {
     Key? key,
     required this.videoContent,
   }) : super(key: key);
-
-  void _launchUrl(url) async {
-    if (!await launchUrl(url)) throw 'Could not launch $url';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +60,7 @@ class WebTVItem extends StatelessWidget {
                   decoration: const BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.all(Radius.circular(8))),
-                  child: Icon(
+                  child: const Icon(
                     Icons.play_arrow,
                     color: Colors.white,
                   ),
@@ -80,28 +76,20 @@ class WebTVItem extends StatelessWidget {
             ),
           ),
           descirption.length > 1
-              ? RichText(
-                  text: TextSpan(
-                      text: descirption[0],
-                      style: DefaultTextStyle.of(context).style,
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: descirption[1],
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                var url = descirption[1];
-                                if (!descirption[1]
-                                    .toString()
-                                    .contains('https')) {
-                                  url = 'https://${descirption[1]}';
-                                }
-                                _launchUrl(Uri.parse(url));
-                              },
-                            style: const TextStyle(
-                              color: Color(ColorHex.teal),
-                              decoration: TextDecoration.underline,
-                            ))
-                      ]),
+              ? Linkify(
+                  onOpen: (link) async {
+                    if (await canLaunchUrl(Uri.parse(link.url))) {
+                      await launchUrl(Uri.parse(link.url));
+                    } else {
+                      throw 'Could not launch $link';
+                    }
+                  },
+                  text: videoContent.description,
+                  style: DefaultTextStyle.of(context).style,
+                  linkStyle: const TextStyle(
+                    color: Color(ColorHex.teal),
+                    decoration: TextDecoration.underline,
+                  ),
                 )
               : Text(
                   videoContent.description,

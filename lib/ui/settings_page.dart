@@ -90,11 +90,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState((){
+    setState(() {
       version = packageInfo.version;
       print('debug $version');
     });
-
   }
 
   @override
@@ -105,7 +104,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
+        //backgroundColor: Theme.of(context).backgroundColor,
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.settings),
         ),

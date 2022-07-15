@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/network/models/top20.dart';
-import 'package:investtech_app/ui/company_page_advanced.dart';
-import 'package:investtech_app/widgets/product_Item_Header.dart';
+import 'package:investtech_app/ui/company_page.dart';
 
 class Top20List extends StatelessWidget {
   final List<Top20> top20Obj;
@@ -20,8 +20,11 @@ class Top20List extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CompanyPageAdvance(
-                      top20Obj[index].companyId, top20Obj[index]),
+                  builder: (context) => CompanyPage(
+                    top20Obj[index].companyId,
+                    4,
+                    isTop20: true,
+                  ),
                 ));
           },
           child: Row(
@@ -30,7 +33,7 @@ class Top20List extends StatelessWidget {
             children: [
               Text(
                 '${index + 1}.',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -39,23 +42,22 @@ class Top20List extends StatelessWidget {
                 children: [
                   Text(
                     top20Obj[index].ticker,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     top20Obj[index].companyName,
-                    style: TextStyle(),
                   ),
                 ],
               ),
-              new Spacer(),
+              const Spacer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     double.parse((top20Obj[index].price)).toStringAsFixed(2),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -64,8 +66,8 @@ class Top20List extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 12,
                         color: double.parse((top20Obj[index].changeVal)) > 0
-                            ? Colors.green[900]
-                            : Colors.red[900]),
+                            ? const Color(ColorHex.green)
+                            : const Color(ColorHex.red)),
                   ),
                 ],
               ),

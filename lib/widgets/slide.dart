@@ -3,7 +3,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/ui/disclaimer_page.dart';
-import 'package:investtech_app/ui/home_page.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,7 +38,7 @@ class Slide extends StatelessWidget {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Disclaimer(true),
+                        builder: (context) => const Disclaimer(true),
                       ));
                 },
                 child: Text(

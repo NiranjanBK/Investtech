@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -9,8 +12,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hidable/hidable.dart';
 import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
+import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/home_page.dart';
 import 'package:investtech_app/ui/intro_page.dart';
 import 'package:investtech_app/ui/subscription_page.dart';
@@ -18,31 +23,81 @@ import 'package:investtech_app/ui/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
-import 'package:event_bus/event_bus.dart';
+import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 
 var analysisDate;
 var globalMarketId;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Get any initial links
+  final PendingDynamicLinkData? initialLink =
+      await FirebaseDynamicLinks.instance.getInitialLink();
 
   ConnectionStatusSingleton connectionStatus =
       ConnectionStatusSingleton.getInstance();
   connectionStatus.initialize();
 
-  print(WidgetsBinding.instance.window.locale.countryCode);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
   bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
   globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
+
+  if (prefs.getString(PrefKeys.SELECTED_MARKET) != null) {
+    String? countryCode;
+    List validCountryCodes = [
+      'no',
+      'nl',
+      'be',
+      'dk',
+      'se',
+      'fi',
+      'fr',
+      'de',
+      'uk',
+      'us',
+      'cur',
+      'ndx',
+      'in',
+      'cn',
+      'CDT',
+      'ch',
+      'pt',
+      'ENXT',
+      'ABN',
+      'enxt',
+      'abn',
+      'ca'
+    ];
+    try {
+      countryCode = await FlutterSimCountryCode.simCountryCode;
+
+      print('inside try block');
+    } on PlatformException {
+      countryCode =
+          WidgetsBinding.instance.window.locale.countryCode.toString();
+    } catch (e) {
+      print('exception caught');
+      countryCode =
+          WidgetsBinding.instance.window.locale.countryCode.toString();
+    }
+    countryCode =
+        validCountryCodes.contains(countryCode.toString().toLowerCase())
+            ? countryCode.toString().toLowerCase()
+            : 'us';
+    print(countryCode);
+    await DatabaseHelper().setUserMarketPref(countryCode.toLowerCase());
+  }
 
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
@@ -63,16 +118,19 @@ void main() async {
       );
     }
   }
-  runApp(MyApp(prefTheme, locale, introSlides));
+
+  runApp(MyApp(prefTheme, locale, introSlides, initialLink));
 }
 
 class MyApp extends StatelessWidget {
   final String? prefTheme;
   final String locale;
   final bool introSlides;
+  final PendingDynamicLinkData? initialLink;
   ThemeData? themeData;
   Locale? newLocale;
-  MyApp(this.prefTheme, this.locale, this.introSlides, {Key? key})
+  MyApp(this.prefTheme, this.locale, this.introSlides, this.initialLink,
+      {Key? key})
       : super(key: key);
 
   static const String _title = 'Flutter Code Sample';
@@ -116,7 +174,7 @@ class MyApp extends StatelessWidget {
               Locale('da', ''), // Norweign, no country code
               Locale('de', ''), // Norweign, no country code
             ],
-            home: MainPage(introSlides),
+            home: MainPage(introSlides, initialLink),
           );
         },
       ),
@@ -126,7 +184,9 @@ class MyApp extends StatelessWidget {
 
 class MainPage extends StatefulWidget {
   final bool introSlides;
-  const MainPage(this.introSlides, {Key? key}) : super(key: key);
+  final PendingDynamicLinkData? initialLink;
+  const MainPage(this.introSlides, this.initialLink, {Key? key})
+      : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -162,11 +222,42 @@ class _MainPageState extends State<MainPage> {
       HomeOverview(
         key: homeKey,
       ),
-      WebLoginPage(ApiRepo(), false),
+      WebLoginPage(ApiRepo(), false, false),
       Subscription(),
     ];
     if (widget.introSlides) {
       setLTA();
+    }
+    FlutterNativeSplash.remove();
+    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CompanyPage(
+              jsonDecode(jsonEncode(dynamicLinkData.link.queryParameters))[
+                  'CompanyID'],
+              4,
+            ),
+          ));
+    }).onError((error) {
+      // Handle errors
+    });
+
+    if (widget.initialLink != null) {
+      final Uri deepLink = widget.initialLink!.link;
+      // Example of using the dynamic link to push the user to a different screen
+      //Navigator.pushNamed(context, deepLink.path);
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CompanyPage(
+                jsonDecode(jsonEncode(deepLink.queryParameters))['CompanyID'],
+                4,
+              ),
+            ));
+      });
     }
     super.initState();
   }

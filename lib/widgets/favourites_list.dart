@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/company_page.dart';
 
@@ -35,7 +36,7 @@ class FavoritesList extends StatelessWidget {
             children: [
               Text(
                 '${index + 1}.',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -44,24 +45,24 @@ class FavoritesList extends StatelessWidget {
                 children: [
                   Text(
                     favCmpObj[index].ticker,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     favCmpObj[index].Name.toString(),
-                    style: TextStyle(),
+                    style: const TextStyle(),
                   ),
                 ],
               ),
-              new Spacer(),
+              const Spacer(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     double.parse((favCmpObj[index].closePrice.toString()))
                         .toStringAsFixed(2),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -72,8 +73,8 @@ class FavoritesList extends StatelessWidget {
                         color: double.parse(
                                     (favCmpObj[index].changeVal.toString())) >
                                 0
-                            ? Colors.green[900]
-                            : Colors.red[900]),
+                            ? const Color(ColorHex.green)
+                            : const Color(ColorHex.red)),
                   ),
                 ],
               ),

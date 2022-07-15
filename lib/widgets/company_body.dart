@@ -6,10 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/company_bloc.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/widgets/company_header.dart';
+import 'package:investtech_app/widgets/progress_indicator.dart';
 
 class CompanyBody extends StatelessWidget {
   Company? cmpData;
@@ -25,6 +28,7 @@ class CompanyBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeBloc themeBloc = context.read<ThemeBloc>();
     return BlocProvider<CompanyBloc>(
       create: (BuildContext ctx) {
         var bloc = CompanyBloc(
@@ -42,7 +46,7 @@ class CompanyBody extends StatelessWidget {
           subscribedUser = state.scuscribedUser;
         }
         return cmpData == null
-            ? const Center(child: CircularProgressIndicator())
+            ? buildProgressIndicator()
             : SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,23 +70,33 @@ class CompanyBody extends StatelessWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    CachedNetworkImage(
-                      imageUrl: ApiRepo().getChartUrl(
-                          subscribedUser
-                              ? CHART_TYPE_ADVANCED
-                              : CHART_TYPE_FREE,
-                          4,
-                          CHART_STYLE_NORMAL,
-                          companyId),
-                      placeholder: (context, url) => Container(
-                          height: 275,
-                          width: double.infinity,
-                          child: const Center(
-                              child: CircularProgressIndicator(
-                                  color: Color(
-                            ColorHex.ACCENT_COLOR,
-                          )))),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: CachedNetworkImage(
+                        imageUrl: ApiRepo().getChartUrl(
+                            subscribedUser
+                                ? CHART_TYPE_ADVANCED
+                                : CHART_TYPE_FREE,
+                            chartId,
+                            themeBloc.loadTheme == AppTheme.lightTheme
+                                ? CHART_STYLE_NORMAL
+                                : CHART_STYLE_BLACK,
+                            companyId),
+                        placeholder: (context, url) => Container(
+                            height: 275,
+                            width: double.infinity,
+                            child: const Center(
+                                child: CircularProgressIndicator(
+                                    color: Color(
+                              ColorHex.ACCENT_COLOR,
+                            )))),
+                        errorWidget: (context, url, error) => SizedBox(
+                            height: 275,
+                            width: double.infinity,
+                            child: Center(
+                                child: Image.asset(
+                                    'assets/images/no_thumbnail.png'))),
+                      ),
                     ),
                     subscribedUser
                         ? Text(
@@ -121,12 +135,15 @@ class CompanyBody extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 30,
                     ),
-                    Text(
-                      AppLocalizations.of(context)!.short_disclaimer,
-                      style: getSmallestTextStyle(),
-                      textAlign: TextAlign.center,
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text(
+                        AppLocalizations.of(context)!.short_disclaimer,
+                        style: getSmallestTextStyle(),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ],
                 ),

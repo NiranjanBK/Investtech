@@ -23,38 +23,34 @@ class RecentSearchList extends StatelessWidget {
               ),
               ListView.separated(
                 shrinkWrap: true,
-                physics: const ScrollPhysics(),
-                padding: EdgeInsets.zero,
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: snapshot.data!.length,
                 separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
+                    const Divider(
+                  height: 0,
+                ),
                 itemBuilder: (context, index) {
-                  return SizedBox(
-                    height: 35,
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CompanyPage(
-                                snapshot.data![index].companyId,
-                                4,
-                              ),
-                            ));
-                      },
-                      dense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5.0, horizontal: 10.0),
-                      horizontalTitleGap: 1.0,
-                      leading: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.update),
-                        ],
-                      ),
-                      title: Text(snapshot.data![index].ticker),
-                      subtitle: Text(snapshot.data![index].companyName),
+                  return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CompanyPage(
+                              snapshot.data![index].companyId,
+                              4,
+                            ),
+                          ));
+                    },
+                    dense: true,
+                    horizontalTitleGap: 1.0,
+                    leading: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.update),
+                      ],
                     ),
+                    title: Text(snapshot.data![index].ticker),
+                    subtitle: Text(snapshot.data![index].companyName),
                   );
                 },
               ),

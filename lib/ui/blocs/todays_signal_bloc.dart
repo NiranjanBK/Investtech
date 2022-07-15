@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -41,13 +42,21 @@ class TodaysSignalBloc
       TodaysSignalBlocEvents event) async* {
     switch (event) {
       case TodaysSignalBlocEvents.LOAD_SIGNALS:
-        http.Response response = await apiRepo.getTodaysSignalDetailPage();
-        if (response.statusCode == 200) {
-          yield TodaysSignalLoadedState(
-              TodaysSignalDetail.fromJson(jsonDecode(response.body)));
-        } else {
-          yield TodaysSignalErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getTodaysSignalDetailPage();
+          if (response.statusCode == 200) {
+            yield TodaysSignalLoadedState(TodaysSignalDetail.fromJson(
+                jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield TodaysSignalErrorState(errorMessage);
+        } on FormatException {
+          yield TodaysSignalErrorState('Format exception');
+        } catch (e) {
+          yield TodaysSignalErrorState(e.toString());
         }
+
         break;
     }
   }

@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/network/models/country.dart';
 import 'package:investtech_app/network/models/favorites.dart';
 import 'package:investtech_app/network/models/market.dart';
 import 'package:investtech_app/network/models/recent_search.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
@@ -257,5 +259,27 @@ class DatabaseHelper {
         countryName: res[index][countryName],
       );
     });
+  }
+
+  setUserMarketPref(countryCode) async {
+    final database = await db;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<Map<String, dynamic>> res = await database!.rawQuery(
+      "SELECT  C.DEFAULT_MARKET_CODE FROM  COUNTRY C WHERE  C.COUNTRY_CODE = '$countryCode'",
+    );
+
+    final defaultMarket = res[0]['DEFAULT_MARKET_CODE'];
+
+    final List<Map<String, dynamic>> userMarket = await database.rawQuery(
+      "SELECT M.MARKET_CODE, M.MARKET_ID, M.MARKET_NAME, C.COUNTRY_CODE, C.COUNTRY_ID, C.DEFAULT_MARKET_CODE FROM MARKET M, COUNTRY C WHERE M.COUNTRY_ID = C.COUNTRY_ID and C.COUNTRY_CODE = '$countryCode' and M.MARKET_CODE = '$defaultMarket'",
+    );
+
+    prefs.setString(PrefKeys.SELECTED_MARKET, userMarket[0]['MARKET_NAME']);
+    prefs.setString(
+        PrefKeys.SELECTED_MARKET_CODE, userMarket[0]['MARKET_CODE']);
+    prefs.setString(
+        PrefKeys.SELECTED_MARKET_ID, userMarket[0]['MARKET_ID'].toString());
+    prefs.setString(
+        PrefKeys.SELECTED_COUNTRY_ID, userMarket[0]['COUNTRY_ID'].toString());
   }
 }

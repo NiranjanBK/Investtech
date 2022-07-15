@@ -36,8 +36,8 @@ class ChartView extends StatelessWidget {
             ' (${double.parse(changePct)}%), ',
             style: TextStyle(
                 color: double.parse(changePct) > 0.0
-                    ? Colors.green[900]
-                    : Colors.red[900],
+                    ? const Color(ColorHex.green)
+                    : const Color(ColorHex.red),
                 fontSize: 12),
           ),
           Text(priceDate.toString(), style: getSmallTextStyle()),

@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/top20_detail.dart';
-import '../../network/models/top20.dart';
 
 enum Top20BlocEvents { LOAD_TOP20 }
 
@@ -40,13 +39,21 @@ class Top20Bloc extends Bloc<Top20BlocEvents, Top20BlocState> {
   Stream<Top20BlocState> mapEventToState(Top20BlocEvents event) async* {
     switch (event) {
       case Top20BlocEvents.LOAD_TOP20:
-        http.Response response = await apiRepo.getTop20DetailPage();
-        if (response.statusCode == 200) {
-          yield Top20LoadedState(
-              Top20Detail.fromJson(jsonDecode(response.body)));
-        } else {
-          yield Top20ErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getTop20DetailPage();
+          if (response.statusCode == 200) {
+            yield Top20LoadedState(
+                Top20Detail.fromJson(jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield Top20ErrorState(errorMessage);
+        } on FormatException {
+          yield Top20ErrorState('Format exception');
+        } catch (e) {
+          yield Top20ErrorState(e.toString());
         }
+
         break;
     }
   }

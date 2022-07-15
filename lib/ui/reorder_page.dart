@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ReorderPage extends StatefulWidget {
   final List<Teaser> products;
   late String reorderString;
+  final String marketCode;
   List<Teaser> excludedProducts = [];
   List<Teaser> includedProducts = [];
   List<String> reoderList = [];
@@ -21,7 +22,8 @@ class ReorderPage extends StatefulWidget {
 
   ReorderPage(
     this.products,
-    this.reorderString, {
+    this.reorderString,
+    this.marketCode, {
     Key? key,
   }) : super(key: key);
 
@@ -58,7 +60,13 @@ class _ReorderPageState extends State<ReorderPage> {
 
     if (widget.reorderString == '') {
       widget.products.map((product) {
-        widget.includedProdList.add(product.id);
+        if (product.id == "8" &&
+            ["ose", "se_sse", "dk_kfx", "dk_inv"].contains(widget.marketCode)) {
+          widget.includedProdList.add(product.id);
+        }
+        if (product.id != "8") {
+          widget.includedProdList.add(product.id);
+        }
       }).toList();
     } else {
       widget.reoderList = widget.reorderString.split(',');
@@ -69,14 +77,19 @@ class _ReorderPageState extends State<ReorderPage> {
 
     widget.productMap.forEach((element) {
       if (widget.includedProdList.contains(element) == false) {
-        widget.excludedProdList.add(element);
+        if (element == "8" &&
+            ["ose", "se_sse", "dk_kfx", "dk_inv"].contains(widget.marketCode)) {
+          widget.excludedProdList.add(element);
+        }
+        if (element != "8") {
+          widget.excludedProdList.add(element);
+        }
       }
     });
   }
 
   addListToSF(key, value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     prefs.setString(key, value);
   }
 
@@ -91,10 +104,10 @@ class _ReorderPageState extends State<ReorderPage> {
     Map<String, String> productMap = {
       '0': AppLocalizations.of(context)!.stock_exchange_barometer,
       '1': AppLocalizations.of(context)!.market_commentary,
-      '2': AppLocalizations.of(context)!.todays_signals,
+      '2': AppLocalizations.of(context)!.todays_signals.replaceAll('\\', ''),
       '3': AppLocalizations.of(context)!.indices_analysis,
       '4': AppLocalizations.of(context)!.indices_evaluation,
-      '5': AppLocalizations.of(context)!.todays_candidate,
+      '5': AppLocalizations.of(context)!.todays_candidate.replaceAll('\\', ''),
       '6': AppLocalizations.of(context)!.top20,
       '7': AppLocalizations.of(context)!.favourite,
       '8': AppLocalizations.of(context)!.web_tv,
@@ -105,11 +118,6 @@ class _ReorderPageState extends State<ReorderPage> {
         actions: [
           InkWell(
             onTap: () {
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => HomeOverview()),
-              //   (Route<dynamic> route) => false,
-              // );
               String prodId = '';
 
               int i;

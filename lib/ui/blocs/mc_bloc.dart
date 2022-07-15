@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/mc_detail.dart';
@@ -43,13 +43,21 @@ class MarketCommentaryBloc
     switch (event) {
       case MarketCommentaryBlocEvents.LOAD_MC:
         // TODO: Handle this case.
-        http.Response response = await apiRepo.getMCDetailPage();
-        if (response.statusCode == 200) {
-          yield MarketCommentaryLoadedState(
-              MarketCommentaryDetail.fromJson(jsonDecode(response.body)));
-        } else {
-          yield MarketCommentaryErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getMCDetailPage();
+          if (response.statusCode == 200) {
+            yield MarketCommentaryLoadedState(MarketCommentaryDetail.fromJson(
+                jsonDecode(jsonEncode(response.data))));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield MarketCommentaryErrorState(errorMessage);
+        } on FormatException {
+          yield MarketCommentaryErrorState('Format exception');
+        } catch (e) {
+          yield MarketCommentaryErrorState(e.toString());
         }
+
         break;
     }
   }
