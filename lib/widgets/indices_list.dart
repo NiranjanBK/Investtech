@@ -35,7 +35,7 @@ class IndicesList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemCount: itemCount,
       itemBuilder: (ctx, index) {

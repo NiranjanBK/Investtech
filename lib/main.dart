@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -26,8 +27,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 
 var analysisDate;
 var globalMarketId;
@@ -53,12 +53,50 @@ void main() async {
   bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
   globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
 
-  if (prefs.getString(PrefKeys.SELECTED_MARKET) == null) {
-    String countryCode = WidgetsBinding.instance.window.locale.countryCode
-        .toString()
-        .toLowerCase();
+  if (prefs.getString(PrefKeys.SELECTED_MARKET) != null) {
+    String? countryCode;
+    List validCountryCodes = [
+      'no',
+      'nl',
+      'be',
+      'dk',
+      'se',
+      'fi',
+      'fr',
+      'de',
+      'uk',
+      'us',
+      'cur',
+      'ndx',
+      'in',
+      'cn',
+      'CDT',
+      'ch',
+      'pt',
+      'ENXT',
+      'ABN',
+      'enxt',
+      'abn',
+      'ca'
+    ];
+    try {
+      countryCode = await FlutterSimCountryCode.simCountryCode;
+
+      print('inside try block');
+    } on PlatformException {
+      countryCode =
+          WidgetsBinding.instance.window.locale.countryCode.toString();
+    } catch (e) {
+      print('exception caught');
+      countryCode =
+          WidgetsBinding.instance.window.locale.countryCode.toString();
+    }
+    countryCode =
+        validCountryCodes.contains(countryCode.toString().toLowerCase())
+            ? countryCode.toString().toLowerCase()
+            : 'us';
     print(countryCode);
-    await DatabaseHelper().setUserMarketPref(countryCode);
+    await DatabaseHelper().setUserMarketPref(countryCode.toLowerCase());
   }
 
   if (Platform.isAndroid) {

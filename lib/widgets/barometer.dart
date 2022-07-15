@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/network/models/barometer.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -36,16 +37,16 @@ class BarometerGraphState extends State<BarometerGraph> {
         int.parse(_barometer.stockBarometer.watch) / totalStocks * 100;
 
     final List<ChartData> chartData = [
-      ChartData(
-          _barometer.stockBarometer.legendBuy, buyPct, (Colors.green[400])!),
+      ChartData(_barometer.stockBarometer.legendBuy, buyPct,
+          (const Color(ColorHex.green))),
       ChartData(_barometer.stockBarometer.legendWatch, watchPct,
-          (Colors.yellow[400])!),
-      ChartData(
-          _barometer.stockBarometer.legendSell, sellPct, (Colors.red[400])!),
+          (const Color(ColorHex.yellow))),
+      ChartData(_barometer.stockBarometer.legendSell, sellPct,
+          (const Color(ColorHex.red))),
     ];
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(top: 0),
         child: Column(
           children: [
             ProductHeader('', 0),

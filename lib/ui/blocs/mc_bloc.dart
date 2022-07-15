@@ -52,6 +52,10 @@ class MarketCommentaryBloc
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
           yield MarketCommentaryErrorState(errorMessage);
+        } on FormatException {
+          yield MarketCommentaryErrorState('Format exception');
+        } catch (e) {
+          yield MarketCommentaryErrorState(e.toString());
         }
 
         break;

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/network/models/web_tv.dart';
@@ -13,10 +12,6 @@ class WebTVItem extends StatelessWidget {
     Key? key,
     required this.videoContent,
   }) : super(key: key);
-
-  void _launchUrl(url) async {
-    if (!await launchUrl(url)) throw 'Could not launch $url';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +60,7 @@ class WebTVItem extends StatelessWidget {
                   decoration: const BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.all(Radius.circular(8))),
-                  child: Icon(
+                  child: const Icon(
                     Icons.play_arrow,
                     color: Colors.white,
                   ),

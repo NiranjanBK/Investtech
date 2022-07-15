@@ -9,7 +9,6 @@ import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 
-import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/favourites_detail_page.dart';
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/widgets/favourites_list.dart';

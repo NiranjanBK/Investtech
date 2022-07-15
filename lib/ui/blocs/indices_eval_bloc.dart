@@ -49,6 +49,10 @@ class IndicesEvalBloc
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
           yield IndicesEvalErrorState(errorMessage);
+        } on FormatException {
+          yield IndicesEvalErrorState('Format exception');
+        } catch (e) {
+          yield IndicesEvalErrorState(e.toString());
         }
 
         break;

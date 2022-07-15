@@ -6,9 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/company_bloc.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/widgets/company_header.dart';
 import 'package:investtech_app/widgets/progress_indicator.dart';
 
@@ -26,6 +28,7 @@ class CompanyBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeBloc themeBloc = context.read<ThemeBloc>();
     return BlocProvider<CompanyBloc>(
       create: (BuildContext ctx) {
         var bloc = CompanyBloc(
@@ -75,7 +78,9 @@ class CompanyBody extends StatelessWidget {
                                 ? CHART_TYPE_ADVANCED
                                 : CHART_TYPE_FREE,
                             chartId,
-                            CHART_STYLE_NORMAL,
+                            themeBloc.loadTheme == AppTheme.lightTheme
+                                ? CHART_STYLE_NORMAL
+                                : CHART_STYLE_BLACK,
                             companyId),
                         placeholder: (context, url) => Container(
                             height: 275,
@@ -85,7 +90,12 @@ class CompanyBody extends StatelessWidget {
                                     color: Color(
                               ColorHex.ACCENT_COLOR,
                             )))),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        errorWidget: (context, url, error) => SizedBox(
+                            height: 275,
+                            width: double.infinity,
+                            child: Center(
+                                child: Image.asset(
+                                    'assets/images/no_thumbnail.png'))),
                       ),
                     ),
                     subscribedUser

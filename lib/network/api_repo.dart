@@ -8,9 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/chart_const.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
-import 'package:investtech_app/ui/news_letter_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity/connectivity.dart';
 
 class ApiRepo {
   static final homeRepo = ApiRepo._();
@@ -63,6 +61,24 @@ class ApiRepo {
     }
   }
 
+  Future<Response> getCountryDetails() async {
+    // Options cacheOptions =
+    //     buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+    dio.options.connectTimeout = 5000;
+    try {
+      return dio.get(
+        //Uri.parse(AppStrings.apiUrl() + "user/login/"),
+
+        'http://ip-api.com/json',
+        //body: json.encode(body.toJson()),
+        // options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   getDio() {
     DioCacheManager dioCacheManager = DioCacheManager(CacheConfig());
 
@@ -108,17 +124,15 @@ class ApiRepo {
     );
   }
 
-  Future<http.Response> login(uid, pwd) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    return client.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/mobile/api.php?page=checkLoginAndPassword&uid=$uid&pwd=$pwd'),
-      //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+  Future<Response> login(uid, pwd) async {
+    Dio dio = getDio();
+    try {
+      return dio.get(
+        'https://www.investtech.com/mobile/api.php?page=checkLoginAndPassword&uid=$uid&pwd=$pwd',
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<http.Response> newsLetterSubscription(uid, mode, marketCode) async {
@@ -261,11 +275,6 @@ class ApiRepo {
         //body: json.encode(body.toJson()),
         options: cacheOptions,
       );
-      // throw DioError(
-      //     type: DioErrorType.other,
-      //     requestOptions: RequestOptions(
-      //         path:
-      //             'https://www.investtech.com/mobile/api.php?page=todaysSignals&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}'));
     } catch (e) {
       //print(e);
       rethrow;
@@ -400,7 +409,8 @@ class DioExceptions implements Exception {
         message = "Send timeout in connection with API server";
         break;
       case DioErrorType.other:
-        if (dioError.message.contains("SocketException")) {
+        if (dioError.message.contains("SocketException") ||
+            dioError.message.contains("No Internet")) {
           message = 'No Internet';
           break;
         }

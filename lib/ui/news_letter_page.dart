@@ -3,9 +3,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/const/theme.dart';
 import 'package:investtech_app/network/api_repo.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/market_selection_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NewsLetter extends StatefulWidget {
   String newsLetterMode;
@@ -20,6 +23,15 @@ class _NewsLetterState extends State<NewsLetter> {
   String? marketCode;
   bool texterror = false;
   TextEditingController emailController = TextEditingController();
+  ThemeBloc? bloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    bloc = context.read<ThemeBloc>();
+    super.initState();
+  }
 
   getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -58,6 +70,7 @@ class _NewsLetterState extends State<NewsLetter> {
                   padding: const EdgeInsets.only(top: 15, bottom: 25),
                   child: Image.asset(
                     'assets/images/news_letter.PNG',
+                    color: DefaultTextStyle.of(context).style.color,
                     width: 50,
                     height: 50,
                   ),
@@ -110,21 +123,31 @@ class _NewsLetterState extends State<NewsLetter> {
                         height: 50,
                         child: TextField(
                           controller: emailController,
-                          cursorColor: Colors.black,
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 12),
+                          cursorColor: DefaultTextStyle.of(context).style.color,
+                          style: TextStyle(
+                              color: DefaultTextStyle.of(context).style.color,
+                              fontSize: 12),
                           decoration: InputDecoration(
                             errorText: texterror
                                 ? AppLocalizations.of(context)!.invalid_email
                                 : null,
-                            floatingLabelStyle:
-                                const TextStyle(color: Colors.black),
+                            floatingLabelStyle: TextStyle(
+                              color: DefaultTextStyle.of(context).style.color,
+                            ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Colors.grey.shade900, width: 1.5),
+                                  color: bloc!.loadTheme == AppTheme.lightTheme
+                                      ? Colors.grey.shade900
+                                      : const Color(ColorHex.warmGrey),
+                                  width: 1.5),
                               borderRadius: BorderRadius.circular(5.0),
                             ),
-                            border: const OutlineInputBorder(),
+                            enabledBorder: const OutlineInputBorder(
+                              // width: 0.0 produces a thin "hairline" border
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 0.0),
+                            ),
+                            labelStyle: DefaultTextStyle.of(context).style,
                             labelText: AppLocalizations.of(context)!.email,
                           ),
                         ),

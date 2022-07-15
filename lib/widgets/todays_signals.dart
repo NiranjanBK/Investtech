@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/ui/company_page.dart';
 import 'package:investtech_app/ui/todays_signals_detail_page.dart';
-import 'package:investtech_app/widgets/indices.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 
 class TodaysSignals extends StatefulWidget {

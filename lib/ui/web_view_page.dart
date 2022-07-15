@@ -44,7 +44,7 @@ class _WebViewPageState extends State<WebViewPage> {
   void _logout() async {
     var prefs = await SharedPreferences.getInstance();
     prefs.remove(PrefKeys.pwd);
-    prefs.remove(PrefKeys.SUBSCRIBED_USER);
+    prefs.remove(PrefKeys.UNLOCK_ALL);
     widget.isLoggedOut = true;
   }
 
@@ -54,7 +54,6 @@ class _WebViewPageState extends State<WebViewPage> {
         ? WebLoginPage(ApiRepo(), true, false)
         : Scaffold(
             appBar: AppBar(
-              //iconTheme: IconThemeData(color: Colors.grey[800]),
               bottom: PreferredSize(
                   preferredSize: const Size(double.infinity, 1),
                   child: SizedBox(
@@ -66,7 +65,6 @@ class _WebViewPageState extends State<WebViewPage> {
                           )
                         : Container(),
                   )),
-              backgroundColor: Colors.white,
               actions: [
                 IconButton(
                   onPressed: () {
@@ -98,6 +96,7 @@ class _WebViewPageState extends State<WebViewPage> {
                   ),
                 ),
                 PopupMenuButton(
+                    color: Theme.of(context).appBarTheme.backgroundColor,
                     iconSize: 16,
                     onSelected: (value) {
                       switch (value) {
@@ -174,6 +173,8 @@ class _WebViewPageState extends State<WebViewPage> {
                       }),
                   onWebViewCreated: (controller) {
                     _webViewController = controller;
+                    print(
+                        "LOGIN=${widget.uid}&PASSWORD=${widget.pwd}&LOGIN_REQUEST=1&CHECK_LOGIN_MESSAGE=1&Submit=Login");
                   },
                   onLoadStop: (controller, url) async {
                     widget.canGoBack = await controller.canGoBack();

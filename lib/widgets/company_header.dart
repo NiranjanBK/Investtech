@@ -36,11 +36,11 @@ class CompanyHeader extends StatelessWidget {
 
   getBoarderColor(int evalCode) {
     if (evalCode > 0) {
-      return Colors.green[900];
+      return const Color(ColorHex.green);
     } else if (evalCode == 0) {
-      return Colors.yellow[400];
+      return const Color(ColorHex.yellow);
     } else {
-      return Colors.red[900];
+      return const Color(ColorHex.red);
     }
   }
 
@@ -57,7 +57,7 @@ class CompanyHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${companyName} (${ticker})',
+                '$companyName ($ticker)',
                 style: getNameAndTickerTextStyle(),
               ),
               Row(
@@ -70,8 +70,8 @@ class CompanyHeader extends StatelessWidget {
                     ' (${double.parse(changePct)}%)',
                     style: TextStyle(
                         color: double.parse(changePct) > 0.0
-                            ? Colors.green[900]
-                            : Colors.red[900],
+                            ? const Color(ColorHex.green)
+                            : const Color(ColorHex.red),
                         fontSize: 12),
                   ),
                   Text(showDate == null ? '' : ', ${date.toString()} ',
@@ -99,7 +99,7 @@ class CompanyHeader extends StatelessWidget {
                     width: 15,
                   ),
                   Container(
-                    padding: EdgeInsets.only(bottom: 2),
+                    padding: const EdgeInsets.only(bottom: 2),
                     decoration: BoxDecoration(
                         border: Border(
                       bottom: BorderSide(
@@ -119,7 +119,7 @@ class CompanyHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${companyName} (${ticker})',
+                '$companyName ($ticker)',
                 style: getNameAndTickerTextStyle(),
               ),
               Row(
@@ -132,8 +132,8 @@ class CompanyHeader extends StatelessWidget {
                     ' (${double.parse(changePct)}%)',
                     style: TextStyle(
                         color: double.parse(changePct) > 0.0
-                            ? Colors.green[900]
-                            : Colors.red[900],
+                            ? const Color(ColorHex.green)
+                            : const Color(ColorHex.red),
                         fontSize: 12),
                   ),
                   Text(showDate == null ? '' : ', ${date.toString()} ',

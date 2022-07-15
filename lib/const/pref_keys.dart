@@ -7,7 +7,7 @@ class PrefKeys {
   static String SELECTED_COUNTRY_ID = "selectedCountryId";
   static String SELECTED_THEME = "selectedTheme";
   static String TOP_20 = "top20";
-  static String SUBSCRIBED_USER = "subscribedUser";
+  static String UNLOCK_ALL = "unlock_all";
   static String selectedLang = "selectedLang";
   static String uid = "uid";
   static String pwd = "pwd";

@@ -51,6 +51,10 @@ class TodaysSignalBloc
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
           yield TodaysSignalErrorState(errorMessage);
+        } on FormatException {
+          yield TodaysSignalErrorState('Format exception');
+        } catch (e) {
+          yield TodaysSignalErrorState(e.toString());
         }
 
         break;

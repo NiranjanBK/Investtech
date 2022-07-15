@@ -48,6 +48,10 @@ class Top20Bloc extends Bloc<Top20BlocEvents, Top20BlocState> {
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
           yield Top20ErrorState(errorMessage);
+        } on FormatException {
+          yield Top20ErrorState('Format exception');
+        } catch (e) {
+          yield Top20ErrorState(e.toString());
         }
 
         break;

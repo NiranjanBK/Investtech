@@ -7,8 +7,9 @@ class AppThemes {
       scaffoldBackgroundColor: Colors.white,
       //primarySwatch: Colors.orange,
       backgroundColor: const Color(0XFFf5f3f3),
-      primaryColor: const Color(0XFFf5f3f3),
-      primaryColorDark: const Color(0XFFf5f3f3),
+      primaryColor: const Color(ColorHex.windowBackground),
+      primaryColorDark:
+          const Color(ColorHex.windowBackground), //const Color(0XFFf5f3f3),
 
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
@@ -45,8 +46,8 @@ class AppThemes {
       ),
     ),
     AppTheme.darkTheme: ThemeData(
-      scaffoldBackgroundColor: Colors.black26,
-      primaryColor: const Color(0xFF3d3d3d),
+      scaffoldBackgroundColor: const Color(ColorHex.black_chart_bg),
+      primaryColor: const Color(ColorHex.black_chart_bg),
       primaryColorDark: Colors.black,
       //primarySwatch: Colors.teal,
       backgroundColor: Colors.black,
@@ -55,8 +56,8 @@ class AppThemes {
               fontWeight: FontWeight.bold,
               fontSize: 15,
               color: Color(0xffb3afaf)),
-          bodyText2: TextStyle(fontSize: 12, color: Color(0xFFE8E8E8)),
-          subtitle1: TextStyle(fontSize: 11, color: Color(0xFFE8E8E8)),
+          bodyText2: TextStyle(fontSize: 12, color: Color(0xffb3afaf)),
+          subtitle1: TextStyle(fontSize: 11, color: Color(0xffb3afaf)),
           caption: TextStyle(
             fontSize: 12,
             color: Color(0xFFE8E8E8),
@@ -79,9 +80,9 @@ class AppThemes {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Color(0xFF3d3d3d),
         selectedIconTheme: IconThemeData(color: Color(0xFFFF6600)),
-        selectedLabelStyle: TextStyle(color: Color(0xFFFF6600)),
-        unselectedIconTheme: IconThemeData(color: Color(0xFFE8E8E8)),
-        unselectedLabelStyle: TextStyle(color: Colors.blue),
+        selectedItemColor: Color(0xFFFF6600),
+        unselectedItemColor: Color(0xFFE8E8E8),
+        // unselectedLabelStyle: TextStyle(color: Colors.blue),
       ),
     )
   };

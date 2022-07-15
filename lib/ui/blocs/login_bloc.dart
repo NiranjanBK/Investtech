@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -47,12 +48,21 @@ class LoginBloc extends Bloc<LoginBlocEvents, LoginBlocState> {
     switch (event) {
       case LoginBlocEvents.LOGIN_SUBMIT:
         yield LoginLoadingState(true);
-        http.Response response = await apiRepo.login(uid, pwd);
-        if (response.statusCode == 200) {
-          yield LoginLoadedState(jsonDecode(response.body));
-        } else {
-          yield LoginErrorState(response.statusCode.toString());
+
+        try {
+          Response response = await apiRepo.login(uid, pwd);
+          if (response.statusCode == 200) {
+            yield LoginLoadedState(jsonDecode(response.data));
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield LoginErrorState(errorMessage);
+        } on FormatException {
+          yield LoginErrorState('Format exception');
+        } catch (e) {
+          yield LoginErrorState(e.toString());
         }
+
         break;
       case LoginBlocEvents.LOGIN_LOADING:
         // TODO: Handle this case.
