@@ -61,6 +61,7 @@ class _CompanyPageState extends State<CompanyPage>
   bool hideAppBar = false;
   int type = CHART_STYLE_NORMAL;
   ThemeBloc? bloc;
+  int favStateInitialIndex = 1;
 
   @override
   void initState() {
@@ -133,7 +134,7 @@ class _CompanyPageState extends State<CompanyPage>
               print('object : $subscribedUser');
               print(
                   'objects : ${jsonDecode(state.favData.toString())['isFavourite']}');
-              print('debug: ${cmpData!.commentText}');
+
               return cmpData == null
                   ? const Center(
                       child: CircularProgressIndicator(
@@ -152,7 +153,7 @@ class _CompanyPageState extends State<CompanyPage>
                         )
                       : DefaultTabController(
                           length: 3,
-                          initialIndex: 1,
+                          initialIndex: state.initialIndex,
                           child: Scaffold(
                             appBar: orientation == Orientation.landscape
                                 ? null
@@ -167,21 +168,30 @@ class _CompanyPageState extends State<CompanyPage>
                                             widget.currentChartTerm =
                                                 chartMap[tabs.indexOf(tab)];
 
-                                            if (tabs.indexOf(tab) == 0) {
+                                            favStateInitialIndex =
+                                                tabs.indexOf(tab);
+
+                                            if (tabs.indexOf(tab) == 0 &&
+                                                state.initialIndex !=
+                                                    tabs.indexOf(tab)) {
                                               context.read<CompanyBloc>().add(
                                                   CompanyBlocEvents
                                                       .LOAD_SHORT_TERM);
-                                            } else if (tabs.indexOf(tab) == 1) {
+                                            } else if (tabs.indexOf(tab) == 1 &&
+                                                state.initialIndex !=
+                                                    tabs.indexOf(tab)) {
                                               context.read<CompanyBloc>().add(
                                                   CompanyBlocEvents
                                                       .LOAD_MEDIUM_TERM);
-                                            } else {
+                                            } else if (tabs.indexOf(tab) == 2 &&
+                                                state.initialIndex !=
+                                                    tabs.indexOf(tab)) {
                                               context.read<CompanyBloc>().add(
                                                   CompanyBlocEvents
                                                       .LOAD_LONG_TERM);
                                             }
                                             print(
-                                                'debug: ${cmpData!.commentText}');
+                                                'debug: ${state.cmpData.commentText}');
                                             return CompanyBody(
                                                 cmpData!,
                                                 widget.cmpId,
@@ -244,7 +254,7 @@ class _CompanyPageState extends State<CompanyPage>
                         )
                       : DefaultTabController(
                           length: 3,
-                          initialIndex: 1,
+                          initialIndex: favStateInitialIndex,
                           child: Scaffold(
                             appBar: orientation == Orientation.landscape
                                 ? null
@@ -258,13 +268,19 @@ class _CompanyPageState extends State<CompanyPage>
                                       widget.currentChartTerm =
                                           chartMap[tabs.indexOf(tab)];
 
-                                      if (widget.currentChartTerm == 5) {
+                                      if (tabs.indexOf(tab) == 0 &&
+                                          favStateInitialIndex !=
+                                              tabs.indexOf(tab)) {
                                         context.read<CompanyBloc>().add(
                                             CompanyBlocEvents.LOAD_SHORT_TERM);
-                                      } else if (widget.currentChartTerm == 4) {
+                                      } else if (tabs.indexOf(tab) == 1 &&
+                                          favStateInitialIndex !=
+                                              tabs.indexOf(tab)) {
                                         context.read<CompanyBloc>().add(
                                             CompanyBlocEvents.LOAD_MEDIUM_TERM);
-                                      } else {
+                                      } else if (tabs.indexOf(tab) == 2 &&
+                                          favStateInitialIndex !=
+                                              tabs.indexOf(tab)) {
                                         context.read<CompanyBloc>().add(
                                             CompanyBlocEvents.LOAD_LONG_TERM);
                                       }
@@ -410,6 +426,7 @@ class _CompanyPageState extends State<CompanyPage>
                   .short_disclaimer
                   .replaceAll('\\', ''),
               style: getSmallestTextStyle(),
+              textAlign: TextAlign.center,
               linkStyle: const TextStyle(
                 color: Color(ColorHex.teal),
                 decoration: TextDecoration.underline,
@@ -718,7 +735,7 @@ class _CompanyPageState extends State<CompanyPage>
                       children: [
                         Text(
                           AppLocalizations.of(context)!.notes,
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                         const SizedBox(height: 20),
                         Row(

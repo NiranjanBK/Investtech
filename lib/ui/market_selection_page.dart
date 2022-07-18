@@ -71,7 +71,10 @@ class _MarketSelectionState extends State<MarketSelection> {
                               child: Row(
                                 children: [
                                   Image.asset(
-                                      'assets/images/flags/h20/${snapshot.data![index].countryCode}.png'),
+                                    'assets/images/flags/h20/${snapshot.data![index].countryCode}.png',
+                                    width: 25,
+                                    height: 25,
+                                  ),
                                   const SizedBox(
                                     width: 10,
                                   ),

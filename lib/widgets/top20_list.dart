@@ -24,6 +24,8 @@ class Top20List extends StatelessWidget {
                     top20Obj[index].companyId,
                     4,
                     isTop20: true,
+                    companyName: top20Obj[index].companyName,
+                    ticker: top20Obj[index].ticker,
                   ),
                 ));
           },

@@ -45,8 +45,9 @@ class RecentSearchList extends StatelessWidget {
                     horizontalTitleGap: 1.0,
                     leading: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.update),
+                      children: [
+                        Icon(Icons.update,
+                            color: DefaultTextStyle.of(context).style.color),
                       ],
                     ),
                     title: Text(snapshot.data![index].ticker),

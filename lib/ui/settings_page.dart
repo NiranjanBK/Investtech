@@ -510,7 +510,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             OpenStore.instance.open(
                               //appStoreId: 'com.investtech.investtechapp',
                               androidAppBundleId:
-                                  'com.investtech.investtechapp',
+                                  'com.investtech.learn_technical_analysis',
                             );
                           },
                           child: ListTile(

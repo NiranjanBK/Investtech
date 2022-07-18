@@ -37,6 +37,7 @@ class _FavoritesTeaserState extends State<FavoritesTeaser> {
     return Expanded(
       child: ListView(
         primary: true,
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         children: [
           InkWell(

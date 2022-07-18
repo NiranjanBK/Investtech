@@ -22,10 +22,12 @@ class FavoritesDetail extends StatefulWidget {
 
 class _FavoritesDetailState extends State<FavoritesDetail> {
   late Future future;
+  bool hasAdvancedChartSubscription = false;
 
   getListValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    hasAdvancedChartSubscription =
+        prefs.getBool(PrefKeys.ADVANCED_CHART) ?? false;
     return prefs.getString(PrefKeys.selectedDataView) ?? 'TableView';
   }
 
@@ -98,6 +100,7 @@ class _FavoritesDetailState extends State<FavoritesDetail> {
                               ),
                       ),
                       PopupMenuButton(
+                          color: Theme.of(context).appBarTheme.backgroundColor,
                           icon: Icon(Icons.more_vert, color: Colors.grey[600]),
                           onSelected: (value) {
                             showDialog<String>(
@@ -202,7 +205,8 @@ class _FavoritesDetailState extends State<FavoritesDetail> {
                                     widget.favCmpObj[index].closePrice
                                         .toString(),
                                     widget.favCmpObj[index].changePct
-                                        .toString());
+                                        .toString(),
+                                    hasAdvancedChartSubscription);
                               }),
                         )
                       : SingleChildScrollView(

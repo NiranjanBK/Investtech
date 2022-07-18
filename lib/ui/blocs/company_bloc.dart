@@ -35,8 +35,10 @@ class CompanyLoadedState extends CompanyBlocState {
   Company cmpData;
   bool scuscribedUser;
   String favData;
+  int initialIndex;
 
-  CompanyLoadedState(this.cmpData, this.scuscribedUser, this.favData);
+  CompanyLoadedState(
+      this.cmpData, this.scuscribedUser, this.favData, this.initialIndex);
 }
 
 class FavouriteLoadedState extends CompanyBlocState {
@@ -61,6 +63,7 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
   String companyId;
   int? chartId = 4;
   Company? cmpData;
+  String? favData;
   bool user = false;
 
   CompanyBloc(this.apiRepo, this.companyId) : super(InitialState());
@@ -68,18 +71,18 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
   @override
   Stream<CompanyBlocState> mapEventToState(CompanyBlocEvents event) async* {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     user = prefs.getBool(PrefKeys.UNLOCK_ALL) ?? false;
 
     switch (event) {
       case CompanyBlocEvents.LOAD_COMPANY:
         try {
-          String favData =
-              await DatabaseHelper().checkNoteAndFavorite(companyId);
+          favData = await DatabaseHelper().checkNoteAndFavorite(companyId);
           Response response = await apiRepo.getCompanyData(chartId, companyId);
           if (response.statusCode == 200) {
             cmpData = Company.fromJson(
                 jsonDecode(jsonEncode(response.data))['company']);
-            yield CompanyLoadedState(cmpData!, user, favData);
+            yield CompanyLoadedState(cmpData!, user, favData!, 1);
           }
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -94,8 +97,8 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
 
       case CompanyBlocEvents.FAVOURITE_LOADED:
         yield FavouriteRefreshState();
-        String favData = await DatabaseHelper().checkNoteAndFavorite(companyId);
-        yield FavouriteLoadedState(cmpData!, user, favData);
+        favData = await DatabaseHelper().checkNoteAndFavorite(companyId);
+        yield FavouriteLoadedState(cmpData!, user, favData!);
         break;
 
       case CompanyBlocEvents.REFRESH:
@@ -104,18 +107,12 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
       case CompanyBlocEvents.LOAD_SHORT_TERM:
         yield FavouriteRefreshState();
         try {
-          String favData =
-              await DatabaseHelper().checkNoteAndFavorite(companyId);
           Response response =
               await apiRepo.getCompanyData(CHART_TERM_SHORT, companyId);
           if (response.statusCode == 200) {
             cmpData = Company.fromJson(
                 jsonDecode(jsonEncode(response.data))['company']);
-            yield CompanyLoadedState(
-                Company.fromJson(
-                    jsonDecode(jsonEncode(response.data))['company']),
-                user,
-                favData);
+            yield CompanyLoadedState(cmpData!, user, favData!, 0);
           }
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -129,19 +126,14 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
         break;
 
       case CompanyBlocEvents.LOAD_LONG_TERM:
+        yield FavouriteRefreshState();
         try {
-          String favData =
-              await DatabaseHelper().checkNoteAndFavorite(companyId);
           Response response =
               await apiRepo.getCompanyData(CHART_TERM_LONG, companyId);
           if (response.statusCode == 200) {
             cmpData = Company.fromJson(
                 jsonDecode(jsonEncode(response.data))['company']);
-            yield CompanyLoadedState(
-                Company.fromJson(
-                    jsonDecode(jsonEncode(response.data))['company']),
-                user,
-                favData);
+            yield CompanyLoadedState(cmpData!, user, favData!, 2);
           }
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -155,19 +147,14 @@ class CompanyBloc extends Bloc<CompanyBlocEvents, CompanyBlocState> {
         break;
 
       case CompanyBlocEvents.LOAD_MEDIUM_TERM:
+        yield FavouriteRefreshState();
         try {
-          String favData =
-              await DatabaseHelper().checkNoteAndFavorite(companyId);
           Response response =
               await apiRepo.getCompanyData(CHART_TERM_MEDIUM, companyId);
           if (response.statusCode == 200) {
             cmpData = Company.fromJson(
                 jsonDecode(jsonEncode(response.data))['company']);
-            yield CompanyLoadedState(
-                Company.fromJson(
-                    jsonDecode(jsonEncode(response.data))['company']),
-                user,
-                favData);
+            yield CompanyLoadedState(cmpData!, user, favData!, 1);
           }
         } on DioError catch (e) {
           final errorMessage = DioExceptions.fromDioError(e).toString();

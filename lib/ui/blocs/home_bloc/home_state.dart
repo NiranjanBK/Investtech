@@ -1,8 +1,6 @@
 part of 'home_bloc.dart';
 
-
 abstract class HomeState extends Equatable {}
-
 
 class HttpLoadingState extends HomeState {
   @override
@@ -30,4 +28,3 @@ class HomeLoadedState extends HomeState {
   @override
   List<Object?> get props => [home];
 }
-

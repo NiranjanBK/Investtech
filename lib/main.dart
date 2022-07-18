@@ -51,10 +51,10 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
-  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
-  globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
+  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? true;
+  globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '100';
 
-  if (prefs.getString(PrefKeys.SELECTED_MARKET) != null) {
+  if (prefs.getString(PrefKeys.SELECTED_MARKET) == null) {
     String? countryCode;
     List validCountryCodes = [
       'no',
@@ -82,13 +82,10 @@ void main() async {
     ];
     try {
       countryCode = await FlutterSimCountryCode.simCountryCode;
-
-      print('inside try block');
     } on PlatformException {
       countryCode =
           WidgetsBinding.instance.window.locale.countryCode.toString();
     } catch (e) {
-      print('exception caught');
       countryCode =
           WidgetsBinding.instance.window.locale.countryCode.toString();
     }
@@ -220,11 +217,14 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     widgetOptions = [
-      BlocProvider(create: (ctx) => HomeBloc(), child: HomeOverview(
-        key: homeKey,
-      ),),
+      BlocProvider(
+        create: (ctx) => HomeBloc(),
+        child: HomeOverview(
+          key: homeKey,
+        ),
+      ),
       WebLoginPage(ApiRepo(), false, false),
-      Subscription(),
+      const Subscription(),
     ];
     if (widget.introSlides) {
       setLTA();

@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/theme.dart';
@@ -14,7 +13,7 @@ import 'package:investtech_app/const/theme.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
-import 'package:investtech_app/ui/home_page.dart';
+
 import 'package:investtech_app/ui/search_item_page.dart';
 import 'package:investtech_app/ui/settings_page.dart';
 import 'package:investtech_app/ui/web_view_page.dart';
@@ -205,8 +204,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                   /*decoration: BoxDecoration(
                               color: Colors.red,
                               borderRadius: BorderRadius.circular(50.0)),*/
-                                  child: Image.network(
-                                      'https://www.investtech.com/images/home2018/logo_200.png')),
+                                  child: Image.asset(
+                                      'assets/images/logo_with_text.png')),
                             ),
                           ),
                           Padding(
@@ -352,6 +351,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                       addToSF(PrefKeys.pwd, pwd, 'string');
                                       addToSF(
                                           PrefKeys.UNLOCK_ALL, true, 'bool');
+                                      addToSF(PrefKeys.ADVANCED_CHART, true,
+                                          'bool');
 
                                       if (widget.isEmptyAppBarActions) {
                                         Navigator.pop(context, true);

@@ -119,7 +119,9 @@ class CompanyBody extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Text(
-              AppLocalizations.of(context)!.short_disclaimer,
+              AppLocalizations.of(context)!
+                  .short_disclaimer
+                  .replaceAll('\\', ''),
               style: getSmallestTextStyle(),
               textAlign: TextAlign.center,
             ),

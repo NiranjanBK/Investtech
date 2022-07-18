@@ -13,7 +13,7 @@ class AppThemes {
 
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
-        titleTextStyle: TextStyle(color: Colors.black),
+        titleTextStyle: TextStyle(fontSize: 20, color: Color(ColorHex.black)),
         iconTheme: IconThemeData(
           color: Colors.black54,
         ),
@@ -64,7 +64,7 @@ class AppThemes {
           )),
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF3d3d3d),
-        titleTextStyle: TextStyle(color: Colors.white),
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
         iconTheme: IconThemeData(
           color: Colors.white54,
         ),

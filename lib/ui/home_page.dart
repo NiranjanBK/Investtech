@@ -92,6 +92,8 @@ class HomeOverviewState extends State<HomeOverview> {
   void initState() {
     super.initState();
 
+    getListValuesSF();
+
     controller.addListener(() {
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
@@ -103,7 +105,7 @@ class HomeOverviewState extends State<HomeOverview> {
     myEvent.subscribe((args) => print('myEvent occured'));
     _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
       print(event);
-      setState(() {});
+      BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
     });
     // Subscribe to the custom event
     ConnectionStatusSingleton connectionStatus =
@@ -120,6 +122,15 @@ class HomeOverviewState extends State<HomeOverview> {
     setState(() {
       isOffline = !hasConnection;
     });
+  }
+
+  String interpolate(String string, StreamBuilder<DateTime> params) {
+    String result = string;
+    var replaceWith =
+        params.toString().replaceAll('StreamBuilder<DateTime>', '');
+    result = result.replaceAll('%1\$s', replaceWith);
+
+    return result;
   }
 
   /*Future<Home> fetchData() async {
@@ -146,14 +157,16 @@ class HomeOverviewState extends State<HomeOverview> {
         ));
 
     // after the SecondScreen result comes back update the Text widget with it
+
     setState(() {
       marketCode = result['marketCode'];
       marketName = result['marketName'];
     });
+    BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
   }
 
   FutureOr onGoBack(dynamic value) {
-    setState(() {});
+    BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
   }
 
   getListValuesSF() async {
@@ -178,23 +191,21 @@ class HomeOverviewState extends State<HomeOverview> {
     return RefreshIndicator(
       edgeOffset: 100,
       onRefresh: () {
-        setState(() {});
+        BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
         return Future.value();
       },
       color: const Color(0xFFFF6600),
       backgroundColor: Colors.white,
       child: Container(
-          padding: const EdgeInsets.only(top: 5),
-          child: isOffline
-              ? const NoInternet('rtrr')
-              :
-
-          BlocBuilder<HomeBloc, HomeState>(
-              builder: (ctx, state) {
+        padding: const EdgeInsets.only(top: 5),
+        child: isOffline
+            ? const NoInternet('rtrr')
+            : BlocBuilder<HomeBloc, HomeState>(builder: (ctx, state) {
                 if (state is HomeLoadedState) {
                   teaserList = state.home.teaser;
-                  List reoderList =
-                  reorderString == '' ? [] : reorderString.toString().split(',');
+                  List reoderList = reorderString == ''
+                      ? []
+                      : reorderString.toString().split(',');
                   analysisDate = state.home.analysesDate.toString();
                   return Scaffold(
                     backgroundColor: Theme.of(context).primaryColorDark,
@@ -214,9 +225,9 @@ class HomeOverviewState extends State<HomeOverview> {
                               Text(
                                 AppLocalizations.of(context)!
                                     .analysis_home_header_template(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                        int.parse(state.home.analysesDate) *
-                                            1000)),
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            int.parse(state.home.analysesDate) *
+                                                1000)),
                                 style: getSmallestTextStyle(),
                               ),
                               const SizedBox(
@@ -225,7 +236,10 @@ class HomeOverviewState extends State<HomeOverview> {
                               Row(
                                 children: [
                                   Text(
-                                    'Last Updated : ',
+                                    interpolate(
+                                        AppLocalizations.of(context)!
+                                            .last_updated_home_header_template,
+                                        buildUpdatedTime()),
                                     style: getSmallestTextStyle(),
                                   ),
                                   buildUpdatedTime(),
@@ -263,70 +277,63 @@ class HomeOverviewState extends State<HomeOverview> {
                                     ],
                                     border: const Border(
                                         bottom: BorderSide(
-                                          width: 0.8,
-                                          color: Colors.black12,
-                                        ))),
+                                      width: 0.8,
+                                      color: Colors.black12,
+                                    ))),
                                 child: Row(
                                   children: [
-                                    if (state.home.teaser[index]
-                                        .productName ==
+                                    if (state.home.teaser[index].productName ==
                                         'marketCommentary') ...{
                                       MarketCommentaries(
                                         state.home.teaser[index],
                                       ),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'todaysSignals') ...{
                                       TodaysSignals(
                                         state.home.teaser[index],
                                       ),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'top20') ...{
                                       TopTwenty(
                                         state.home.teaser[index],
                                       ),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'indicesAnalyses') ...{
                                       Indices(
                                         state.home.teaser[index],
                                         'analyses',
                                       ),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'todaysCandidate') ...{
                                       TodaysCandidate(
                                         state.home.teaser[index],
                                         'case',
                                       ),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'indicesEvaluations') ...{
                                       IndicesEvaluation(
                                           state.home.teaser[index]),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'barometer') ...{
                                       BarometerGraph(
                                           state.home.teaser[index].content,
                                           state.home.teaser[index].title),
                                     } else if (state.home.teaser[index]
-                                        .productName ==
-                                        'webTV' &&
-                                        [
-                                          "ose",
-                                          "se_sse",
-                                          "dk_kfx",
-                                          "dk_inv"
-                                        ].contains(marketCode)) ...{
-                                      WebTVTeaser(
-                                          state.home.teaser[index]),
-                                    } else if (state.home.teaser[index]
-                                        .productName ==
+                                                .productName ==
+                                            'webTV' &&
+                                        ["ose", "se_sse", "dk_kfx", "dk_inv"]
+                                            .contains(marketCode)) ...{
+                                      WebTVTeaser(state.home.teaser[index]),
+                                    } else if (state
+                                            .home.teaser[index].productName ==
                                         'favourites') ...{
-                                      FavoritesTeaser(
-                                          state.home.teaser[index]),
+                                      FavoritesTeaser(state.home.teaser[index]),
                                     }
 
                                     //Text(),
@@ -350,8 +357,8 @@ class HomeOverviewState extends State<HomeOverview> {
                                     child: IconButton(
                                       onPressed: () async {
                                         SharedPreferences prefs =
-                                        await SharedPreferences
-                                            .getInstance();
+                                            await SharedPreferences
+                                                .getInstance();
                                         prefs.setBool(
                                             PrefKeys.LTA_CONTAINER, false);
 
@@ -397,12 +404,13 @@ class HomeOverviewState extends State<HomeOverview> {
                                           OpenStore.instance.open(
                                             //appStoreId: 'com.investtech.investtechapp',
                                             androidAppBundleId:
-                                            'com.investtech.investtechapp',
+                                                'com.investtech.learn_technical_analysis',
                                           );
                                         },
                                         child: Text(
-                                          "Get the app",
-                                          style: TextStyle(
+                                          AppLocalizations.of(context)!
+                                              .get_the_app,
+                                          style: const TextStyle(
                                               color: Colors.orange),
                                         ),
                                         style: ElevatedButton.styleFrom(
@@ -420,17 +428,35 @@ class HomeOverviewState extends State<HomeOverview> {
                       ],
                     ),
                   );
-                }
-                else if(state is ErrorState){
-                  return Center(child: Text(state.errorBody),);
+                } else if (state is ErrorState) {
+                  return Scaffold(
+                    body: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        NoInternet(state.errorBody),
+                        ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<HomeBloc>(context)
+                                .add(GetHomePageEvent(marketCode));
+                          },
+                          child: Text(AppLocalizations.of(context)!.refresh),
+                          style: ButtonStyle(
+                              foregroundColor: MaterialStateProperty.all<Color>(
+                                  const Color(ColorHex.ACCENT_COLOR)),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white)),
+                        ),
+                      ],
+                    ),
+                  );
                 } else {
                   return const Center(
                       child: CircularProgressIndicator(
                           valueColor:
-                          AlwaysStoppedAnimation<Color>(Colors.orange)));
+                              AlwaysStoppedAnimation<Color>(Colors.orange)));
                 }
               }),
-              /*: FutureBuilder<Home>(
+        /*: FutureBuilder<Home>(
                   future: fetchData(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
@@ -676,7 +702,6 @@ class HomeOverviewState extends State<HomeOverview> {
                                 AlwaysStoppedAnimation<Color>(Colors.orange)));
                   },
                 )*/
-
       ),
     );
   }
@@ -689,7 +714,10 @@ class HomeOverviewState extends State<HomeOverview> {
         },
         child: Row(
           children: [
-            Text(marketName ?? 'National S.E'),
+            Text(
+              marketName ?? 'National S.E',
+              style: const TextStyle(fontSize: 15),
+            ),
             Transform.rotate(
               angle: 33, //set the angel
               child: Icon(
@@ -725,9 +753,9 @@ class HomeOverviewState extends State<HomeOverview> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReorderPage(
-                            teaserList, reorderString.toString(), marketCode.toString()),
-                      )).then(onGoBack);
+                        builder: (context) => ReorderPage(teaserList,
+                            reorderString.toString(), marketCode.toString()),
+                      ));
                   break;
                 case 'Settings':
                   myEvent.broadcast();

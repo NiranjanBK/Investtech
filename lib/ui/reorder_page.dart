@@ -4,11 +4,12 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
 import 'package:investtech_app/network/models/home.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:investtech_app/ui/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ReorderPage extends StatefulWidget {
   final List<Teaser> products;
-  late String reorderString;
+  final String reorderString;
   final String marketCode;
   List<Teaser> excludedProducts = [];
   List<Teaser> includedProducts = [];
@@ -35,7 +36,6 @@ class _ReorderPageState extends State<ReorderPage> {
   @override
   void initState() {
     super.initState();
-
     if (widget.reorderString == '') {
       widget.products.map((product) {
         widget.includedProducts.add(product);
@@ -68,6 +68,7 @@ class _ReorderPageState extends State<ReorderPage> {
           widget.includedProdList.add(product.id);
         }
       }).toList();
+      print(widget.includedProdList);
     } else {
       widget.reoderList = widget.reorderString.split(',');
       widget.reoderList.map((prodId) {
@@ -86,6 +87,8 @@ class _ReorderPageState extends State<ReorderPage> {
         }
       }
     });
+
+    print(widget.excludedProdList);
   }
 
   addListToSF(key, value) async {
@@ -114,7 +117,7 @@ class _ReorderPageState extends State<ReorderPage> {
     };
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(AppLocalizations.of(context)!.home),
         actions: [
           InkWell(
             onTap: () {
@@ -126,9 +129,13 @@ class _ReorderPageState extends State<ReorderPage> {
               }
               prodId += widget.includedProdList[i];
               addListToSF('items', prodId);
+              eventBus.fire(ReloadEvent());
               Navigator.pop(context, true);
             },
-            child: const Icon(Icons.check),
+            child: const Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(Icons.check),
+            ),
           )
         ],
       ),
@@ -138,6 +145,7 @@ class _ReorderPageState extends State<ReorderPage> {
           children: [
             ReorderableListView(
               //padding: EdgeInsets.zero,
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               children: widget.includedProdList
                   .map((item) => Container(
