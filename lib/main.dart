@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -288,7 +289,7 @@ class _MainPageState extends State<MainPage> {
                       label: 'Home',
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.web_asset_off),
+                      icon: Icon(CupertinoIcons.globe),
                       label: 'Web',
                     ),
                     BottomNavigationBarItem(

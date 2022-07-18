@@ -348,7 +348,11 @@ class HomeOverviewState extends State<HomeOverview> {
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(.4),
+                                  image: const DecorationImage(
+                                      image: AssetImage(
+                                          'assets/images/lta_teaser_bg.png'),
+                                      fit: BoxFit.cover),
+                                  color: const Color(ColorHex.black_chart_bg),
                                   borderRadius: BorderRadius.circular(5)),
                               child: Column(
                                 children: [
@@ -367,7 +371,7 @@ class HomeOverviewState extends State<HomeOverview> {
                                         });
                                       },
                                       icon: const Icon(Icons.close),
-                                      color: Colors.white,
+                                      color: const Color(ColorHex.lightGrey),
                                     ),
                                   ),
                                   Padding(
@@ -389,7 +393,8 @@ class HomeOverviewState extends State<HomeOverview> {
                                     child: Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          AppLocalizations.of(context)!.lta,
+                                          AppLocalizations.of(context)!
+                                              .lta_info,
                                           style: const TextStyle(
                                               fontSize: 14,
                                               color: Colors.white),
@@ -414,9 +419,12 @@ class HomeOverviewState extends State<HomeOverview> {
                                               color: Colors.orange),
                                         ),
                                         style: ElevatedButton.styleFrom(
-                                          primary: Colors.white,
+                                          primary: Theme.of(context)
+                                              .appBarTheme
+                                              .backgroundColor,
                                           textStyle: const TextStyle(
-                                              color: Colors.orange),
+                                              color:
+                                                  Color(ColorHex.ACCENT_COLOR)),
                                         ),
                                       ),
                                     ),
