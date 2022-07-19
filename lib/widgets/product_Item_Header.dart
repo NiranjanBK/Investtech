@@ -11,7 +11,7 @@ class ProductHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 15, bottom: 10, left: 10, right: 10),
+      padding: const EdgeInsets.only(top: 15, bottom: 10, left: 16, right: 16),
       decoration: BoxDecoration(
           color: Theme.of(context).primaryColorDark,
           border: const Border(bottom: BorderSide(color: Colors.black12))),

@@ -17,11 +17,11 @@ import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/home_bloc/home_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
-import 'package:investtech_app/ui/company_page.dart';
-import 'package:investtech_app/ui/home_page.dart';
-import 'package:investtech_app/ui/intro_page.dart';
-import 'package:investtech_app/ui/subscription_page.dart';
-import 'package:investtech_app/ui/web_login_page.dart';
+import 'package:investtech_app/ui/company%20page/company_page.dart';
+import 'package:investtech_app/ui/home/home_page.dart';
+import 'package:investtech_app/ui/intro/intro_page.dart';
+import 'package:investtech_app/ui/subscription/subscription_page.dart';
+import 'package:investtech_app/ui/web/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -283,18 +283,18 @@ class _MainPageState extends State<MainPage> {
                 controller:
                     homeKey.currentState?.controller ?? ScrollController(),
                 child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
+                  items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Home',
+                      icon: const Icon(Icons.home),
+                      label: AppLocalizations.of(context)!.home,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(CupertinoIcons.globe),
-                      label: 'Web',
+                      icon: const Icon(CupertinoIcons.globe),
+                      label: AppLocalizations.of(context)!.web,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.lock_open_rounded),
-                      label: 'Subscription',
+                      icon: const Icon(Icons.lock_open_rounded),
+                      label: AppLocalizations.of(context)!.subscriptions,
                     ),
                   ],
                   currentIndex: selectedIndex,
