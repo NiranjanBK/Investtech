@@ -8,10 +8,10 @@ import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
-import 'package:investtech_app/ui/company_page.dart';
+import 'package:investtech_app/ui/company%20page/company_page.dart';
 import 'package:investtech_app/widgets/product_Item_Header.dart';
 import '../network/models/company.dart';
-import '../widgets/company_header.dart';
+import '../ui/company page/company_header.dart';
 
 class TodaysCandidate extends StatefulWidget {
   final dynamic _companyData, _product;
@@ -58,7 +58,7 @@ class _TodaysCandidateState extends State<TodaysCandidate> {
             ProductHeader(
                 jsonDecode(jsonEncode(widget._companyData))['title'], 0),
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Column(
                 children: [
                   CompanyHeader(

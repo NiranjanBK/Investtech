@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,11 +15,11 @@ import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/home_bloc/home_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
-import 'package:investtech_app/ui/company_page.dart';
-import 'package:investtech_app/ui/home_page.dart';
-import 'package:investtech_app/ui/intro_page.dart';
-import 'package:investtech_app/ui/subscription_page.dart';
-import 'package:investtech_app/ui/web_login_page.dart';
+import 'package:investtech_app/ui/company%20page/company_page.dart';
+import 'package:investtech_app/ui/home/home_page.dart';
+import 'package:investtech_app/ui/intro/intro_page.dart';
+import 'package:investtech_app/ui/subscription/subscription_page.dart';
+import 'package:investtech_app/ui/web/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,10 +50,10 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? prefTheme = prefs.getString(PrefKeys.SELECTED_THEME) ?? '';
   String? locale = prefs.getString(PrefKeys.selectedLang) ?? 'en';
-  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? false;
-  globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
+  bool? introSlides = prefs.getBool(PrefKeys.introSlides) ?? true;
+  globalMarketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '100';
 
-  if (prefs.getString(PrefKeys.SELECTED_MARKET) != null) {
+  if (prefs.getString(PrefKeys.SELECTED_MARKET) == null) {
     String? countryCode;
     List validCountryCodes = [
       'no',
@@ -82,13 +81,10 @@ void main() async {
     ];
     try {
       countryCode = await FlutterSimCountryCode.simCountryCode;
-
-      print('inside try block');
     } on PlatformException {
       countryCode =
           WidgetsBinding.instance.window.locale.countryCode.toString();
     } catch (e) {
-      print('exception caught');
       countryCode =
           WidgetsBinding.instance.window.locale.countryCode.toString();
     }
@@ -220,11 +216,14 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     widgetOptions = [
-      BlocProvider(create: (ctx) => HomeBloc(), child: HomeOverview(
-        key: homeKey,
-      ),),
+      BlocProvider(
+        create: (ctx) => HomeBloc(),
+        child: HomeOverview(
+          key: homeKey,
+        ),
+      ),
       WebLoginPage(ApiRepo(), false, false),
-      Subscription(),
+      const Subscription(),
     ];
     if (widget.introSlides) {
       setLTA();
@@ -282,18 +281,18 @@ class _MainPageState extends State<MainPage> {
                 controller:
                     homeKey.currentState?.controller ?? ScrollController(),
                 child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
+                  items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Home',
+                      icon: const Icon(Icons.home),
+                      label: AppLocalizations.of(context)!.home,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.web_asset_off),
-                      label: 'Web',
+                      icon: const Icon(CupertinoIcons.globe),
+                      label: AppLocalizations.of(context)!.web,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.lock_open_rounded),
-                      label: 'Subscription',
+                      icon: const Icon(Icons.lock_open_rounded),
+                      label: AppLocalizations.of(context)!.subscriptions,
                     ),
                   ],
                   currentIndex: selectedIndex,

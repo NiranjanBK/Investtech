@@ -281,22 +281,26 @@ class ApiRepo {
     }
   }
 
-  Future<http.Response> getSearchTerm(term, marketId) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    return client.get(
-      //Uri.parse(AppStrings.apiUrl() + "user/login/"),
-      Uri.parse(
-          'https://www.investtech.com/main/autoCompleteSearch.php?output=json&q=${term}&MarketID=${marketId}'),
-      //body: json.encode(body.toJson()),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+  Future<Response> getSearchTerm(term, marketId) async {
+    Options cacheOptions =
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+    Dio dio = getDio();
+
+    await getListValuesSF();
+    try {
+      return dio.get(
+        'https://www.investtech.com/main/autoCompleteSearch.php?output=json&q=${term}&MarketID=${marketId}',
+        //body: json.encode(body.toJson()),
+        options: cacheOptions,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Response> getCompanyData(chartId, companyId) async {
     Options cacheOptions =
-        buildCacheOptions(const Duration(hours: 1), forceRefresh: true);
+        buildCacheOptions(const Duration(hours: 1), forceRefresh: false);
     Dio dio = getDio();
 
     chartId = chartId.toString();
@@ -304,7 +308,7 @@ class ApiRepo {
       return dio.get(
         //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-        'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=in_nse&countryID=91&lang=${languageCodeMap![lang]}',
+        'https://www.investtech.com/mobile/api.php?page=advancedChartData&CompanyID=$companyId&chartId=$chartId&market=$marketCode&countryID=91&lang=${languageCodeMap![lang]}',
 
         //body: json.encode(body.toJson()),
         options: cacheOptions,

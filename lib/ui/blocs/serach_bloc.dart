@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -49,16 +50,22 @@ class SearchBloc extends Bloc<SearchBlocEvents, SearchBlocState> {
     switch (event) {
       case SearchBlocEvents.LOAD_SEARCH:
         yield SearchLoadingState(true);
-        http.Response response =
-            await apiRepo.getSearchTerm(searchTerm, marketId);
-        if (response.statusCode == 200) {
-          var _searchData = jsonDecode(response.body) as List;
-          List<SearchResult> _searchResult = _searchData
-              .map((result) => SearchResult.fromJson(result))
-              .toList();
-          yield SearchLoadedState(_searchResult);
-        } else {
-          yield SearchErrorState(response.statusCode.toString());
+        try {
+          Response response = await apiRepo.getSearchTerm(searchTerm, marketId);
+          if (response.statusCode == 200) {
+            var _searchData = jsonDecode(response.data) as List;
+            List<SearchResult> _searchResult = _searchData
+                .map((result) => SearchResult.fromJson(result))
+                .toList();
+            yield SearchLoadedState(_searchResult);
+          }
+        } on DioError catch (e) {
+          final errorMessage = DioExceptions.fromDioError(e).toString();
+          yield SearchErrorState(errorMessage);
+        } on FormatException {
+          yield SearchErrorState('Format exception');
+        } catch (e) {
+          yield SearchErrorState(e.toString());
         }
         break;
       case SearchBlocEvents.SEARCH_LOADING:
