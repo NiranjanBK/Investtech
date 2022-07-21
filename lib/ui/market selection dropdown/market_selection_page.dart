@@ -9,6 +9,7 @@ import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/country.dart';
 import 'package:investtech_app/network/models/market.dart';
 import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/ui/home/home_page.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -61,7 +62,7 @@ class _MarketSelectionState extends State<MarketSelection> {
                                   snapshot.data![index].countryId.toString());
                               globalMarketId =
                                   snapshot.data![index].marketId.toString();
-
+                              eventBus.fire(ReloadEvent());
                               Navigator.pop(context, {
                                 'marketCode': snapshot.data![index].marketCode,
                                 'marketName': snapshot.data![index].marketName

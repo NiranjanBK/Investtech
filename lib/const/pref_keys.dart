@@ -9,6 +9,7 @@ class PrefKeys {
   static String TOP_20 = "top20";
   static String ADVANCED_CHART = "advancedChart";
   static String UNLOCK_ALL = "unlock_all";
+  static String SHOW_TOOLTIP = "showTooltip";
   static String selectedLang = "selectedLang";
   static String uid = "uid";
   static String pwd = "pwd";

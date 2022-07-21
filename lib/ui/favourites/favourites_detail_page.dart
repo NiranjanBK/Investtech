@@ -5,6 +5,7 @@ import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/network/database/database_helper.dart';
 import 'package:investtech_app/network/models/company.dart';
+import 'package:investtech_app/ui/company%20page/company_page.dart';
 import 'package:investtech_app/ui/favourites/chart_view.dart';
 import 'package:investtech_app/ui/favourites/favourites_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -195,18 +196,35 @@ class _FavoritesDetailState extends State<FavoritesDetail> {
                               itemBuilder: (ctx, index) {
                                 print(widget.favCmpObj[index].priceDate
                                     .toString());
-                                return ChartView(
-                                    widget.favCmpObj[index].Id.toString(),
-                                    4,
-                                    widget.favCmpObj[index].Name.toString(),
-                                    widget.favCmpObj[index].ticker,
-                                    widget.favCmpObj[index].PriceDate
-                                        .toString(),
-                                    widget.favCmpObj[index].closePrice
-                                        .toString(),
-                                    widget.favCmpObj[index].changePct
-                                        .toString(),
-                                    hasAdvancedChartSubscription);
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CompanyPage(
+                                            widget.favCmpObj[index].Id
+                                                .toString(),
+                                            4,
+                                            companyName:
+                                                widget.favCmpObj[index].Name,
+                                            ticker:
+                                                widget.favCmpObj[index].ticker,
+                                          ),
+                                        ));
+                                  },
+                                  child: ChartView(
+                                      widget.favCmpObj[index].Id.toString(),
+                                      4,
+                                      widget.favCmpObj[index].Name.toString(),
+                                      widget.favCmpObj[index].ticker,
+                                      widget.favCmpObj[index].PriceDate
+                                          .toString(),
+                                      widget.favCmpObj[index].closePrice
+                                          .toString(),
+                                      widget.favCmpObj[index].changePct
+                                          .toString(),
+                                      hasAdvancedChartSubscription),
+                                );
                               }),
                         )
                       : SingleChildScrollView(

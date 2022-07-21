@@ -73,7 +73,7 @@ dependencies:
   dio_http_cache: any
   flutter_linkify: ^5.0.2
   flutter_sim_country_code: ^0.1.2
- 
+  simple_tooltip: ^1.0.0
   
 flutter_native_splash:
   color: "#ffffff"

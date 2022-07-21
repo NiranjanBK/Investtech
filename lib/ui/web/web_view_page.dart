@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,7 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   InAppWebViewController? _webViewController;
+
   @override
   void initState() {
     super.initState();
@@ -88,7 +90,18 @@ class _WebViewPageState extends State<WebViewPage> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    SystemChrome.setEnabledSystemUIOverlays(
+                        [SystemUiOverlay.bottom]);
+                    if (MediaQuery.of(context).orientation ==
+                        Orientation.portrait) {
+                      SystemChrome.setPreferredOrientations(
+                          [DeviceOrientation.landscapeLeft]);
+                    } else {
+                      SystemChrome.setPreferredOrientations(
+                          [DeviceOrientation.portraitUp]);
+                    }
+                  },
                   icon: Icon(
                     Icons.fullscreen,
                     color: Colors.orange[800],
@@ -160,35 +173,34 @@ class _WebViewPageState extends State<WebViewPage> {
               ],
               title: Text(widget.title),
             ),
-            body: Stack(
-              children: [
-                InAppWebView(
-                  initialUrlRequest: URLRequest(
-                      url: Uri.parse(widget.url),
-                      method: 'POST',
-                      body: Uint8List.fromList(utf8.encode(
-                          "LOGIN=${widget.uid}&PASSWORD=${widget.pwd}&LOGIN_REQUEST=1&CHECK_LOGIN_MESSAGE=1&Submit=Login")),
-                      headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                      }),
-                  onWebViewCreated: (controller) {
-                    _webViewController = controller;
-                  },
-                  onLoadStop: (controller, url) async {
-                    widget.canGoBack = await controller.canGoBack();
-                    widget.canGoForward = await controller.canGoForward();
+            body: InAppWebView(
+              initialUrlRequest: URLRequest(
+                  url: Uri.parse(widget.url),
+                  method: 'POST',
+                  body: Uint8List.fromList(utf8.encode(
+                      "LOGIN=${widget.uid}&PASSWORD=${widget.pwd}&LOGIN_REQUEST=1&CHECK_LOGIN_MESSAGE=1&Submit=Login")),
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                  }),
+              onWebViewCreated: (controller) {
+                _webViewController = controller;
+              },
+              onScrollChanged: (controller, x, y) {
+                print('X pos: $x, Y pos: $y');
+              },
+              onLoadStop: (controller, url) async {
+                widget.canGoBack = await controller.canGoBack();
+                widget.canGoForward = await controller.canGoForward();
 
-                    setState(
-                      () {
-                        widget.isLoading = false;
-                        if (url.toString().contains('Logout')) {
-                          _logout();
-                        }
-                      },
-                    );
+                setState(
+                  () {
+                    widget.isLoading = false;
+                    if (url.toString().contains('Logout')) {
+                      _logout();
+                    }
                   },
-                ),
-              ],
+                );
+              },
             ),
           );
   }

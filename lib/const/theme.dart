@@ -32,9 +32,9 @@ class AppThemes {
               fontSize: 15,
               color: Color(ColorHex.DARK_GREY)),
           bodyText2: TextStyle(fontSize: 12, color: Color(ColorHex.DARK_GREY)),
-          subtitle1: TextStyle(fontSize: 10, color: Color(ColorHex.DARK_GREY)),
+          subtitle1: TextStyle(fontSize: 13, color: Color(ColorHex.warmGrey)),
           caption: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             color: Color(ColorHex.DARK_GREY),
           )),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -57,9 +57,9 @@ class AppThemes {
               fontSize: 15,
               color: Color(0xffb3afaf)),
           bodyText2: TextStyle(fontSize: 12, color: Color(0xffb3afaf)),
-          subtitle1: TextStyle(fontSize: 11, color: Color(0xffb3afaf)),
+          subtitle1: TextStyle(fontSize: 13, color: Color(0xffb3afaf)),
           caption: TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             color: Color(0xFFE8E8E8),
           )),
       appBarTheme: const AppBarTheme(

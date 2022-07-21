@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:investtech_app/const/theme.dart';
 
 import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/home_bloc/home_bloc.dart';
+import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/widgets/fade_animation.dart';
 import 'package:investtech_app/widgets/no_internet.dart';
 import 'package:open_store/open_store.dart';
@@ -34,7 +36,7 @@ import '../market Commentary/market_commentary.dart';
 import '../indices/indices.dart';
 import '../../widgets/todays_candidate.dart';
 import '../indices evaluation/indices_evaluation.dart';
-
+import 'package:simple_tooltip/simple_tooltip.dart';
 import 'package:event/event.dart';
 
 import '../top20/top20.dart';
@@ -65,6 +67,8 @@ class HomeOverviewState extends State<HomeOverview> {
   String? marketCode;
   String? marketId;
   String? marketName;
+  ThemeBloc? themeBloc;
+  bool? showTooltip;
 
   bool? lta;
   StreamSubscription? _reloadStreamSub;
@@ -88,8 +92,10 @@ class HomeOverviewState extends State<HomeOverview> {
     super.initState();
 
     getListValuesSF();
-
+    themeBloc = context.read<ThemeBloc>();
     controller.addListener(() {
+      turnOffTooltip();
+
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
     });
@@ -111,6 +117,16 @@ class HomeOverviewState extends State<HomeOverview> {
 
     startTime = DateTime.now();
     BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
+  }
+
+  turnOffTooltip() async {
+    if (showTooltip!) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool(PrefKeys.SHOW_TOOLTIP, false);
+      setState(() {
+        showTooltip = false;
+      });
+    }
   }
 
   void connectionChanged(dynamic hasConnection) {
@@ -152,12 +168,13 @@ class HomeOverviewState extends State<HomeOverview> {
         ));
 
     // after the SecondScreen result comes back update the Text widget with it
-
-    setState(() {
-      marketCode = result['marketCode'];
-      marketName = result['marketName'];
-    });
-    BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
+    if (result != null) {
+      setState(() {
+        marketCode = result['marketCode'];
+        marketName = result['marketName'];
+      });
+      BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
+    }
   }
 
   FutureOr onGoBack(dynamic value) {
@@ -172,6 +189,7 @@ class HomeOverviewState extends State<HomeOverview> {
     marketCode = prefs.getString(PrefKeys.SELECTED_MARKET_CODE) ?? 'in_nse';
     marketId = prefs.getString(PrefKeys.SELECTED_MARKET_ID) ?? '911';
     lta = prefs.getBool(PrefKeys.LTA_CONTAINER) ?? false;
+    showTooltip = prefs.getBool(PrefKeys.SHOW_TOOLTIP) ?? true;
   }
 
   @override
@@ -193,272 +211,271 @@ class HomeOverviewState extends State<HomeOverview> {
       backgroundColor: Colors.white,
       child: Container(
         padding: const EdgeInsets.only(top: 5),
-        child: isOffline
-            ? const NoInternet('rtrr')
-            : BlocBuilder<HomeBloc, HomeState>(builder: (ctx, state) {
-                if (state is HomeLoadedState) {
-                  teaserList = state.home.teaser;
-                  List reoderList = reorderString == ''
-                      ? []
-                      : reorderString.toString().split(',');
-                  analysisDate = state.home.analysesDate.toString();
-                  return Scaffold(
-                    backgroundColor: Theme.of(context).primaryColorDark,
-                    appBar: buildAppBar(context, teaserList),
-                    body: ListView(
-                      controller: controller,
-                      shrinkWrap: true,
-                      children: [
-                        Container(
-                          height: 40,
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(left: 10, top: 5),
-                          color: Theme.of(context).primaryColorDark,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+        child: BlocBuilder<HomeBloc, HomeState>(builder: (ctx, state) {
+          if (state is HomeLoadedState) {
+            teaserList = state.home.teaser;
+            List reoderList =
+                reorderString == '' ? [] : reorderString.toString().split(',');
+            analysisDate = state.home.analysesDate.toString();
+            return GestureDetector(
+              onTap: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setBool(PrefKeys.SHOW_TOOLTIP, false);
+                setState(() {
+                  showTooltip = false;
+                });
+              },
+              child: Scaffold(
+                backgroundColor: Theme.of(context).primaryColorDark,
+                appBar: buildAppBar(context, teaserList),
+                body: ListView(
+                  controller: controller,
+                  shrinkWrap: true,
+                  children: [
+                    Container(
+                      height: 40,
+                      width: double.infinity,
+                      padding: const EdgeInsets.only(left: 10, top: 5),
+                      color: Theme.of(context).primaryColorDark,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!
+                                .analysis_home_header_template(
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(state.home.analysesDate) *
+                                            1000)),
+                            style: getSmallestTextStyle(),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Row(
                             children: [
                               Text(
-                                AppLocalizations.of(context)!
-                                    .analysis_home_header_template(
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                            int.parse(state.home.analysesDate) *
-                                                1000)),
+                                interpolate(
+                                    AppLocalizations.of(context)!
+                                        .last_updated_home_header_template,
+                                    buildUpdatedTime()),
                                 style: getSmallestTextStyle(),
                               ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    interpolate(
-                                        AppLocalizations.of(context)!
-                                            .last_updated_home_header_template,
-                                        buildUpdatedTime()),
-                                    style: getSmallestTextStyle(),
+                              buildUpdatedTime(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 20,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.home.teaser.length,
+                      itemBuilder: (context, index) {
+                        return FadeAnimation(
+                          delay: 2,
+                          child: Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(
+                              bottom: 1,
+                            ),
+                            //padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.grey,
+                                    offset: Offset(0.0, 2.0),
+                                    blurRadius: 1.5,
+                                    spreadRadius: 0,
                                   ),
-                                  buildUpdatedTime(),
                                 ],
+                                border: const Border(
+                                    bottom: BorderSide(
+                                  width: 0.8,
+                                  color: Colors.black12,
+                                ))),
+                            child: Row(
+                              children: [
+                                if (state.home.teaser[index].productName ==
+                                    'marketCommentary') ...{
+                                  MarketCommentaries(
+                                    state.home.teaser[index],
+                                  ),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'todaysSignals') ...{
+                                  TodaysSignals(
+                                    state.home.teaser[index],
+                                  ),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'top20') ...{
+                                  TopTwenty(
+                                    state.home.teaser[index],
+                                  ),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'indicesAnalyses') ...{
+                                  Indices(
+                                    state.home.teaser[index],
+                                    'analyses',
+                                  ),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'todaysCandidate') ...{
+                                  TodaysCandidate(
+                                    state.home.teaser[index],
+                                    'case',
+                                  ),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'indicesEvaluations') ...{
+                                  IndicesEvaluation(state.home.teaser[index]),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'barometer') ...{
+                                  BarometerGraph(
+                                      state.home.teaser[index].content,
+                                      state.home.teaser[index].title),
+                                } else if (state
+                                            .home.teaser[index].productName ==
+                                        'webTV' &&
+                                    ["ose", "se_sse", "dk_kfx", "dk_inv"]
+                                        .contains(marketCode)) ...{
+                                  WebTVTeaser(state.home.teaser[index]),
+                                } else if (state
+                                        .home.teaser[index].productName ==
+                                    'favourites') ...{
+                                  FavoritesTeaser(state.home.teaser[index]),
+                                }
+
+                                //Text(),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    if (lta == true)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: const DecorationImage(
+                                  image: AssetImage(
+                                      'assets/images/lta_teaser_bg.png'),
+                                  fit: BoxFit.cover),
+                              color: const Color(ColorHex.black_chart_bg),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    prefs.setBool(
+                                        PrefKeys.LTA_CONTAINER, false);
+
+                                    setState(() {
+                                      lta = false;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.close),
+                                  color: const Color(ColorHex.lightGrey),
+                                ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 5),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      AppLocalizations.of(context)!.lta,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.white),
+                                    )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0, vertical: 5),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      AppLocalizations.of(context)!.lta_info,
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white),
+                                    )),
+                              ),
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      OpenStore.instance.open(
+                                        //appStoreId: 'com.investtech.investtechapp',
+                                        androidAppBundleId:
+                                            'com.investtech.learn_technical_analysis',
+                                      );
+                                    },
+                                    child: Text(
+                                      AppLocalizations.of(context)!.get_the_app,
+                                      style:
+                                          const TextStyle(color: Colors.orange),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Theme.of(context)
+                                          .appBarTheme
+                                          .backgroundColor,
+                                      textStyle: const TextStyle(
+                                          color: Color(ColorHex.ACCENT_COLOR)),
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         ),
-                        Container(
-                          height: 20,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: state.home.teaser.length,
-                          itemBuilder: (context, index) {
-                            return FadeAnimation(
-                              delay: 2,
-                              child: Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.only(
-                                  bottom: 1,
-                                ),
-                                //padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.grey,
-                                        offset: Offset(0.0, 2.0),
-                                        blurRadius: 1.5,
-                                        spreadRadius: 0,
-                                      ),
-                                    ],
-                                    border: const Border(
-                                        bottom: BorderSide(
-                                      width: 0.8,
-                                      color: Colors.black12,
-                                    ))),
-                                child: Row(
-                                  children: [
-                                    if (state.home.teaser[index].productName ==
-                                        'marketCommentary') ...{
-                                      MarketCommentaries(
-                                        state.home.teaser[index],
-                                      ),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'todaysSignals') ...{
-                                      TodaysSignals(
-                                        state.home.teaser[index],
-                                      ),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'top20') ...{
-                                      TopTwenty(
-                                        state.home.teaser[index],
-                                      ),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'indicesAnalyses') ...{
-                                      Indices(
-                                        state.home.teaser[index],
-                                        'analyses',
-                                      ),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'todaysCandidate') ...{
-                                      TodaysCandidate(
-                                        state.home.teaser[index],
-                                        'case',
-                                      ),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'indicesEvaluations') ...{
-                                      IndicesEvaluation(
-                                          state.home.teaser[index]),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'barometer') ...{
-                                      BarometerGraph(
-                                          state.home.teaser[index].content,
-                                          state.home.teaser[index].title),
-                                    } else if (state.home.teaser[index]
-                                                .productName ==
-                                            'webTV' &&
-                                        ["ose", "se_sse", "dk_kfx", "dk_inv"]
-                                            .contains(marketCode)) ...{
-                                      WebTVTeaser(state.home.teaser[index]),
-                                    } else if (state
-                                            .home.teaser[index].productName ==
-                                        'favourites') ...{
-                                      FavoritesTeaser(state.home.teaser[index]),
-                                    }
-
-                                    //Text(),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        if (lta == true)
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  image: const DecorationImage(
-                                      image: AssetImage(
-                                          'assets/images/lta_teaser_bg.png'),
-                                      fit: BoxFit.cover),
-                                  color: const Color(ColorHex.black_chart_bg),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Column(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                      onPressed: () async {
-                                        SharedPreferences prefs =
-                                            await SharedPreferences
-                                                .getInstance();
-                                        prefs.setBool(
-                                            PrefKeys.LTA_CONTAINER, false);
-
-                                        setState(() {
-                                          lta = false;
-                                        });
-                                      },
-                                      icon: const Icon(Icons.close),
-                                      color: const Color(ColorHex.lightGrey),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 5),
-                                    child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          AppLocalizations.of(context)!.lta,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              color: Colors.white),
-                                        )),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 5),
-                                    child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .lta_info,
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white),
-                                        )),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          OpenStore.instance.open(
-                                            //appStoreId: 'com.investtech.investtechapp',
-                                            androidAppBundleId:
-                                                'com.investtech.learn_technical_analysis',
-                                          );
-                                        },
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .get_the_app,
-                                          style: const TextStyle(
-                                              color: Colors.orange),
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Theme.of(context)
-                                              .appBarTheme
-                                              .backgroundColor,
-                                          textStyle: const TextStyle(
-                                              color:
-                                                  Color(ColorHex.ACCENT_COLOR)),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                } else if (state is ErrorState) {
-                  return Scaffold(
-                    body: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        NoInternet(state.errorBody),
-                        ElevatedButton(
-                          onPressed: () {
-                            BlocProvider.of<HomeBloc>(context)
-                                .add(GetHomePageEvent(marketCode));
-                          },
-                          child: Text(AppLocalizations.of(context)!.refresh),
-                          style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  const Color(ColorHex.ACCENT_COLOR)),
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white)),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.orange)));
-                }
-              }),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          } else if (state is ErrorState) {
+            return Scaffold(
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  NoInternet(state.errorBody),
+                  ElevatedButton(
+                    onPressed: () {
+                      BlocProvider.of<HomeBloc>(context)
+                          .add(GetHomePageEvent(marketCode));
+                    },
+                    child: Text(AppLocalizations.of(context)!.refresh),
+                    style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all<Color>(
+                            const Color(ColorHex.ACCENT_COLOR)),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white)),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)));
+          }
+        }),
         /*: FutureBuilder<Home>(
                   future: fetchData(),
                   builder: (context, snapshot) {
@@ -715,20 +732,44 @@ class HomeOverviewState extends State<HomeOverview> {
         onTap: () {
           awaitReturnValueFromSecondScreen(context);
         },
-        child: Row(
-          children: [
-            Text(
-              marketName ?? 'National S.E',
-              style: const TextStyle(fontSize: 15),
-            ),
-            Transform.rotate(
-              angle: 33, //set the angel
-              child: Icon(
-                Icons.play_arrow,
-                color: Colors.orange[800],
+        child: SimpleTooltip(
+          tooltipDirection: TooltipDirection.down,
+          arrowTipDistance: 2,
+          arrowLength: 10,
+          hideOnTooltipTap: true,
+          borderColor: themeBloc!.loadTheme == AppTheme.lightTheme
+              ? const Color(ColorHex.darkColorPrimary)
+              : const Color(ColorHex.white),
+          backgroundColor: themeBloc!.loadTheme == AppTheme.lightTheme
+              ? const Color(ColorHex.darkColorPrimary)
+              : const Color(ColorHex.white),
+          show: showTooltip!,
+          ballonPadding: const EdgeInsets.all(0),
+          targetCenter: const Offset(40, 40),
+          content: Text(
+            'Introducing Crypto Currencies! Now available as a new market',
+            style: TextStyle(
+                fontSize: DefaultTextStyle.of(context).style.fontSize,
+                color: themeBloc!.loadTheme == AppTheme.darkTheme
+                    ? const Color(ColorHex.darkColorPrimary)
+                    : const Color(ColorHex.white),
+                decoration: DefaultTextStyle.of(context).style.decoration),
+          ),
+          child: Row(
+            children: [
+              Text(
+                marketName ?? 'National S.E',
+                style: const TextStyle(fontSize: 15),
               ),
-            ),
-          ],
+              Transform.rotate(
+                angle: 33, //set the angel
+                child: Icon(
+                  Icons.play_arrow,
+                  color: Colors.orange[800],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       actions: [

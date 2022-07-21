@@ -122,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: Text(
                         AppLocalizations.of(context)!.account_settings,
                         style:
-                            TextStyle(color: Colors.orange[800], fontSize: 12),
+                            TextStyle(color: Colors.orange[800], fontSize: 15),
                       ),
                     ),
                     InkWell(
@@ -373,7 +373,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: Text(
                             AppLocalizations.of(context)!.sharing,
                             style: TextStyle(
-                                color: Colors.orange[800], fontSize: 12),
+                                color: Colors.orange[800], fontSize: 15),
                           ),
                         ),
                         ListTile(
@@ -437,7 +437,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: Text(
                             AppLocalizations.of(context)!.about,
                             style: TextStyle(
-                                color: Colors.orange[800], fontSize: 12),
+                                color: Colors.orange[800], fontSize: 15),
                           ),
                         ),
                         InkWell(

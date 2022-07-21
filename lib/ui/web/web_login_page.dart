@@ -220,8 +220,13 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                     DefaultTextStyle.of(context).style.color,
                                 //style: const TextStyle(),
                                 decoration: InputDecoration(
-                                  floatingLabelStyle: const TextStyle(
-                                      color: Color(ColorHex.warmGrey)),
+                                  floatingLabelStyle: TextStyle(
+                                    fontSize: 13,
+                                    color:
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? const Color(ColorHex.metalGrey)
+                                            : const Color(ColorHex.mediumGrey),
+                                  ),
                                   prefixIcon: Icon(
                                     Icons.people,
                                     color:
@@ -245,8 +250,13 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                   ),
                                   labelText:
                                       AppLocalizations.of(context)!.username,
-                                  labelStyle:
-                                      DefaultTextStyle.of(context).style,
+                                  labelStyle: TextStyle(
+                                    fontSize: 13,
+                                    color:
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? const Color(ColorHex.metalGrey)
+                                            : const Color(ColorHex.mediumGrey),
+                                  ),
                                 ),
                               ),
                             ),
@@ -264,8 +274,13 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                 cursorColor:
                                     DefaultTextStyle.of(context).style.color,
                                 decoration: InputDecoration(
-                                  floatingLabelStyle:
-                                      DefaultTextStyle.of(context).style,
+                                  floatingLabelStyle: TextStyle(
+                                    fontSize: 13,
+                                    color:
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? const Color(ColorHex.metalGrey)
+                                            : const Color(ColorHex.mediumGrey),
+                                  ),
                                   prefixIcon: Icon(
                                     Icons.vpn_key,
                                     color:
@@ -307,8 +322,13 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                   ),
                                   labelText:
                                       AppLocalizations.of(context)!.password,
-                                  labelStyle:
-                                      DefaultTextStyle.of(context).style,
+                                  labelStyle: TextStyle(
+                                    fontSize: 13,
+                                    color:
+                                        bloc!.loadTheme == AppTheme.lightTheme
+                                            ? const Color(ColorHex.metalGrey)
+                                            : const Color(ColorHex.mediumGrey),
+                                  ),
                                 ),
                               ),
                             ),
