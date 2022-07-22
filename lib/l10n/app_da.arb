@@ -38,7 +38,7 @@
     "medium_term": "Mellemlangt sigt",
     "long_term": "Langt sigt",
     "analysis_home_header_template": "Analyser: %1$s",
-    "last_updated_home_header_template": "Sidst modificeret: %1$s",
+    "last_updated_home_header_template": "Sidst modificeret: ",
     "do_not_include": "Medtag ikke",
     "reorder": "Omarranger",
     "home_min_items": "Minimum tre items",

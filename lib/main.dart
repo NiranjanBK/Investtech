@@ -28,6 +28,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 var analysisDate;
 var globalMarketId;
@@ -38,7 +39,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  //FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   // Get any initial links
   final PendingDynamicLinkData? initialLink =
       await FirebaseDynamicLinks.instance.getInitialLink();

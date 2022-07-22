@@ -92,7 +92,7 @@
     "just_now": "Soeben",
     "ago": "vor",
     "ago_template": "vor %1$s",
-    "last_updated_home_header_template": "Zuletzt aktualisiert: %1$s",
+    "last_updated_home_header_template": "Zuletzt aktualisiert: ",
     "subscription_valid_till": "Abonnement gültig bis",
     "add_favorites": "Favoriten hinzufügen",
     "advanced_charts_store_desc_short": "Analysen und Empfehlungen für 29.000+ Aktien",

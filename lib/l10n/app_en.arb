@@ -93,7 +93,7 @@
     "short_term": "Short Term",
     "medium_term": "Medium Term",
     "long_term": "Long Term",
-    "last_updated_home_header_template": "Last updated: %1$s",
+    "last_updated_home_header_template": "Last updated: ",
     "do_not_include": "Do not include",
     "reorder": "Reorder",
     "home_min_items": "Minimum 3 items",

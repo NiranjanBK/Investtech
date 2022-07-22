@@ -135,15 +135,6 @@ class HomeOverviewState extends State<HomeOverview> {
     });
   }
 
-  String interpolate(String string, StreamBuilder<DateTime> params) {
-    String result = string;
-    var replaceWith =
-        params.toString().replaceAll('StreamBuilder<DateTime>', '');
-    result = result.replaceAll('%1\$s', replaceWith);
-
-    return result;
-  }
-
   /*Future<Home> fetchData() async {
     await getListValuesSF();
     Response response = await ApiRepo().getHomePgae(marketCode);
@@ -204,6 +195,7 @@ class HomeOverviewState extends State<HomeOverview> {
     return RefreshIndicator(
       edgeOffset: 100,
       onRefresh: () {
+        startTime = DateTime.now();
         BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
         return Future.value();
       },
@@ -214,8 +206,7 @@ class HomeOverviewState extends State<HomeOverview> {
         child: BlocBuilder<HomeBloc, HomeState>(builder: (ctx, state) {
           if (state is HomeLoadedState) {
             teaserList = state.home.teaser;
-            List reoderList =
-                reorderString == '' ? [] : reorderString.toString().split(',');
+
             analysisDate = state.home.analysesDate.toString();
             return GestureDetector(
               onTap: () async {
@@ -254,10 +245,8 @@ class HomeOverviewState extends State<HomeOverview> {
                           Row(
                             children: [
                               Text(
-                                interpolate(
-                                    AppLocalizations.of(context)!
-                                        .last_updated_home_header_template,
-                                    buildUpdatedTime()),
+                                AppLocalizations.of(context)!
+                                    .last_updated_home_header_template,
                                 style: getSmallestTextStyle(),
                               ),
                               buildUpdatedTime(),
