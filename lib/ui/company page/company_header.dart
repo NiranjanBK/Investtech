@@ -34,16 +34,6 @@ class CompanyHeader extends StatelessWidget {
       this.priceDate,
       this.showDate});
 
-  getBoarderColor(int evalCode) {
-    if (evalCode > 0) {
-      return const Color(ColorHex.green);
-    } else if (evalCode == 0) {
-      return const Color(ColorHex.yellow);
-    } else {
-      return const Color(ColorHex.red);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     Map<String, String> evalInfo = {
@@ -103,7 +93,8 @@ class CompanyHeader extends StatelessWidget {
                     decoration: BoxDecoration(
                         border: Border(
                       bottom: BorderSide(
-                          color: getBoarderColor(int.parse(evalCode!)),
+                          color:
+                              ColorHex().getBoarderColor(int.parse(evalCode!)),
                           width: 7),
                     )),
                     child: Text(
@@ -169,8 +160,8 @@ class CompanyHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 2, right: 2),
                         decoration: BoxDecoration(
                             border: Border(
-                          bottom:
-                              BorderSide(color: getBoarderColor(1), width: 7),
+                          bottom: BorderSide(
+                              color: ColorHex().getBoarderColor(1), width: 7),
                         )),
                         child: Text(
                           AppLocalizations.of(context)!.positive,
@@ -185,8 +176,8 @@ class CompanyHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 2, left: 2),
                         decoration: BoxDecoration(
                             border: Border(
-                          bottom:
-                              BorderSide(color: getBoarderColor(-1), width: 7),
+                          bottom: BorderSide(
+                              color: ColorHex().getBoarderColor(-1), width: 7),
                         )),
                         child: Text(
                           AppLocalizations.of(context)!.negative,

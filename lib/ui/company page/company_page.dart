@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -122,36 +123,38 @@ class _CompanyPageState extends State<CompanyPage>
     return OrientationBuilder(builder: (context, orientation) {
       return widget.isTop20 == null
           ? Scaffold(
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(56),
-                child: BlocProvider<FavouriteBloc>(
-                  create: (BuildContext ctx) {
-                    var favBloc = FavouriteBloc(
-                      widget.cmpId,
-                    );
+              appBar: orientation == Orientation.landscape
+                  ? null
+                  : PreferredSize(
+                      preferredSize: const Size.fromHeight(56),
+                      child: BlocProvider<FavouriteBloc>(
+                        create: (BuildContext ctx) {
+                          var favBloc = FavouriteBloc(
+                            widget.cmpId,
+                          );
 
-                    favBloc.add(FavouriteBlocEvents.LOAD_FAVOURITE);
-                    return favBloc;
-                  },
-                  child: BlocBuilder<FavouriteBloc, FavouriteBlocState>(
-                    builder: (context, state) {
-                      if (state is FavouriteLoadedState) {
-                        return buildAppBar(context, state.favData, false);
-                      } else if (state is FavouriteModifiedState) {
-                        return buildAppBar(context, state.favData, false);
-                      } else if (state is FavouriteErrorState) {
-                        return AppBar(
-                          title: Text(state.error),
-                        );
-                      } else {
-                        return const CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.orange));
-                      }
-                    },
-                  ),
-                ),
-              ),
+                          favBloc.add(FavouriteBlocEvents.LOAD_FAVOURITE);
+                          return favBloc;
+                        },
+                        child: BlocBuilder<FavouriteBloc, FavouriteBlocState>(
+                          builder: (context, state) {
+                            if (state is FavouriteLoadedState) {
+                              return buildAppBar(context, state.favData, false);
+                            } else if (state is FavouriteModifiedState) {
+                              return buildAppBar(context, state.favData, false);
+                            } else if (state is FavouriteErrorState) {
+                              return AppBar(
+                                title: Text(state.error),
+                              );
+                            } else {
+                              return const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.orange));
+                            }
+                          },
+                        ),
+                      ),
+                    ),
               body: BlocProvider<CompanyBloc>(
                 create: (BuildContext ctx) {
                   var cmpBloc = CompanyBloc(
@@ -394,27 +397,42 @@ class _CompanyPageState extends State<CompanyPage>
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: CachedNetworkImage(
-                imageUrl: ApiRepo().getChartUrl(
-                    subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
-                    widget.chartId,
-                    bloc!.loadTheme == AppTheme.lightTheme
-                        ? CHART_STYLE_NORMAL
-                        : CHART_STYLE_BLACK,
-                    widget.cmpId),
-                placeholder: (context, url) => Container(
-                    height: 275,
-                    width: double.infinity,
-                    child: const Center(
-                        child: CircularProgressIndicator(
-                            color: Color(
-                      ColorHex.ACCENT_COLOR,
-                    )))),
-                errorWidget: (context, url, error) => SizedBox(
-                    height: 275,
-                    width: double.infinity,
-                    child: Center(
-                        child: Image.asset('assets/images/no_thumbnail.png'))),
+              child: InkWell(
+                onTap: () {
+                  SystemChrome.setEnabledSystemUIOverlays(
+                      [SystemUiOverlay.bottom]);
+                  if (MediaQuery.of(context).orientation ==
+                      Orientation.portrait) {
+                    SystemChrome.setPreferredOrientations(
+                        [DeviceOrientation.landscapeLeft]);
+                  } else {
+                    SystemChrome.setPreferredOrientations(
+                        [DeviceOrientation.portraitUp]);
+                  }
+                },
+                child: CachedNetworkImage(
+                  imageUrl: ApiRepo().getChartUrl(
+                      subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
+                      widget.chartId,
+                      bloc!.loadTheme == AppTheme.lightTheme
+                          ? CHART_STYLE_NORMAL
+                          : CHART_STYLE_BLACK,
+                      widget.cmpId),
+                  placeholder: (context, url) => Container(
+                      height: 275,
+                      width: double.infinity,
+                      child: const Center(
+                          child: CircularProgressIndicator(
+                              color: Color(
+                        ColorHex.ACCENT_COLOR,
+                      )))),
+                  errorWidget: (context, url, error) => SizedBox(
+                      height: 275,
+                      width: double.infinity,
+                      child: Center(
+                          child:
+                              Image.asset('assets/images/no_thumbnail.png'))),
+                ),
               ),
             ),
             subscribedUser
@@ -441,12 +459,13 @@ class _CompanyPageState extends State<CompanyPage>
                                             const Subscription(),
                                       ));
                                 },
-                              style: TextStyle(
-                                color: bloc!.loadTheme == AppTheme.lightTheme
-                                    ? const Color(ColorHex.black)
-                                    : const Color(ColorHex.white),
-                                //decoration: TextDecoration.underline,
-                              ))
+                              style: const TextStyle(
+                                  // color: bloc!.loadTheme == AppTheme.lightTheme
+                                  //     ? const Color(ColorHex.black)
+                                  //     : const Color(ColorHex.white),
+                                  color: Color(ColorHex.ACCENT_COLOR)
+                                  //decoration: TextDecoration.underline,
+                                  ))
                         ]),
                   ),
 
@@ -489,15 +508,22 @@ class _CompanyPageState extends State<CompanyPage>
   }
 
   Widget LandscapeMode(cmpData, subscribedUser, currentChartId) {
-    double _width = 50;
-    double _height = 50;
+    var pixelRatio = window.devicePixelRatio;
+    var logicalScreenSize = window.physicalSize / pixelRatio;
+    var logicalWidth = logicalScreenSize.width;
+    //var logicalHeight = logicalScreenSize.height;
+
+    int width = logicalWidth.toInt();
+    int height = (width * 0.6).toInt();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     if (!hideAppBar) {
       Future.delayed(const Duration(seconds: 10), () {
-        setState(() {
-          hideAppBar = true;
-        });
+        if (mounted) {
+          setState(() {
+            hideAppBar = true;
+          });
+        }
       });
     }
 
@@ -517,7 +543,8 @@ class _CompanyPageState extends State<CompanyPage>
                     subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
                     currentChartId,
                     type,
-                    widget.cmpId),
+                    widget.cmpId,
+                    '$width,$height'),
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -559,8 +586,8 @@ class _CompanyPageState extends State<CompanyPage>
                           });
                         },
                         child: Container(
-                          height: _height,
-                          width: _width,
+                          height: 50,
+                          width: 50,
                           decoration: BoxDecoration(
                             color: swtichChartThemeColor ?? Colors.black,
                             borderRadius: const BorderRadius.only(
@@ -762,7 +789,7 @@ class _CompanyPageState extends State<CompanyPage>
         },
         child: Icon(
           widget.isFavourite ? Icons.star_outlined : Icons.star_border_outlined,
-          color: Colors.orange[500],
+          color: const Color(ColorHex.ACCENT_COLOR),
         ),
       ),
       Padding(
@@ -856,7 +883,8 @@ class _CompanyPageState extends State<CompanyPage>
                               height: 25,
                               child: Text(
                                 AppLocalizations.of(context)!.save,
-                                style: TextStyle(color: Colors.orange[800]),
+                                style: const TextStyle(
+                                    color: Color(ColorHex.ACCENT_COLOR)),
                               ),
                             ),
                             onPressed: () async {
@@ -882,7 +910,8 @@ class _CompanyPageState extends State<CompanyPage>
                           //height: 25,
                           child: Text(
                             AppLocalizations.of(context)!.cancel,
-                            style: TextStyle(color: Colors.orange[800]),
+                            style: const TextStyle(
+                                color: Color(ColorHex.ACCENT_COLOR)),
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -897,7 +926,7 @@ class _CompanyPageState extends State<CompanyPage>
           },
           child: Icon(
             widget.hasNote ? Icons.mode_comment : Icons.mode_comment_outlined,
-            color: Colors.orange[500],
+            color: const Color(ColorHex.ACCENT_COLOR),
           ),
         ),
       ),
@@ -916,9 +945,9 @@ class _CompanyPageState extends State<CompanyPage>
               text: shareText,
             );
           },
-          child: Icon(
+          child: const Icon(
             Icons.share,
-            color: Colors.orange[500],
+            color: Color(ColorHex.ACCENT_COLOR),
           ),
         ),
       ),

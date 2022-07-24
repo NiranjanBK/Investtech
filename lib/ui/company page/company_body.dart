@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:investtech_app/const/chart_const.dart';
@@ -12,6 +13,7 @@ import 'package:investtech_app/network/models/company.dart';
 import 'package:investtech_app/ui/blocs/company_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/ui/company%20page/company_header.dart';
+import 'package:investtech_app/ui/subscription/subscription_page.dart';
 import 'package:investtech_app/widgets/no_internet.dart';
 import 'package:investtech_app/widgets/progress_indicator.dart';
 
@@ -71,28 +73,44 @@ class CompanyBody extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: CachedNetworkImage(
-                    imageUrl: ApiRepo().getChartUrl(
-                        subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
-                        chartId,
-                        themeBloc.loadTheme == AppTheme.lightTheme
-                            ? CHART_STYLE_NORMAL
-                            : CHART_STYLE_BLACK,
-                        companyId),
-                    placeholder: (context, url) => Container(
-                        height: 275,
-                        width: double.infinity,
-                        child: const Center(
-                            child: CircularProgressIndicator(
-                                color: Color(
-                          ColorHex.ACCENT_COLOR,
-                        )))),
-                    errorWidget: (context, url, error) => SizedBox(
-                        height: 275,
-                        width: double.infinity,
-                        child: Center(
-                            child:
-                                Image.asset('assets/images/no_thumbnail.png'))),
+                  child: InkWell(
+                    onTap: () {
+                      SystemChrome.setEnabledSystemUIOverlays(
+                          [SystemUiOverlay.bottom]);
+                      if (MediaQuery.of(context).orientation ==
+                          Orientation.portrait) {
+                        SystemChrome.setPreferredOrientations(
+                            [DeviceOrientation.landscapeLeft]);
+                      } else {
+                        SystemChrome.setPreferredOrientations(
+                            [DeviceOrientation.portraitUp]);
+                      }
+                    },
+                    child: CachedNetworkImage(
+                      imageUrl: ApiRepo().getChartUrl(
+                          subscribedUser
+                              ? CHART_TYPE_ADVANCED
+                              : CHART_TYPE_FREE,
+                          chartId,
+                          themeBloc.loadTheme == AppTheme.lightTheme
+                              ? CHART_STYLE_NORMAL
+                              : CHART_STYLE_BLACK,
+                          companyId),
+                      placeholder: (context, url) => Container(
+                          height: 275,
+                          width: double.infinity,
+                          child: const Center(
+                              child: CircularProgressIndicator(
+                                  color: Color(
+                            ColorHex.ACCENT_COLOR,
+                          )))),
+                      errorWidget: (context, url, error) => SizedBox(
+                          height: 275,
+                          width: double.infinity,
+                          child: Center(
+                              child: Image.asset(
+                                  'assets/images/no_thumbnail.png'))),
+                    ),
                   ),
                 ),
                 subscribedUser
@@ -112,10 +130,15 @@ class CompanyBody extends StatelessWidget {
                                   text: AppLocalizations.of(context)!.read_more,
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      print('Go to subscription page');
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const Subscription(),
+                                          ));
                                     },
                                   style: const TextStyle(
-                                    color: Color(ColorHex.black),
+                                    color: Color(ColorHex.ACCENT_COLOR),
                                     //decoration: TextDecoration.underline,
                                   ))
                             ]),

@@ -13,8 +13,8 @@ class ProductHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(top: 15, bottom: 10, left: 16, right: 16),
       decoration: BoxDecoration(
-          color: Theme.of(context).primaryColorDark,
-          border: const Border(bottom: BorderSide(color: Colors.black12))),
+          //color: Theme.of(context).primaryColorDark, border: const Border(bottom: BorderSide(color: Colors.black12))
+          ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

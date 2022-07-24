@@ -37,19 +37,19 @@ class BarometerGraphState extends State<BarometerGraph> {
         int.parse(_barometer.stockBarometer.watch) / totalStocks * 100;
 
     final List<ChartData> chartData = [
-      ChartData(
-          _barometer.stockBarometer.legendBuy, buyPct, (Colors.green[400])!),
+      ChartData(_barometer.stockBarometer.legendBuy, buyPct,
+          const Color(ColorHex.APP_GREEN_A90)),
       ChartData(_barometer.stockBarometer.legendWatch, watchPct,
-          (Colors.yellow[400])!),
-      ChartData(
-          _barometer.stockBarometer.legendSell, sellPct, (Colors.red[400])!),
+          const Color(ColorHex.APP_YELLOW_A90)),
+      ChartData(_barometer.stockBarometer.legendSell, sellPct,
+          const Color(ColorHex.APP_RED_A90)),
     ];
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(top: 0),
         child: Column(
           children: [
-            ProductHeader('', 0),
+            ProductHeader(widget.title, 0),
             const SizedBox(
               height: 10,
             ),

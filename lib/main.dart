@@ -93,7 +93,6 @@ void main() async {
         validCountryCodes.contains(countryCode.toString().toLowerCase())
             ? countryCode.toString().toLowerCase()
             : 'us';
-    print(countryCode);
     await DatabaseHelper().setUserMarketPref(countryCode.toLowerCase());
   }
 

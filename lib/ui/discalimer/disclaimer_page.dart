@@ -32,7 +32,7 @@ class Disclaimer extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    Text(AppLocalizations.of(context)!.full_disclaimer),
+                    buildDisclaimer(context),
                     const Spacer(),
                     Row(
                       children: [
@@ -63,9 +63,10 @@ class Disclaimer extends StatelessWidget {
                           style: ButtonStyle(
                             fixedSize: MaterialStateProperty.all<Size>(
                                 const Size(175, 20)),
-                            padding: MaterialStateProperty.all<
-                                    EdgeInsetsGeometry>(
-                                EdgeInsets.only(top: 8, bottom: 8, left: 16)),
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                    const EdgeInsets.only(
+                                        top: 8, bottom: 8, left: 16)),
                             backgroundColor:
                                 MaterialStateProperty.all<Color>(Colors.white),
                             foregroundColor: MaterialStateProperty.all<Color>(
@@ -77,23 +78,28 @@ class Disclaimer extends StatelessWidget {
                   ],
                 ))
             : Padding(
-                padding: const EdgeInsets.all(10),
-                child: Linkify(
-                  options: const LinkifyOptions(defaultToHttps: true),
-                  onOpen: (link) async {
-                    if (await canLaunchUrl(Uri.parse(link.url))) {
-                      await launchUrl(Uri.parse(link.url));
-                    } else {
-                      throw 'Could not launch $link';
-                    }
-                  },
-                  text: AppLocalizations.of(context)!.full_disclaimer,
-                  //style: DefaultTextStyle.of(context).style,
-                  linkStyle: const TextStyle(
-                    color: Color(ColorHex.teal),
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
+                padding: const EdgeInsets.all(20),
+                child: buildDisclaimer(context),
               ));
+  }
+
+  Linkify buildDisclaimer(BuildContext context) {
+    return Linkify(
+      textAlign: TextAlign.justify,
+      options: const LinkifyOptions(defaultToHttps: true),
+      onOpen: (link) async {
+        if (await canLaunchUrl(Uri.parse(link.url))) {
+          await launchUrl(Uri.parse(link.url));
+        } else {
+          throw 'Could not launch $link';
+        }
+      },
+      text: AppLocalizations.of(context)!.full_disclaimer.replaceAll('\\', ''),
+      style: const TextStyle(fontSize: 14, height: 1.5),
+      linkStyle: const TextStyle(
+        color: Color(ColorHex.teal),
+        decoration: TextDecoration.underline,
+      ),
+    );
   }
 }

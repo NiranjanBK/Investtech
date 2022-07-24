@@ -152,7 +152,8 @@ class ApiRepo {
       [chartType = CHART_TYPE_FREE,
       chartTerm = CHART_TERM_MEDIUM,
       style = CHART_STYLE_NORMAL,
-      companyId]) {
+      companyId,
+      size = '1080,648']) {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = "https://www.investtech.com/mobile/img.php?";
     if (chartType == CHART_TYPE_ADVANCED) {
@@ -162,7 +163,8 @@ class ApiRepo {
       var type = "free,$companyId";
       url += "type=$type";
     }
-    return '$url&size=1080,648&style=$style&variant=mobile&density=2.75';
+    print('$url&size=$size&style=$style&variant=mobile&density=2.75');
+    return '$url&size=$size&style=$style&variant=mobile&density=2.75';
   }
 
   Future<Response> getTop20DetailPage() async {

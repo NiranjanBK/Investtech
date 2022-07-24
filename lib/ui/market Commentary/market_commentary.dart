@@ -14,16 +14,6 @@ class MarketCommentaries extends StatelessWidget {
 
   MarketCommentaries(this._marketData);
 
-  getBoarderColor(int evalCode) {
-    if (evalCode > 0) {
-      return const Color(ColorHex.green);
-    } else if (evalCode == 0) {
-      return const Color(ColorHex.yellow);
-    } else {
-      return const Color(ColorHex.red);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var _marketCommentaries = jsonDecode(jsonEncode(_marketData))['content']
@@ -60,16 +50,14 @@ class MarketCommentaries extends StatelessWidget {
                 //crossAxisSpacing: 1.0,
               ),
               itemBuilder: (ctx, index) {
-                Color? cardBackground = BlocProvider.of<ThemeBloc>(context)
-                            .loadTheme ==
-                        AppTheme.darkTheme
-                    ? Theme.of(context).primaryColor
-                    : double.parse((commentaryObj[index].evaluationCode)) > 0
-                        ? Colors.green[50]
-                        : double.parse((commentaryObj[index].evaluationCode)) ==
-                                0
-                            ? Colors.orange[50]
-                            : Colors.red[100];
+                Color? cardBackground =
+                    BlocProvider.of<ThemeBloc>(context).loadTheme ==
+                            AppTheme.darkTheme
+                        ? Theme.of(context).primaryColor
+                        : ColorHex()
+                            .getBoarderColor(
+                                int.parse(commentaryObj[index].evaluationCode))
+                            .withAlpha(0x1A);
                 return InkWell(
                   onTap: () {
                     Navigator.push(
@@ -89,7 +77,7 @@ class MarketCommentaries extends StatelessWidget {
                         Container(
                             height: 10,
                             // margin: EdgeInsets.only(top: 5),
-                            color: getBoarderColor(int.parse(
+                            color: ColorHex().getBoarderColor(int.parse(
                                 commentaryObj[index].evaluationCode))),
                         Expanded(
                           child: Container(
@@ -127,7 +115,7 @@ class MarketCommentaries extends StatelessWidget {
                                 Text(
                                   commentaryObj[index].title,
                                   style: const TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ],

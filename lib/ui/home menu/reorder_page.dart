@@ -156,7 +156,7 @@ class _ReorderPageState extends State<ReorderPage> {
                         key: Key(item),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
-                              vertical: 0.0, horizontal: 10.0),
+                              vertical: 0.0, horizontal: 16.0),
                           dense: true,
                           title: Row(
                             children: [

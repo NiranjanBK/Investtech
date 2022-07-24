@@ -72,7 +72,9 @@ class _IndicesDetailPageState extends State<IndicesDetailPage> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     separatorBuilder: (BuildContext context, int index) =>
-                        const Divider(),
+                        const Divider(
+                      color: Colors.grey,
+                    ),
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {

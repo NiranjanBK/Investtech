@@ -18,7 +18,8 @@ class RecentSearchList extends StatelessWidget {
             shrinkWrap: true,
             children: [
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Text(AppLocalizations.of(context)!.recent_searches),
               ),
               ListView.separated(

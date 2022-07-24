@@ -12,19 +12,19 @@ class IndicesList extends StatelessWidget {
   displayArrow(int evalCode) {
     if (evalCode > 0) {
       return Image.asset(
-        'assets/images/arrow_green_small.gif',
+        'assets/images/arrow_green.png',
         width: 20,
         height: 20,
       );
     } else if (evalCode == 0) {
       return Image.asset(
-        'assets/images/arrow_yellow_small.gif',
+        'assets/images/arrow_yellow.png',
         width: 20,
         height: 20,
       );
     } else {
       return Image.asset(
-        'assets/images/arrow_red_small.gif',
+        'assets/images/arrow_red.png',
         width: 20,
         height: 20,
       );

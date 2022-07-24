@@ -83,8 +83,7 @@ class TodaysSignalDetailPage extends StatelessWidget {
                                 decoration: const BoxDecoration(
                                     border: Border(
                                         bottom: BorderSide(
-                                            color: Colors.blueGrey,
-                                            width: 0.5))),
+                                            color: Colors.grey, width: 0.5))),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [

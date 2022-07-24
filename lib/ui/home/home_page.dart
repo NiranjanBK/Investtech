@@ -217,18 +217,19 @@ class HomeOverviewState extends State<HomeOverview> {
                 });
               },
               child: Scaffold(
-                backgroundColor: Theme.of(context).primaryColorDark,
+                //backgroundColor: Theme.of(context).primaryColorDark,
                 appBar: buildAppBar(context, teaserList),
                 body: ListView(
                   controller: controller,
                   shrinkWrap: true,
                   children: [
                     Container(
-                      height: 40,
+                      height: 45,
                       width: double.infinity,
-                      padding: const EdgeInsets.only(left: 10, top: 5),
-                      color: Theme.of(context).primaryColorDark,
-                      child: Column(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      //color: Theme.of(context).appBarTheme.backgroundColor,
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -239,10 +240,9 @@ class HomeOverviewState extends State<HomeOverview> {
                                             1000)),
                             style: getSmallestTextStyle(),
                           ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
+                          const Spacer(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                 AppLocalizations.of(context)!
@@ -274,18 +274,18 @@ class HomeOverviewState extends State<HomeOverview> {
                             //padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.grey,
-                                    offset: Offset(0.0, 2.0),
-                                    blurRadius: 1.5,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
+                                // boxShadow: const [
+                                //   BoxShadow(
+                                //     color: Colors.grey,
+                                //     offset: Offset(0.0, 2.0),
+                                //     blurRadius: 1.5,
+                                //     spreadRadius: 0,
+                                //   ),
+                                // ],
                                 border: const Border(
                                     bottom: BorderSide(
                                   width: 0.8,
-                                  color: Colors.black12,
+                                  color: Color(ColorHex.warmGrey),
                                 ))),
                             child: Row(
                               children: [

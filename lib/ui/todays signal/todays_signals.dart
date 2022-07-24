@@ -45,7 +45,7 @@ class _TodaysSignalsState extends State<TodaysSignals> {
                 ),
                 ListView.separated(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: _signals.length,
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(),
@@ -66,7 +66,8 @@ class _TodaysSignalsState extends State<TodaysSignals> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_signals[index]['ticker'],
+                          Text(
+                              '${_signals[index]['companyName']} (${_signals[index]["ticker"]})',
                               style: getBoldTextStyle()),
                           const SizedBox(
                             height: 3,

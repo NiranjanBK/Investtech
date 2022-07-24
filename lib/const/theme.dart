@@ -22,7 +22,7 @@ class AppThemes {
       iconTheme: const IconThemeData(color: Color(0xFFC0C0C0)),
 
       // Define the default font family.
-      fontFamily: 'Georgia',
+      //fontFamily: 'Georgia',
 
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.

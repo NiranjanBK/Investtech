@@ -184,7 +184,7 @@ class _SearchItemPageState extends State<SearchItemPage> {
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
+                              vertical: 10, horizontal: 16),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,15 +228,15 @@ class _SearchItemPageState extends State<SearchItemPage> {
                                         fontSize: 12),
                                   ),
                                   Text(
-                                    '${double.parse((searchResult![index].changeVal))}(${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
+                                    '${double.parse((searchResult![index].changeVal))} (${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
                                     style: TextStyle(
                                         fontSize: 12,
                                         color: double.parse(
                                                     (searchResult![index]
                                                         .changeVal)) >
                                                 0
-                                            ? Colors.green[900]
-                                            : Colors.red[900]),
+                                            ? const Color(ColorHex.green)
+                                            : const Color(ColorHex.red)),
                                   ),
                                 ],
                               ),
