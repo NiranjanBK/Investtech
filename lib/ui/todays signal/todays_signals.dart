@@ -48,7 +48,9 @@ class _TodaysSignalsState extends State<TodaysSignals> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _signals.length,
                   separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
+                      const Divider(
+                    color: Colors.grey,
+                  ),
                   itemBuilder: (ctx, index) {
                     return InkWell(
                       onTap: () {
@@ -68,7 +70,7 @@ class _TodaysSignalsState extends State<TodaysSignals> {
                         children: [
                           Text(
                               '${_signals[index]['companyName']} (${_signals[index]["ticker"]})',
-                              style: getBoldTextStyle()),
+                              style: Theme.of(context).textTheme.headline4),
                           const SizedBox(
                             height: 3,
                           ),

@@ -47,14 +47,14 @@ class CompanyHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$companyName ($ticker)',
-                style: getNameAndTickerTextStyle(),
+                '$companyName (${ticker.toUpperCase()})',
+                style: Theme.of(context).textTheme.headline3,
               ),
               Row(
                 children: [
                   Text(
                     '${double.parse(close)}',
-                    style: getSmallBoldTextStyle(),
+                    style: Theme.of(context).textTheme.headline3,
                   ),
                   Text(
                     ' (${double.parse(changePct)}%)',
@@ -65,7 +65,7 @@ class CompanyHeader extends StatelessWidget {
                         fontSize: 12),
                   ),
                   Text(showDate == null ? '' : ', ${date.toString()} ',
-                      style: getSmallTextStyle()),
+                      style: Theme.of(context).textTheme.headline3),
                 ],
               ),
               const SizedBox(
@@ -99,7 +99,7 @@ class CompanyHeader extends StatelessWidget {
                     )),
                     child: Text(
                       evaluation.toString(),
-                      style: getEvaluationTextStyle(),
+                      style: Theme.of(context).textTheme.headline1,
                     ),
                   )
                 ],
@@ -110,14 +110,14 @@ class CompanyHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$companyName ($ticker)',
-                style: getNameAndTickerTextStyle(),
+                '$companyName (${ticker.toUpperCase()})',
+                style: Theme.of(context).textTheme.headline3,
               ),
               Row(
                 children: [
                   Text(
                     '${double.parse(close)}',
-                    style: getSmallBoldTextStyle(),
+                    style: Theme.of(context).textTheme.headline3,
                   ),
                   Text(
                     ' (${double.parse(changePct)}%)',
@@ -128,7 +128,7 @@ class CompanyHeader extends StatelessWidget {
                         fontSize: 12),
                   ),
                   Text(showDate == null ? '' : ', ${date.toString()} ',
-                      style: getSmallTextStyle()),
+                      style: Theme.of(context).textTheme.headline3),
                 ],
               ),
               Padding(
@@ -161,7 +161,7 @@ class CompanyHeader extends StatelessWidget {
                         decoration: BoxDecoration(
                             border: Border(
                           bottom: BorderSide(
-                              color: ColorHex().getBoarderColor(1), width: 7),
+                              color: ColorHex().getBoarderColor(2), width: 7),
                         )),
                         child: Text(
                           AppLocalizations.of(context)!.positive,
@@ -177,7 +177,7 @@ class CompanyHeader extends StatelessWidget {
                         decoration: BoxDecoration(
                             border: Border(
                           bottom: BorderSide(
-                              color: ColorHex().getBoarderColor(-1), width: 7),
+                              color: ColorHex().getBoarderColor(-2), width: 7),
                         )),
                         child: Text(
                           AppLocalizations.of(context)!.negative,

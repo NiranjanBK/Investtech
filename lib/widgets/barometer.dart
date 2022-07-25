@@ -55,7 +55,7 @@ class BarometerGraphState extends State<BarometerGraph> {
             ),
             Text(
               _barometer.stockBarometer.market,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headline4,
             ),
             const SizedBox(
               height: 10,
@@ -71,7 +71,7 @@ class BarometerGraphState extends State<BarometerGraph> {
                       innerRadius: '20.0',
                       radius: '100',
                       dataLabelMapper: (ChartData data, _) =>
-                          '${data.y.toStringAsFixed(1)} %\n${data.x}',
+                          '${data.y.roundToDouble()}%\n${data.x}',
                       dataLabelSettings:
                           const DataLabelSettings(isVisible: true),
                       dataSource: chartData,

@@ -508,6 +508,7 @@ class _CompanyPageState extends State<CompanyPage>
   }
 
   Widget LandscapeMode(cmpData, subscribedUser, currentChartId) {
+    var _height = 0;
     var pixelRatio = window.devicePixelRatio;
     var logicalScreenSize = window.physicalSize / pixelRatio;
     var logicalWidth = logicalScreenSize.width;
@@ -533,6 +534,7 @@ class _CompanyPageState extends State<CompanyPage>
           onTap: () {
             setState(() {
               hideAppBar = !hideAppBar;
+              _height = 45;
             });
           },
           child: Stack(
@@ -600,51 +602,62 @@ class _CompanyPageState extends State<CompanyPage>
             ],
           ),
         ),
-        hideAppBar
-            ? Container()
-            : DefaultTextStyle.merge(
-                style: TextStyle(
-                  color:
-                      type == CHART_STYLE_NORMAL ? Colors.black : Colors.white,
+        AnimatedContainer(
+          duration: const Duration(seconds: 2),
+          child: hideAppBar
+              ? Container()
+              : DefaultTextStyle.merge(
+                  style: TextStyle(
+                    color: type == CHART_STYLE_NORMAL
+                        ? Colors.black
+                        : Colors.white,
+                  ),
+                  child: Container(
+                    height: 45,
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    decoration: BoxDecoration(
+                        color: type == CHART_STYLE_NORMAL
+                            ? Colors.white
+                            : Colors.black,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: Offset(0.0, 2.0),
+                            blurRadius: 1.5,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                        border: const Border(
+                            bottom: BorderSide(
+                          width: 0.8,
+                          color: Colors.black12,
+                        ))),
+                    child: Row(children: [
+                      CompanyPriceQuote(cmpData, subscribedUser),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 14),
+                        child: InkWell(
+                            onTap: () {
+                              SystemChrome.setEnabledSystemUIOverlays(
+                                  [SystemUiOverlay.bottom]);
+                              if (MediaQuery.of(context).orientation ==
+                                  Orientation.portrait) {
+                                SystemChrome.setPreferredOrientations(
+                                    [DeviceOrientation.landscapeLeft]);
+                              } else {
+                                SystemChrome.setPreferredOrientations(
+                                    [DeviceOrientation.portraitUp]);
+                              }
+                            },
+                            child: const Icon(Icons.close)),
+                      )
+                    ]),
+                  ),
                 ),
-                child: Container(
-                  height: 45,
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: type == CHART_STYLE_NORMAL
-                          ? Colors.white
-                          : Colors.black,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 2.0),
-                          blurRadius: 1.5,
-                          spreadRadius: 0,
-                        ),
-                      ],
-                      border: const Border(
-                          bottom: BorderSide(
-                        width: 0.8,
-                        color: Colors.black12,
-                      ))),
-                  child: Row(children: [
-                    CompanyPriceQuote(cmpData, subscribedUser),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 14),
-                      child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              hideAppBar = !hideAppBar;
-                            });
-                          },
-                          child: const Icon(Icons.close)),
-                    )
-                  ]),
-                ),
-              ),
+        ),
       ],
     );
   }

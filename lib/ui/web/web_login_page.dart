@@ -167,6 +167,10 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                 color: Theme.of(context)
                                     .appBarTheme
                                     .backgroundColor,
+                                icon: const Icon(
+                                  Icons.more_vert,
+                                  color: Color(ColorHex.ACCENT_COLOR),
+                                ),
                                 onSelected: (value) {
                                   switch (value) {
                                     case 'Settings':

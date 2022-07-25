@@ -1,5 +1,5 @@
 {
-    "analysis_home_header_template": "Analyser: {date}",
+    "analysis_home_header_template": "Analyser\n{date}",
     "language_code": "da",
     "full_disclaimer": "Investtech garanterer ikke for fuldstændigheden eller rigtigheden af analysen. Eventuel eksponering i forhold til de råd / signaler, som fremkommer i analyserne, står helt og holdent for investors regning og risiko. Investtech er hverken direkte eller indirekte ansvarlig for tab, der opstår som følge af brug af Investtechs analyser. Oplysninger om eventuelle interessekonflikter vil altid fremgå af investeringsanbefalingen. Yderligere information om Investtechs analyser findes her www.investtech.com/disclaimer The content provided by Investtech.com is NOT SEC or FSA regulated and is therefore not intended for US or UK consumers.",
     "short_disclaimer": "Investtech er ikke ansvarlig for tab af nogen art, hverken direkte eller inddirekte, der måtte opstå som et resultat af brugen af Investtech\\'s analyser. Yderligere information om Investtech\\'s analyser findes her www.investtech.com/disclaimer",
@@ -38,7 +38,7 @@
     "medium_term": "Mellemlangt sigt",
     "long_term": "Langt sigt",
     "analysis_home_header_template": "Analyser: %1$s",
-    "last_updated_home_header_template": "Sidst modificeret: ",
+    "last_updated_home_header_template": "Sidst modificeret",
     "do_not_include": "Medtag ikke",
     "reorder": "Omarranger",
     "home_min_items": "Minimum tre items",

@@ -257,7 +257,7 @@ class HomeOverviewState extends State<HomeOverview> {
                     ),
                     Container(
                       height: 20,
-                      color: Theme.of(context).primaryColorDark,
+                      color: Theme.of(context).primaryColor,
                     ),
                     ListView.builder(
                       shrinkWrap: true,
@@ -778,7 +778,8 @@ class HomeOverviewState extends State<HomeOverview> {
               color: Colors.orange[800],
             )),
         PopupMenuButton(
-            icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+            icon: const Icon(Icons.more_vert,
+                color: Color(ColorHex.ACCENT_COLOR)),
             color: Theme.of(context).appBarTheme.backgroundColor,
             onSelected: (value) {
               switch (value) {

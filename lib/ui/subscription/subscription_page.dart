@@ -313,6 +313,11 @@ class _SubscriptionState extends State<Subscription> {
                                   ))
                               : null;
                         },
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                const Color(ColorHex.subscription_orange)),
+                            foregroundColor: MaterialStateProperty.all<Color>(
+                                const Color(ColorHex.ACCENT_COLOR))),
                         child: ListTile(
                           title: Text(
                             AppLocalizations.of(context)!.advanced_charts,
@@ -369,11 +374,6 @@ class _SubscriptionState extends State<Subscription> {
                                   ],
                                 ),
                         ),
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                const Color(ColorHex.subscription_orange)),
-                            foregroundColor: MaterialStateProperty.all<Color>(
-                                const Color(ColorHex.ACCENT_COLOR))),
                       ),
                     ),
                   ]),

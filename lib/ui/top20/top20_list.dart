@@ -13,7 +13,9 @@ class Top20List extends StatelessWidget {
       shrinkWrap: true,
       itemCount: top20Obj.length,
       physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      separatorBuilder: (BuildContext context, int index) => const Divider(
+        color: Colors.grey,
+      ),
       itemBuilder: (ctx, index) {
         return InkWell(
           onTap: () {
@@ -64,7 +66,7 @@ class Top20List extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${double.parse((top20Obj[index].changeVal))}(${double.parse((top20Obj[index].changePct)).toStringAsFixed(2)}%)',
+                    '${double.parse((top20Obj[index].changeVal))} (${double.parse((top20Obj[index].changePct)).toStringAsFixed(2)}%)',
                     style: TextStyle(
                         fontSize: 12,
                         color: double.parse((top20Obj[index].changeVal)) > 0

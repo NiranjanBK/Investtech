@@ -46,7 +46,7 @@ class MarketCommentaries extends StatelessWidget {
               itemCount: commentaryObj.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                //childAspectRatio: 0.9,
+                childAspectRatio: 0.9,
                 //crossAxisSpacing: 1.0,
               ),
               itemBuilder: (ctx, index) {
@@ -88,17 +88,13 @@ class MarketCommentaries extends StatelessWidget {
                               children: [
                                 Text(
                                   commentaryObj[index].market,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16),
+                                  style: Theme.of(context).textTheme.headline1,
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   double.parse((commentaryObj[index].close))
                                       .toStringAsFixed(2),
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16),
+                                  style: Theme.of(context).textTheme.headline1,
                                 ),
                                 const SizedBox(height: 2),
                                 Text(

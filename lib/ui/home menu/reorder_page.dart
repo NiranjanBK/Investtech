@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
+import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/network/models/home.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/ui/home/home_page.dart';
@@ -112,11 +113,19 @@ class _ReorderPageState extends State<ReorderPage> {
       '4': AppLocalizations.of(context)!.indices_evaluation,
       '5': AppLocalizations.of(context)!.todays_candidate.replaceAll('\\', ''),
       '6': AppLocalizations.of(context)!.top20,
-      '7': AppLocalizations.of(context)!.favourite,
+      '7': AppLocalizations.of(context)!.favourites,
       '8': AppLocalizations.of(context)!.web_tv,
     };
     return Scaffold(
       appBar: AppBar(
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Center(
+              child: Text(AppLocalizations.of(context)!.close,
+                  style: Theme.of(context).appBarTheme.toolbarTextStyle)),
+        ),
         title: Text(AppLocalizations.of(context)!.home),
         actions: [
           InkWell(
@@ -132,9 +141,14 @@ class _ReorderPageState extends State<ReorderPage> {
               eventBus.fire(ReloadEvent());
               Navigator.pop(context, true);
             },
-            child: const Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.check),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
             ),
           )
         ],
@@ -152,7 +166,8 @@ class _ReorderPageState extends State<ReorderPage> {
                         height: 45,
                         decoration: const BoxDecoration(
                             border: Border(
-                                bottom: BorderSide(color: Colors.black12))),
+                                bottom: BorderSide(
+                                    color: Colors.grey, width: 0.2))),
                         key: Key(item),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
@@ -246,14 +261,15 @@ class _ReorderPageState extends State<ReorderPage> {
               height: 45,
               padding: const EdgeInsets.only(left: 10),
               decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.black12))),
-              child: Row(
-                children: [
-                  Text(widget.excludedProducts.isEmpty
-                      ? 'None Excluded'
-                      : 'Do not include'),
-                ],
-              ),
+                  border: Border(
+                      bottom: BorderSide(color: Colors.grey, width: 0.2))),
+              // child: Row(
+              //   children: [
+              //     Text(widget.excludedProducts.isEmpty
+              //         ? 'None Excluded'
+              //         : 'Do not include'),
+              //   ],
+              // ),
             ),
             ListView.builder(
               shrinkWrap: true,
@@ -262,8 +278,8 @@ class _ReorderPageState extends State<ReorderPage> {
                 return Container(
                   height: 45,
                   decoration: const BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: Colors.black12))),
+                      border: Border(
+                          bottom: BorderSide(color: Colors.grey, width: 0.2))),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 0.0, horizontal: 10.0),

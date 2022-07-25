@@ -1,5 +1,5 @@
 {
-    "analysis_home_header_template": "Analysen: {date}",
+    "analysis_home_header_template": "Analysen\n{date}",
     "language_code": "de",
     "full_disclaimer": "Investtech übernimmt keine Haftung für die Vollständigkeit oder Richtigkeit der jeweiligen Analyse. Ein etwaiges Engagement aufgrund der aus den Analysen resultierenden Empfehlungen/Signale erfolgt zur Gänze für Rechnung und Risiko des Anlegers. Investtech haftet nicht für Verluste, die sich direkt oder indirekt infolge der Nutzung von Investtechs Analysen ergeben. Angaben zu etwaigen Interessenkonflikten gehen stets aus der Anlageempfehlung hervor. Weitere Informationen zu Investtechs Analysen finden Sie hier www.investtech.com/disclaimer The content provided by Investtech.com is NOT SEC or FSA regulated and is therefore not intended for US or UK consumers.",
     "short_disclaimer": "Investtech haftet nicht für Verluste, die direkt oder indirekt aus der Nutzung von Investtechs Analysen resultieren. Weitere Informationen zu Investtechs Analysen finden Sie hier: www.investtech.com/disclaimer ",
@@ -92,7 +92,7 @@
     "just_now": "Soeben",
     "ago": "vor",
     "ago_template": "vor %1$s",
-    "last_updated_home_header_template": "Zuletzt aktualisiert: ",
+    "last_updated_home_header_template": "Zuletzt aktualisiert",
     "subscription_valid_till": "Abonnement gültig bis",
     "add_favorites": "Favoriten hinzufügen",
     "advanced_charts_store_desc_short": "Analysen und Empfehlungen für 29.000+ Aktien",

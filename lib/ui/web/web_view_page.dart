@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:investtech_app/const/colors.dart';
 
 import 'package:investtech_app/network/api_repo.dart';
 import 'package:investtech_app/ui/blocs/serach_bloc.dart';
@@ -111,6 +112,10 @@ class _WebViewPageState extends State<WebViewPage> {
                 PopupMenuButton(
                     color: Theme.of(context).appBarTheme.backgroundColor,
                     iconSize: 16,
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color(ColorHex.ACCENT_COLOR),
+                    ),
                     onSelected: (value) {
                       switch (value) {
                         case 'Search':

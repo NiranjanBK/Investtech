@@ -8,12 +8,12 @@ class AppThemes {
       //primarySwatch: Colors.orange,
       backgroundColor: const Color(0XFFf5f3f3),
       primaryColor: const Color(ColorHex.windowBackground),
-      primaryColorDark:
-          const Color(ColorHex.windowBackground), //const Color(0XFFf5f3f3),
+      primaryColorDark: const Color(ColorHex.black), //const Color(0XFFf5f3f3),
 
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
         titleTextStyle: TextStyle(fontSize: 20, color: Color(ColorHex.black)),
+        toolbarTextStyle: TextStyle(color: Color(ColorHex.black), fontSize: 14),
         iconTheme: IconThemeData(
           color: Colors.black54,
         ),
@@ -33,10 +33,27 @@ class AppThemes {
               color: Color(ColorHex.DARK_GREY)),
           bodyText2: TextStyle(fontSize: 12, color: Color(ColorHex.DARK_GREY)),
           subtitle1: TextStyle(fontSize: 13, color: Color(ColorHex.warmGrey)),
+          headline4: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Color(ColorHex.black)),
+          headline3: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: Color(ColorHex.black)),
+          headline1: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Color(ColorHex.black)),
+          headline2: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Color(ColorHex.black)),
           caption: TextStyle(
             fontSize: 14,
             color: Color(ColorHex.DARK_GREY),
           )),
+
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedIconTheme: IconThemeData(color: Color(0xFFFF6600)),
@@ -48,7 +65,7 @@ class AppThemes {
     AppTheme.darkTheme: ThemeData(
       scaffoldBackgroundColor: const Color(ColorHex.black_chart_bg),
       primaryColor: const Color(ColorHex.black_chart_bg),
-      primaryColorDark: Colors.black,
+      primaryColorDark: const Color(ColorHex.white),
       //primarySwatch: Colors.teal,
       backgroundColor: Colors.black,
       textTheme: const TextTheme(
@@ -58,6 +75,22 @@ class AppThemes {
               color: Color(0xffb3afaf)),
           bodyText2: TextStyle(fontSize: 12, color: Color(0xffb3afaf)),
           subtitle1: TextStyle(fontSize: 13, color: Color(0xffb3afaf)),
+          headline4: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Color(ColorHex.white)),
+          headline3: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: Color(ColorHex.white)),
+          headline2: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Color(ColorHex.white)),
+          headline1: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Color(ColorHex.white)),
           caption: TextStyle(
             fontSize: 14,
             color: Color(0xFFE8E8E8),
@@ -65,6 +98,7 @@ class AppThemes {
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF3d3d3d),
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        toolbarTextStyle: TextStyle(color: Colors.white, fontSize: 14),
         iconTheme: IconThemeData(
           color: Colors.white54,
         ),
