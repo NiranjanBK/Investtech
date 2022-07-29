@@ -56,8 +56,9 @@ class CompanyPage extends StatefulWidget {
 }
 
 class _CompanyPageState extends State<CompanyPage>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   TextEditingController notesController = TextEditingController();
+  AnimationController? controller;
 
   //late Future future;
   Company? cmpData;
@@ -73,6 +74,11 @@ class _CompanyPageState extends State<CompanyPage>
     // TODO: implement initState
 
     bloc = context.read<ThemeBloc>();
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+
     super.initState();
   }
 
@@ -84,6 +90,7 @@ class _CompanyPageState extends State<CompanyPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    controller!.dispose();
     super.dispose();
   }
 
@@ -399,8 +406,8 @@ class _CompanyPageState extends State<CompanyPage>
               padding: const EdgeInsets.only(bottom: 10),
               child: InkWell(
                 onTap: () {
-                  SystemChrome.setEnabledSystemUIOverlays(
-                      [SystemUiOverlay.bottom]);
+                  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                      overlays: [SystemUiOverlay.bottom]);
                   if (MediaQuery.of(context).orientation ==
                       Orientation.portrait) {
                     SystemChrome.setPreferredOrientations(
@@ -518,145 +525,151 @@ class _CompanyPageState extends State<CompanyPage>
     int height = (width * 0.6).toInt();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    if (!hideAppBar) {
-      Future.delayed(const Duration(seconds: 10), () {
-        if (mounted) {
-          setState(() {
-            hideAppBar = true;
-          });
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (mounted) {
+        if (controller!.isDismissed) {
+          controller!.forward();
         }
-      });
-    }
+      }
+    });
 
     return Stack(
       children: [
         GestureDetector(
           onTap: () {
-            setState(() {
-              hideAppBar = !hideAppBar;
-              _height = 45;
-            });
+            if (controller!.isCompleted) {
+              controller!.reverse();
+            } else {
+              controller!.forward();
+            }
           },
-          child: Stack(
-            children: [
-              CachedNetworkImage(
-                width: double.infinity,
-                imageUrl: ApiRepo().getChartUrl(
-                    subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
-                    currentChartId,
-                    type,
-                    widget.cmpId,
-                    '$width,$height'),
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+          child: CachedNetworkImage(
+            width: double.infinity,
+            imageUrl: ApiRepo().getChartUrl(
+                subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
+                currentChartId,
+                type,
+                widget.cmpId,
+                '$width,$height'),
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.fill,
                 ),
-                placeholder: (context, url) => Container(
-                    //height: 275,
-                    width: double.infinity,
-                    child: const Center(
-                        child: CircularProgressIndicator(
-                            color: Color(
-                      ColorHex.ACCENT_COLOR,
-                    )))),
-                errorWidget: (context, url, error) => SizedBox(
-                    height: 275,
-                    width: double.infinity,
-                    child: Center(
-                        child: Image.asset('assets/images/no_thumbnail.png'))),
               ),
-              hideAppBar
-                  ? Container()
-                  : Positioned(
-                      bottom: 0.0,
-                      right: 0.0,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            widget.currentChartTerm = currentChartId;
-                            if (type == CHART_STYLE_BLACK) {
-                              type = CHART_STYLE_NORMAL;
-                              swtichChartThemeColor = Colors.black;
-                            } else {
-                              type = CHART_STYLE_BLACK;
-                              swtichChartThemeColor = Colors.white;
-                            }
-                          });
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            color: swtichChartThemeColor ?? Colors.black,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(100.0),
+            ),
+            placeholder: (context, url) => Container(
+                //height: 275,
+                width: double.infinity,
+                child: const Center(
+                    child: CircularProgressIndicator(
+                        color: Color(
+                  ColorHex.ACCENT_COLOR,
+                )))),
+            errorWidget: (context, url, error) => SizedBox(
+                height: 275,
+                width: double.infinity,
+                child: Center(
+                    child: Image.asset('assets/images/no_thumbnail.png'))),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          child: AnimatedBuilder(
+              animation: controller!,
+              builder: (context, child) => Stack(
+                    children: [
+                      Positioned(
+                        bottom: 0.0,
+                        right: 0.0,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              widget.currentChartTerm = currentChartId;
+                              if (type == CHART_STYLE_BLACK) {
+                                type = CHART_STYLE_NORMAL;
+                                swtichChartThemeColor = Colors.black;
+                              } else {
+                                type = CHART_STYLE_BLACK;
+                                swtichChartThemeColor = Colors.white;
+                              }
+                            });
+                          },
+                          child: Transform.translate(
+                            offset: Offset(0, -controller!.value * -50),
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: swtichChartThemeColor ?? Colors.black,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(100.0),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    )
-            ],
-          ),
-        ),
-        AnimatedContainer(
-          duration: const Duration(seconds: 2),
-          child: hideAppBar
-              ? Container()
-              : DefaultTextStyle.merge(
-                  style: TextStyle(
-                    color: type == CHART_STYLE_NORMAL
-                        ? Colors.black
-                        : Colors.white,
-                  ),
-                  child: Container(
-                    height: 45,
-                    width: double.infinity,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: type == CHART_STYLE_NORMAL
-                            ? Colors.white
-                            : Colors.black,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.grey,
-                            offset: Offset(0.0, 2.0),
-                            blurRadius: 1.5,
-                            spreadRadius: 0,
+                      Transform.translate(
+                        offset: Offset(0, -controller!.value * 64),
+                        child: DefaultTextStyle.merge(
+                          style: TextStyle(
+                            color: type == CHART_STYLE_NORMAL
+                                ? Colors.black
+                                : Colors.white,
                           ),
-                        ],
-                        border: const Border(
-                            bottom: BorderSide(
-                          width: 0.8,
-                          color: Colors.black12,
-                        ))),
-                    child: Row(children: [
-                      CompanyPriceQuote(cmpData, subscribedUser),
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 14),
-                        child: InkWell(
-                            onTap: () {
-                              SystemChrome.setEnabledSystemUIOverlays(
-                                  [SystemUiOverlay.bottom]);
-                              if (MediaQuery.of(context).orientation ==
-                                  Orientation.portrait) {
-                                SystemChrome.setPreferredOrientations(
-                                    [DeviceOrientation.landscapeLeft]);
-                              } else {
-                                SystemChrome.setPreferredOrientations(
-                                    [DeviceOrientation.portraitUp]);
-                              }
-                            },
-                            child: const Icon(Icons.close)),
-                      )
-                    ]),
-                  ),
-                ),
+                          child: Container(
+                            height: 45,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            decoration: BoxDecoration(
+                                color: type == CHART_STYLE_NORMAL
+                                    ? Colors.white
+                                    : Colors.black,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.grey,
+                                    offset: Offset(0.0, 2.0),
+                                    blurRadius: 1.5,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
+                                border: const Border(
+                                    bottom: BorderSide(
+                                  width: 0.8,
+                                  color: Colors.black12,
+                                ))),
+                            child: Row(children: [
+                              CompanyPriceQuote(cmpData, subscribedUser),
+                              const Spacer(),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 14),
+                                child: InkWell(
+                                    onTap: () {
+                                      SystemChrome.setEnabledSystemUIOverlays(
+                                          [SystemUiOverlay.bottom]);
+                                      if (MediaQuery.of(context).orientation ==
+                                          Orientation.portrait) {
+                                        SystemChrome.setPreferredOrientations(
+                                            [DeviceOrientation.landscapeLeft]);
+                                      } else {
+                                        SystemChrome.setPreferredOrientations(
+                                            [DeviceOrientation.portraitUp]);
+                                      }
+                                    },
+                                    child: const Icon(Icons.close)),
+                              )
+                            ]),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
         ),
       ],
     );

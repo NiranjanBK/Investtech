@@ -418,7 +418,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                   )
                 : WebViewPage(
                     '',
-                    'https://www.investtech.com/main/market.php?CountryID=$countryId',
+                    snapshot.data!.getString(PrefKeys.Last_VISITED_WEB_PAGE) ??
+                        'https://www.investtech.com/main/market.php?CountryID=$countryId',
                     uid!,
                     pwd!);
           }),

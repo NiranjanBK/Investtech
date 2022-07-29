@@ -84,7 +84,7 @@ class ApiRepo {
 
     Dio dio = Dio();
     dio.options.headers['content-Type'] = 'application/json; charset=UTF-8';
-    // dio.options.connectTimeout = 2000;
+    dio.options.connectTimeout = 15000;
     dio.interceptors.add(dioCacheManager.interceptor);
     dio.interceptors.add(CustomInterceptors());
 
@@ -103,12 +103,14 @@ class ApiRepo {
     Dio dio = getDio();
 
     await getListValuesSF();
+    print(reorderString);
     companyIds = await DatabaseHelper().getNoteAndFavoriteCompanyIds();
     var top20Flag = '0';
-    var favFlag = '0';
+    var favFlag = '1';
 
     if (top20) top20Flag = '1';
-    if (reorderString.toString().contains('7')) favFlag = '1';
+    if (!reorderString.toString().contains('7')) favFlag = '0';
+    if (reorderString == "") favFlag = '1';
 
     var activeFlag = '$favFlag,$top20Flag,1,1';
 
@@ -117,7 +119,7 @@ class ApiRepo {
     return dio.get(
       //Uri.parse(AppStrings.apiUrl() + "user/login/"),
 
-      'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? '' : 'prefs=$reorderString'}&market=$marketCode&countryID=$countryId&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}',
+      'https://www.investtech.com/mobile/api.php?page=home&active=$activeFlag&${reorderString == "" ? 'prefs=0,1,7,2,3,4,5,6,8&' : 'prefs=$reorderString&'}market=$marketCode&countryID=$countryId&lang=${languageCodeMap![lang]}${CompanyIDs.isEmpty ? '' : '&CompanyIDs=$CompanyIDs'}',
       //body: json.encode(body.toJson()),
 
       options: cacheOptions,

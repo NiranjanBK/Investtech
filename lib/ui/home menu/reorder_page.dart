@@ -37,6 +37,7 @@ class _ReorderPageState extends State<ReorderPage> {
   @override
   void initState() {
     super.initState();
+    print(widget.reorderString);
     if (widget.reorderString == '') {
       widget.products.map((product) {
         widget.includedProducts.add(product);

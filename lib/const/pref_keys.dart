@@ -10,6 +10,8 @@ class PrefKeys {
   static String ADVANCED_CHART = "advancedChart";
   static String UNLOCK_ALL = "unlock_all";
   static String SHOW_TOOLTIP = "showTooltip";
+  static String Last_VISITED_WEB_PAGE = "lastVisitedWebPage";
+  static String SHOW_RATING_POPUP = "showRatingPopup";
   static String selectedLang = "selectedLang";
   static String uid = "uid";
   static String pwd = "pwd";

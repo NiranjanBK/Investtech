@@ -263,6 +263,15 @@ class DatabaseHelper {
       );
     });
 
+    markets.add(const MARKET(
+      marketId: 994,
+      marketCode: 'crypto',
+      marketName: 'Cryptocurrency',
+      countryId: 994,
+      countryCode: 'cpt',
+      countryName: 'Cryptocurrency',
+    ));
+
     markets.sort((m1, m2) {
       if (m1.countryId == int.tryParse(userCountryId.toString()) &&
           m1.countryId != m2.countryId) {
