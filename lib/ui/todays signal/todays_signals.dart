@@ -45,10 +45,12 @@ class _TodaysSignalsState extends State<TodaysSignals> {
                 ),
                 ListView.separated(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: _signals.length,
                   separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
+                      const Divider(
+                    color: Colors.grey,
+                  ),
                   itemBuilder: (ctx, index) {
                     return InkWell(
                       onTap: () {
@@ -66,8 +68,9 @@ class _TodaysSignalsState extends State<TodaysSignals> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(_signals[index]['ticker'],
-                              style: getBoldTextStyle()),
+                          Text(
+                              '${_signals[index]['companyName']} (${_signals[index]["ticker"]})',
+                              style: Theme.of(context).textTheme.headline4),
                           const SizedBox(
                             height: 3,
                           ),

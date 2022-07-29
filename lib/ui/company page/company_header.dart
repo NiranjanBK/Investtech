@@ -34,16 +34,6 @@ class CompanyHeader extends StatelessWidget {
       this.priceDate,
       this.showDate});
 
-  getBoarderColor(int evalCode) {
-    if (evalCode > 0) {
-      return const Color(ColorHex.green);
-    } else if (evalCode == 0) {
-      return const Color(ColorHex.yellow);
-    } else {
-      return const Color(ColorHex.red);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     Map<String, String> evalInfo = {
@@ -57,14 +47,14 @@ class CompanyHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$companyName ($ticker)',
-                style: getNameAndTickerTextStyle(),
+                '$companyName (${ticker.toUpperCase()})',
+                style: Theme.of(context).textTheme.headline3,
               ),
               Row(
                 children: [
                   Text(
                     '${double.parse(close)}',
-                    style: getSmallBoldTextStyle(),
+                    style: Theme.of(context).textTheme.headline3,
                   ),
                   Text(
                     ' (${double.parse(changePct)}%)',
@@ -75,7 +65,7 @@ class CompanyHeader extends StatelessWidget {
                         fontSize: 12),
                   ),
                   Text(showDate == null ? '' : ', ${date.toString()} ',
-                      style: getSmallTextStyle()),
+                      style: Theme.of(context).textTheme.headline3),
                 ],
               ),
               const SizedBox(
@@ -103,12 +93,13 @@ class CompanyHeader extends StatelessWidget {
                     decoration: BoxDecoration(
                         border: Border(
                       bottom: BorderSide(
-                          color: getBoarderColor(int.parse(evalCode!)),
+                          color:
+                              ColorHex().getBoarderColor(int.parse(evalCode!)),
                           width: 7),
                     )),
                     child: Text(
                       evaluation.toString(),
-                      style: getEvaluationTextStyle(),
+                      style: Theme.of(context).textTheme.headline1,
                     ),
                   )
                 ],
@@ -119,14 +110,14 @@ class CompanyHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '$companyName ($ticker)',
-                style: getNameAndTickerTextStyle(),
+                '$companyName (${ticker.toUpperCase()})',
+                style: Theme.of(context).textTheme.headline3,
               ),
               Row(
                 children: [
                   Text(
                     '${double.parse(close)}',
-                    style: getSmallBoldTextStyle(),
+                    style: Theme.of(context).textTheme.headline3,
                   ),
                   Text(
                     ' (${double.parse(changePct)}%)',
@@ -137,7 +128,7 @@ class CompanyHeader extends StatelessWidget {
                         fontSize: 12),
                   ),
                   Text(showDate == null ? '' : ', ${date.toString()} ',
-                      style: getSmallTextStyle()),
+                      style: Theme.of(context).textTheme.headline3),
                 ],
               ),
               Padding(
@@ -169,8 +160,8 @@ class CompanyHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 2, right: 2),
                         decoration: BoxDecoration(
                             border: Border(
-                          bottom:
-                              BorderSide(color: getBoarderColor(1), width: 7),
+                          bottom: BorderSide(
+                              color: ColorHex().getBoarderColor(2), width: 7),
                         )),
                         child: Text(
                           AppLocalizations.of(context)!.positive,
@@ -185,8 +176,8 @@ class CompanyHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 2, left: 2),
                         decoration: BoxDecoration(
                             border: Border(
-                          bottom:
-                              BorderSide(color: getBoarderColor(-1), width: 7),
+                          bottom: BorderSide(
+                              color: ColorHex().getBoarderColor(-2), width: 7),
                         )),
                         child: Text(
                           AppLocalizations.of(context)!.negative,

@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/const/theme.dart';
 
-import 'package:investtech_app/network/internet/connection_status.dart';
 import 'package:investtech_app/ui/blocs/home_bloc/home_bloc.dart';
 import 'package:investtech_app/ui/blocs/theme_bloc.dart';
 import 'package:investtech_app/widgets/fade_animation.dart';
@@ -78,7 +77,6 @@ class HomeOverviewState extends State<HomeOverview> {
   final streamController = StreamController<DateTime>.broadcast();
 
   DateTime startTime = DateTime.now();
-  StreamSubscription? _connectionChangeStream;
   bool isOffline = false;
 
   @override
@@ -90,12 +88,10 @@ class HomeOverviewState extends State<HomeOverview> {
   @override
   void initState() {
     super.initState();
-
     getListValuesSF();
     themeBloc = context.read<ThemeBloc>();
     controller.addListener(() {
       turnOffTooltip();
-
       isVisible =
           controller.position.userScrollDirection == ScrollDirection.forward;
     });
@@ -103,17 +99,12 @@ class HomeOverviewState extends State<HomeOverview> {
     Timer.periodic(const Duration(seconds: 2), (timer) {
       if (!streamController.isClosed) streamController.add(DateTime.now());
     });
-    myEvent.subscribe((args) => print('myEvent occured'));
+
     _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
-      print(event);
+      getListValuesSF();
       BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
     });
     // Subscribe to the custom event
-    ConnectionStatusSingleton connectionStatus =
-        ConnectionStatusSingleton.getInstance();
-
-    _connectionChangeStream =
-        connectionStatus.connectionChange.listen(connectionChanged);
 
     startTime = DateTime.now();
     BlocProvider.of<HomeBloc>(context).add(GetHomePageEvent(marketCode));
@@ -135,27 +126,12 @@ class HomeOverviewState extends State<HomeOverview> {
     });
   }
 
-  /*Future<Home> fetchData() async {
-    await getListValuesSF();
-    Response response = await ApiRepo().getHomePgae(marketCode);
-    if (response.statusCode == 200) {
-
-      startTime = DateTime.now();
-
-      return Home.fromJson(jsonDecode(jsonEncode(response.data)));
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load data');
-    }
-  }*/
-
   void awaitReturnValueFromSecondScreen(BuildContext context) async {
     // start the SecondScreen and wait for it to finish with a result
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MarketSelection(),
+          builder: (context) => const MarketSelection(),
         ));
 
     // after the SecondScreen result comes back update the Text widget with it
@@ -187,11 +163,6 @@ class HomeOverviewState extends State<HomeOverview> {
   Widget build(BuildContext context) {
     late List<Teaser> teaserList = [];
 
-    _reloadStreamSub = eventBus.on<ReloadEvent>().listen((ReloadEvent event) {
-      print(event);
-      // setState(() {});
-    });
-
     return RefreshIndicator(
       edgeOffset: 100,
       onRefresh: () {
@@ -206,7 +177,7 @@ class HomeOverviewState extends State<HomeOverview> {
         child: BlocBuilder<HomeBloc, HomeState>(builder: (ctx, state) {
           if (state is HomeLoadedState) {
             teaserList = state.home.teaser;
-
+            //getListValuesSF();
             analysisDate = state.home.analysesDate.toString();
             return GestureDetector(
               onTap: () async {
@@ -217,18 +188,19 @@ class HomeOverviewState extends State<HomeOverview> {
                 });
               },
               child: Scaffold(
-                backgroundColor: Theme.of(context).primaryColorDark,
+                //backgroundColor: Theme.of(context).primaryColorDark,
                 appBar: buildAppBar(context, teaserList),
                 body: ListView(
                   controller: controller,
                   shrinkWrap: true,
                   children: [
                     Container(
-                      height: 40,
+                      height: 45,
                       width: double.infinity,
-                      padding: const EdgeInsets.only(left: 10, top: 5),
-                      color: Theme.of(context).primaryColorDark,
-                      child: Column(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      //color: Theme.of(context).appBarTheme.backgroundColor,
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -239,10 +211,9 @@ class HomeOverviewState extends State<HomeOverview> {
                                             1000)),
                             style: getSmallestTextStyle(),
                           ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
+                          const Spacer(),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                 AppLocalizations.of(context)!
@@ -257,7 +228,7 @@ class HomeOverviewState extends State<HomeOverview> {
                     ),
                     Container(
                       height: 20,
-                      color: Theme.of(context).primaryColorDark,
+                      color: Theme.of(context).primaryColor,
                     ),
                     ListView.builder(
                       shrinkWrap: true,
@@ -274,18 +245,18 @@ class HomeOverviewState extends State<HomeOverview> {
                             //padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.grey,
-                                    offset: Offset(0.0, 2.0),
-                                    blurRadius: 1.5,
-                                    spreadRadius: 0,
-                                  ),
-                                ],
+                                // boxShadow: const [
+                                //   BoxShadow(
+                                //     color: Colors.grey,
+                                //     offset: Offset(0.0, 2.0),
+                                //     blurRadius: 1.5,
+                                //     spreadRadius: 0,
+                                //   ),
+                                // ],
                                 border: const Border(
                                     bottom: BorderSide(
                                   width: 0.8,
-                                  color: Colors.black12,
+                                  color: Color(ColorHex.warmGrey),
                                 ))),
                             child: Row(
                               children: [
@@ -415,17 +386,17 @@ class HomeOverviewState extends State<HomeOverview> {
                                             'com.investtech.learn_technical_analysis',
                                       );
                                     },
-                                    child: Text(
-                                      AppLocalizations.of(context)!.get_the_app,
-                                      style:
-                                          const TextStyle(color: Colors.orange),
-                                    ),
                                     style: ElevatedButton.styleFrom(
                                       primary: Theme.of(context)
                                           .appBarTheme
                                           .backgroundColor,
                                       textStyle: const TextStyle(
                                           color: Color(ColorHex.ACCENT_COLOR)),
+                                    ),
+                                    child: Text(
+                                      AppLocalizations.of(context)!.get_the_app,
+                                      style:
+                                          const TextStyle(color: Colors.orange),
                                     ),
                                   ),
                                 ),
@@ -449,12 +420,12 @@ class HomeOverviewState extends State<HomeOverview> {
                       BlocProvider.of<HomeBloc>(context)
                           .add(GetHomePageEvent(marketCode));
                     },
-                    child: Text(AppLocalizations.of(context)!.refresh),
                     style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all<Color>(
                             const Color(ColorHex.ACCENT_COLOR)),
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.white)),
+                    child: Text(AppLocalizations.of(context)!.refresh),
                   ),
                 ],
               ),
@@ -465,252 +436,6 @@ class HomeOverviewState extends State<HomeOverview> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)));
           }
         }),
-        /*: FutureBuilder<Home>(
-                  future: fetchData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      teaserList = snapshot.data!.teaser;
-                      List reoderList =
-                          reorderString == '' ? [] : reorderString.split(',');
-                      analysisDate = snapshot.data!.analysesDate.toString();
-                      return Scaffold(
-                        backgroundColor: Theme.of(context).primaryColorDark,
-                        appBar: buildAppBar(context, teaserList),
-                        body: ListView(
-                          controller: controller,
-                          shrinkWrap: true,
-                          children: [
-                            Container(
-                              height: 40,
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(left: 10, top: 5),
-                              color: Theme.of(context).primaryColorDark,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!
-                                        .analysis_home_header_template(
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                int.parse(snapshot
-                                                        .data!.analysesDate) *
-                                                    1000)),
-                                    style: getSmallestTextStyle(),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Last Updated : ',
-                                        style: getSmallestTextStyle(),
-                                      ),
-                                      buildUpdatedTime(),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              height: 20,
-                              color: Theme.of(context).primaryColorDark,
-                            ),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: snapshot.data!.teaser.length,
-                              itemBuilder: (context, index) {
-                                return FadeAnimation(
-                                  delay: 2,
-                                  child: Container(
-                                    width: double.infinity,
-                                    margin: const EdgeInsets.only(
-                                      bottom: 1,
-                                    ),
-                                    //padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColor,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.grey,
-                                            offset: Offset(0.0, 2.0),
-                                            blurRadius: 1.5,
-                                            spreadRadius: 0,
-                                          ),
-                                        ],
-                                        border: const Border(
-                                            bottom: BorderSide(
-                                          width: 0.8,
-                                          color: Colors.black12,
-                                        ))),
-                                    child: Row(
-                                      children: [
-                                        if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'marketCommentary') ...{
-                                          MarketCommentaries(
-                                            snapshot.data!.teaser[index],
-                                          ),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'todaysSignals') ...{
-                                          TodaysSignals(
-                                            snapshot.data!.teaser[index],
-                                          ),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'top20') ...{
-                                          TopTwenty(
-                                            snapshot.data!.teaser[index],
-                                          ),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'indicesAnalyses') ...{
-                                          Indices(
-                                            snapshot.data!.teaser[index],
-                                            'analyses',
-                                          ),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'todaysCandidate') ...{
-                                          TodaysCandidate(
-                                            snapshot.data!.teaser[index],
-                                            'case',
-                                          ),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'indicesEvaluations') ...{
-                                          IndicesEvaluation(
-                                              snapshot.data!.teaser[index]),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'barometer') ...{
-                                          BarometerGraph(
-                                              snapshot
-                                                  .data!.teaser[index].content,
-                                              snapshot
-                                                  .data!.teaser[index].title),
-                                        } else if (snapshot.data!.teaser[index]
-                                                    .productName ==
-                                                'webTV' &&
-                                            [
-                                              "ose",
-                                              "se_sse",
-                                              "dk_kfx",
-                                              "dk_inv"
-                                            ].contains(marketCode)) ...{
-                                          WebTVTeaser(
-                                              snapshot.data!.teaser[index]),
-                                        } else if (snapshot.data!.teaser[index]
-                                                .productName ==
-                                            'favourites') ...{
-                                          FavoritesTeaser(
-                                              snapshot.data!.teaser[index]),
-                                        }
-
-                                        //Text(),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            if (lta == true)
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(.4),
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: Column(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: IconButton(
-                                          onPressed: () async {
-                                            SharedPreferences prefs =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            prefs.setBool(
-                                                PrefKeys.LTA_CONTAINER, false);
-
-                                            setState(() {
-                                              lta = false;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.close),
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 5),
-                                        child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              AppLocalizations.of(context)!.lta,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                  color: Colors.white),
-                                            )),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 5),
-                                        child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              AppLocalizations.of(context)!.lta,
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.white),
-                                            )),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              OpenStore.instance.open(
-                                                //appStoreId: 'com.investtech.investtechapp',
-                                                androidAppBundleId:
-                                                    'com.investtech.investtechapp',
-                                              );
-                                            },
-                                            child: Text(
-                                              "Get the app",
-                                              style: TextStyle(
-                                                  color: Colors.orange),
-                                            ),
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.white,
-                                              textStyle: const TextStyle(
-                                                  color: Colors.orange),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('${snapshot.error}'));
-                    }
-
-                    // By default, show a loading spinner.
-                    return const Center(
-                        child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.orange)));
-                  },
-                )*/
       ),
     );
   }
@@ -778,7 +503,8 @@ class HomeOverviewState extends State<HomeOverview> {
               color: Colors.orange[800],
             )),
         PopupMenuButton(
-            icon: Icon(Icons.more_vert, color: Colors.grey[600]),
+            icon: const Icon(Icons.more_vert,
+                color: Color(ColorHex.ACCENT_COLOR)),
             color: Theme.of(context).appBarTheme.backgroundColor,
             onSelected: (value) {
               switch (value) {

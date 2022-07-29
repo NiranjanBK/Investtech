@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -55,8 +56,9 @@ class CompanyPage extends StatefulWidget {
 }
 
 class _CompanyPageState extends State<CompanyPage>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   TextEditingController notesController = TextEditingController();
+  AnimationController? controller;
 
   //late Future future;
   Company? cmpData;
@@ -72,6 +74,11 @@ class _CompanyPageState extends State<CompanyPage>
     // TODO: implement initState
 
     bloc = context.read<ThemeBloc>();
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+
     super.initState();
   }
 
@@ -83,6 +90,7 @@ class _CompanyPageState extends State<CompanyPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    controller!.dispose();
     super.dispose();
   }
 
@@ -122,36 +130,38 @@ class _CompanyPageState extends State<CompanyPage>
     return OrientationBuilder(builder: (context, orientation) {
       return widget.isTop20 == null
           ? Scaffold(
-              appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(56),
-                child: BlocProvider<FavouriteBloc>(
-                  create: (BuildContext ctx) {
-                    var favBloc = FavouriteBloc(
-                      widget.cmpId,
-                    );
+              appBar: orientation == Orientation.landscape
+                  ? null
+                  : PreferredSize(
+                      preferredSize: const Size.fromHeight(56),
+                      child: BlocProvider<FavouriteBloc>(
+                        create: (BuildContext ctx) {
+                          var favBloc = FavouriteBloc(
+                            widget.cmpId,
+                          );
 
-                    favBloc.add(FavouriteBlocEvents.LOAD_FAVOURITE);
-                    return favBloc;
-                  },
-                  child: BlocBuilder<FavouriteBloc, FavouriteBlocState>(
-                    builder: (context, state) {
-                      if (state is FavouriteLoadedState) {
-                        return buildAppBar(context, state.favData, false);
-                      } else if (state is FavouriteModifiedState) {
-                        return buildAppBar(context, state.favData, false);
-                      } else if (state is FavouriteErrorState) {
-                        return AppBar(
-                          title: Text(state.error),
-                        );
-                      } else {
-                        return const CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.orange));
-                      }
-                    },
-                  ),
-                ),
-              ),
+                          favBloc.add(FavouriteBlocEvents.LOAD_FAVOURITE);
+                          return favBloc;
+                        },
+                        child: BlocBuilder<FavouriteBloc, FavouriteBlocState>(
+                          builder: (context, state) {
+                            if (state is FavouriteLoadedState) {
+                              return buildAppBar(context, state.favData, false);
+                            } else if (state is FavouriteModifiedState) {
+                              return buildAppBar(context, state.favData, false);
+                            } else if (state is FavouriteErrorState) {
+                              return AppBar(
+                                title: Text(state.error),
+                              );
+                            } else {
+                              return const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.orange));
+                            }
+                          },
+                        ),
+                      ),
+                    ),
               body: BlocProvider<CompanyBloc>(
                 create: (BuildContext ctx) {
                   var cmpBloc = CompanyBloc(
@@ -394,27 +404,42 @@ class _CompanyPageState extends State<CompanyPage>
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: CachedNetworkImage(
-                imageUrl: ApiRepo().getChartUrl(
-                    subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
-                    widget.chartId,
-                    bloc!.loadTheme == AppTheme.lightTheme
-                        ? CHART_STYLE_NORMAL
-                        : CHART_STYLE_BLACK,
-                    widget.cmpId),
-                placeholder: (context, url) => Container(
-                    height: 275,
-                    width: double.infinity,
-                    child: const Center(
-                        child: CircularProgressIndicator(
-                            color: Color(
-                      ColorHex.ACCENT_COLOR,
-                    )))),
-                errorWidget: (context, url, error) => SizedBox(
-                    height: 275,
-                    width: double.infinity,
-                    child: Center(
-                        child: Image.asset('assets/images/no_thumbnail.png'))),
+              child: InkWell(
+                onTap: () {
+                  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                      overlays: [SystemUiOverlay.bottom]);
+                  if (MediaQuery.of(context).orientation ==
+                      Orientation.portrait) {
+                    SystemChrome.setPreferredOrientations(
+                        [DeviceOrientation.landscapeLeft]);
+                  } else {
+                    SystemChrome.setPreferredOrientations(
+                        [DeviceOrientation.portraitUp]);
+                  }
+                },
+                child: CachedNetworkImage(
+                  imageUrl: ApiRepo().getChartUrl(
+                      subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
+                      widget.chartId,
+                      bloc!.loadTheme == AppTheme.lightTheme
+                          ? CHART_STYLE_NORMAL
+                          : CHART_STYLE_BLACK,
+                      widget.cmpId),
+                  placeholder: (context, url) => Container(
+                      height: 275,
+                      width: double.infinity,
+                      child: const Center(
+                          child: CircularProgressIndicator(
+                              color: Color(
+                        ColorHex.ACCENT_COLOR,
+                      )))),
+                  errorWidget: (context, url, error) => SizedBox(
+                      height: 275,
+                      width: double.infinity,
+                      child: Center(
+                          child:
+                              Image.asset('assets/images/no_thumbnail.png'))),
+                ),
               ),
             ),
             subscribedUser
@@ -441,12 +466,13 @@ class _CompanyPageState extends State<CompanyPage>
                                             const Subscription(),
                                       ));
                                 },
-                              style: TextStyle(
-                                color: bloc!.loadTheme == AppTheme.lightTheme
-                                    ? const Color(ColorHex.black)
-                                    : const Color(ColorHex.white),
-                                //decoration: TextDecoration.underline,
-                              ))
+                              style: const TextStyle(
+                                  // color: bloc!.loadTheme == AppTheme.lightTheme
+                                  //     ? const Color(ColorHex.black)
+                                  //     : const Color(ColorHex.white),
+                                  color: Color(ColorHex.ACCENT_COLOR)
+                                  //decoration: TextDecoration.underline,
+                                  ))
                         ]),
                   ),
 
@@ -489,135 +515,162 @@ class _CompanyPageState extends State<CompanyPage>
   }
 
   Widget LandscapeMode(cmpData, subscribedUser, currentChartId) {
-    double _width = 50;
-    double _height = 50;
+    var _height = 0;
+    var pixelRatio = window.devicePixelRatio;
+    var logicalScreenSize = window.physicalSize / pixelRatio;
+    var logicalWidth = logicalScreenSize.width;
+    //var logicalHeight = logicalScreenSize.height;
+
+    int width = logicalWidth.toInt();
+    int height = (width * 0.6).toInt();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    if (!hideAppBar) {
-      Future.delayed(const Duration(seconds: 10), () {
-        setState(() {
-          hideAppBar = true;
-        });
-      });
-    }
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (mounted) {
+        if (controller!.isDismissed) {
+          controller!.forward();
+        }
+      }
+    });
 
     return Stack(
       children: [
         GestureDetector(
           onTap: () {
-            setState(() {
-              hideAppBar = !hideAppBar;
-            });
+            if (controller!.isCompleted) {
+              controller!.reverse();
+            } else {
+              controller!.forward();
+            }
           },
-          child: Stack(
-            children: [
-              CachedNetworkImage(
-                width: double.infinity,
-                imageUrl: ApiRepo().getChartUrl(
-                    subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
-                    currentChartId,
-                    type,
-                    widget.cmpId),
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+          child: CachedNetworkImage(
+            width: double.infinity,
+            imageUrl: ApiRepo().getChartUrl(
+                subscribedUser ? CHART_TYPE_ADVANCED : CHART_TYPE_FREE,
+                currentChartId,
+                type,
+                widget.cmpId,
+                '$width,$height'),
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.fill,
                 ),
-                placeholder: (context, url) => Container(
-                    //height: 275,
-                    width: double.infinity,
-                    child: const Center(
-                        child: CircularProgressIndicator(
-                            color: Color(
-                      ColorHex.ACCENT_COLOR,
-                    )))),
-                errorWidget: (context, url, error) => SizedBox(
-                    height: 275,
-                    width: double.infinity,
-                    child: Center(
-                        child: Image.asset('assets/images/no_thumbnail.png'))),
               ),
-              hideAppBar
-                  ? Container()
-                  : Positioned(
-                      bottom: 0.0,
-                      right: 0.0,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            widget.currentChartTerm = currentChartId;
-                            if (type == CHART_STYLE_BLACK) {
-                              type = CHART_STYLE_NORMAL;
-                              swtichChartThemeColor = Colors.black;
-                            } else {
-                              type = CHART_STYLE_BLACK;
-                              swtichChartThemeColor = Colors.white;
-                            }
-                          });
-                        },
-                        child: Container(
-                          height: _height,
-                          width: _width,
-                          decoration: BoxDecoration(
-                            color: swtichChartThemeColor ?? Colors.black,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(100.0),
+            ),
+            placeholder: (context, url) => Container(
+                //height: 275,
+                width: double.infinity,
+                child: const Center(
+                    child: CircularProgressIndicator(
+                        color: Color(
+                  ColorHex.ACCENT_COLOR,
+                )))),
+            errorWidget: (context, url, error) => SizedBox(
+                height: 275,
+                width: double.infinity,
+                child: Center(
+                    child: Image.asset('assets/images/no_thumbnail.png'))),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          child: AnimatedBuilder(
+              animation: controller!,
+              builder: (context, child) => Stack(
+                    children: [
+                      Positioned(
+                        bottom: 0.0,
+                        right: 0.0,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              widget.currentChartTerm = currentChartId;
+                              if (type == CHART_STYLE_BLACK) {
+                                type = CHART_STYLE_NORMAL;
+                                swtichChartThemeColor = Colors.black;
+                              } else {
+                                type = CHART_STYLE_BLACK;
+                                swtichChartThemeColor = Colors.white;
+                              }
+                            });
+                          },
+                          child: Transform.translate(
+                            offset: Offset(0, -controller!.value * -50),
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                color: swtichChartThemeColor ?? Colors.black,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(100.0),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    )
-            ],
-          ),
-        ),
-        hideAppBar
-            ? Container()
-            : DefaultTextStyle.merge(
-                style: TextStyle(
-                  color:
-                      type == CHART_STYLE_NORMAL ? Colors.black : Colors.white,
-                ),
-                child: Container(
-                  height: 45,
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: type == CHART_STYLE_NORMAL
-                          ? Colors.white
-                          : Colors.black,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.grey,
-                          offset: Offset(0.0, 2.0),
-                          blurRadius: 1.5,
-                          spreadRadius: 0,
+                      Transform.translate(
+                        offset: Offset(0, -controller!.value * 64),
+                        child: DefaultTextStyle.merge(
+                          style: TextStyle(
+                            color: type == CHART_STYLE_NORMAL
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                          child: Container(
+                            height: 45,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            decoration: BoxDecoration(
+                                color: type == CHART_STYLE_NORMAL
+                                    ? Colors.white
+                                    : Colors.black,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.grey,
+                                    offset: Offset(0.0, 2.0),
+                                    blurRadius: 1.5,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
+                                border: const Border(
+                                    bottom: BorderSide(
+                                  width: 0.8,
+                                  color: Colors.black12,
+                                ))),
+                            child: Row(children: [
+                              CompanyPriceQuote(cmpData, subscribedUser),
+                              const Spacer(),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 14),
+                                child: InkWell(
+                                    onTap: () {
+                                      SystemChrome.setEnabledSystemUIOverlays(
+                                          [SystemUiOverlay.bottom]);
+                                      if (MediaQuery.of(context).orientation ==
+                                          Orientation.portrait) {
+                                        SystemChrome.setPreferredOrientations(
+                                            [DeviceOrientation.landscapeLeft]);
+                                      } else {
+                                        SystemChrome.setPreferredOrientations(
+                                            [DeviceOrientation.portraitUp]);
+                                      }
+                                    },
+                                    child: const Icon(Icons.close)),
+                              )
+                            ]),
+                          ),
                         ),
-                      ],
-                      border: const Border(
-                          bottom: BorderSide(
-                        width: 0.8,
-                        color: Colors.black12,
-                      ))),
-                  child: Row(children: [
-                    CompanyPriceQuote(cmpData, subscribedUser),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 14),
-                      child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              hideAppBar = !hideAppBar;
-                            });
-                          },
-                          child: const Icon(Icons.close)),
-                    )
-                  ]),
-                ),
-              ),
+                      ),
+                    ],
+                  )),
+        ),
       ],
     );
   }
@@ -762,7 +815,7 @@ class _CompanyPageState extends State<CompanyPage>
         },
         child: Icon(
           widget.isFavourite ? Icons.star_outlined : Icons.star_border_outlined,
-          color: Colors.orange[500],
+          color: const Color(ColorHex.ACCENT_COLOR),
         ),
       ),
       Padding(
@@ -856,7 +909,8 @@ class _CompanyPageState extends State<CompanyPage>
                               height: 25,
                               child: Text(
                                 AppLocalizations.of(context)!.save,
-                                style: TextStyle(color: Colors.orange[800]),
+                                style: const TextStyle(
+                                    color: Color(ColorHex.ACCENT_COLOR)),
                               ),
                             ),
                             onPressed: () async {
@@ -882,7 +936,8 @@ class _CompanyPageState extends State<CompanyPage>
                           //height: 25,
                           child: Text(
                             AppLocalizations.of(context)!.cancel,
-                            style: TextStyle(color: Colors.orange[800]),
+                            style: const TextStyle(
+                                color: Color(ColorHex.ACCENT_COLOR)),
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -897,7 +952,7 @@ class _CompanyPageState extends State<CompanyPage>
           },
           child: Icon(
             widget.hasNote ? Icons.mode_comment : Icons.mode_comment_outlined,
-            color: Colors.orange[500],
+            color: const Color(ColorHex.ACCENT_COLOR),
           ),
         ),
       ),
@@ -916,9 +971,9 @@ class _CompanyPageState extends State<CompanyPage>
               text: shareText,
             );
           },
-          child: Icon(
+          child: const Icon(
             Icons.share,
-            color: Colors.orange[500],
+            color: Color(ColorHex.ACCENT_COLOR),
           ),
         ),
       ),

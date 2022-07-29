@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/text_style.dart';
 import 'package:investtech_app/const/theme.dart';
@@ -184,7 +185,7 @@ class _SearchItemPageState extends State<SearchItemPage> {
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
+                              vertical: 10, horizontal: 16),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,28 +217,42 @@ class _SearchItemPageState extends State<SearchItemPage> {
                                 ),
                               ),
                               const Spacer(),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    double.parse(
-                                            (searchResult![index].lastClose))
-                                        .toStringAsFixed(2),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 12),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        double.parse((searchResult![index]
+                                                .lastClose))
+                                            .toStringAsFixed(2),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 12),
+                                      ),
+                                      Text(
+                                        '${double.parse((searchResult![index].changeVal))} (${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: double.parse(
+                                                        (searchResult![index]
+                                                            .changeVal)) >
+                                                    0
+                                                ? const Color(ColorHex.green)
+                                                : const Color(ColorHex.red)),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    '${double.parse((searchResult![index].changeVal))}(${double.parse((searchResult![index].changePct)).toStringAsFixed(2)}%)',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: double.parse(
-                                                    (searchResult![index]
-                                                        .changeVal)) >
-                                                0
-                                            ? Colors.green[900]
-                                            : Colors.red[900]),
-                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 15,
+                                      color: Colors.grey,
+                                    ),
+                                  )
                                 ],
                               ),
                             ],

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:investtech_app/const/pref_keys.dart';
+import 'package:investtech_app/main.dart';
 import 'package:investtech_app/network/models/country.dart';
 import 'package:investtech_app/network/models/favorites.dart';
 import 'package:investtech_app/network/models/market.dart';
@@ -245,11 +246,13 @@ class DatabaseHelper {
 
   Future<List<MARKET>> getMarketDetails() async {
     final database = await db;
-    final List<Map<String, dynamic>> res = await database!.rawQuery(
-      "SELECT M.MARKET_CODE, M.MARKET_ID, M.MARKET_NAME, C.COUNTRY_CODE, C.COUNTRY_ID, C.COUNTRY_NAME FROM MARKET M, COUNTRY C WHERE M.COUNTRY_ID = C.COUNTRY_ID and M.MARKET_ID != '861' ORDER BY M.PREFERENCE",
+    final prefs = await SharedPreferences.getInstance();
+    final userCountryId = prefs.getString(PrefKeys.SELECTED_COUNTRY_ID);
+    List<Map<String, dynamic>> res = await database!.rawQuery(
+      "SELECT M.MARKET_CODE, M.MARKET_ID, M.MARKET_NAME, C.COUNTRY_CODE, C.COUNTRY_ID, C.COUNTRY_NAME FROM MARKET M, COUNTRY C WHERE M.COUNTRY_ID = C.COUNTRY_ID and M.MARKET_ID != '861' ORDER BY M.PREFERENCE desc",
     );
 
-    return List.generate(res.length, (index) {
+    var markets = List.generate(res.length, (index) {
       return MARKET(
         marketId: int.tryParse(res[index][marketId].toString()) ?? -1,
         marketCode: res[index][marketCode],
@@ -259,6 +262,26 @@ class DatabaseHelper {
         countryName: res[index][countryName],
       );
     });
+
+    markets.add(const MARKET(
+      marketId: 994,
+      marketCode: 'crypto',
+      marketName: 'Cryptocurrency',
+      countryId: 994,
+      countryCode: 'cpt',
+      countryName: 'Cryptocurrency',
+    ));
+
+    markets.sort((m1, m2) {
+      if (m1.countryId == int.tryParse(userCountryId.toString()) &&
+          m1.countryId != m2.countryId) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+
+    return markets;
   }
 
   setUserMarketPref(countryCode) async {
@@ -281,5 +304,6 @@ class DatabaseHelper {
         PrefKeys.SELECTED_MARKET_ID, userMarket[0]['MARKET_ID'].toString());
     prefs.setString(
         PrefKeys.SELECTED_COUNTRY_ID, userMarket[0]['COUNTRY_ID'].toString());
+    globalMarketId = userMarket[0]['MARKET_ID'].toString();
   }
 }

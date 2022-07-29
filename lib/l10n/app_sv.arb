@@ -1,5 +1,5 @@
 {
-    "analysis_home_header_template": "Analyser: {date}",
+    "analysis_home_header_template": "Analyser\n{date}",
     "language_code": "se",
     "full_disclaimer": "Investtech garanterar inte fullständigheten eller korrektheten av analyserna. Eventuell exponering utifrån de råd / signaler som framkommer i analyserna görs helt och fullt på den enskilda investerarens räkning och risk. Investtech är inte ansvarig för någon form för förlust, varken direkt eller indirekt, som uppstår som en följd av att ha använt Investtechs analyser. Upplysningar om eventuella intressekonflikter kommer alltid att framgå av investeringsrekommendationen. Ytterligere information om Investtechs analyser finns här: www.investtech.com/disclaimer The content provided by Investtech.com is NOT SEC or FSA regulated and is therefore not intended for US or UK consumers.",
     "short_disclaimer": "Investtech är inte ansvariga för några förluster, varken direkt eller indirekt, som uppstår till följd av användning av Investtech\\'s analyser. Mer information om Investtech\\'s analyser hittas här www.investtech.com/disclaimer",
@@ -96,7 +96,7 @@
     "ago": "sedan",
     "ago_template": "%1$s sedan",
     "web": "Web",
-    "last_updated_home_header_template": "Sist oppdatert: ",
+    "last_updated_home_header_template": "Sist oppdatert",
     "webview_footer_info": "Exklusivt för våra webb-abonnenter.",
     "subscribed": "Tecknad",
     "restoring_purchases": "Återställ köp…",

@@ -1,20 +1,21 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:investtech_app/const/colors.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:investtech_app/network/api_repo.dart';
-import 'package:investtech_app/ui/blocs/serach_bloc.dart';
-import 'package:investtech_app/ui/company%20search/search_item_page.dart';
-import 'package:investtech_app/ui/home%20menu/settings_page.dart';
+
 import 'package:investtech_app/ui/web/web_login_page.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+enum Availability { loading, available, unavailable }
 
 class WebViewPage extends StatefulWidget {
   final String title;
@@ -34,6 +35,8 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   InAppWebViewController? _webViewController;
+  final InAppReview inAppReview = InAppReview.instance;
+  Availability availability = Availability.loading;
 
   @override
   void initState() {
@@ -41,7 +44,30 @@ class _WebViewPageState extends State<WebViewPage> {
     // Enable virtual display.
 
     //if (Platform.isAndroid) WebView.platform = AndroidWebView();
+    Future.delayed(const Duration(seconds: 300), () async {
+      var prefs = await SharedPreferences.getInstance();
+      bool showRatingPopUp = prefs.getBool(PrefKeys.SHOW_RATING_POPUP) ?? true;
+      if (showRatingPopUp) {
+        requestReview();
+        prefs.setBool(PrefKeys.SHOW_RATING_POPUP, false);
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        final isAvailable = await inAppReview.isAvailable();
+
+        setState(() {
+          availability = isAvailable && !Platform.isAndroid
+              ? Availability.available
+              : Availability.unavailable;
+        });
+      } catch (e) {
+        setState(() => availability = Availability.unavailable);
+      }
+    });
   }
+
+  Future<void> requestReview() => inAppReview.requestReview();
 
   void _logout() async {
     var prefs = await SharedPreferences.getInstance();
@@ -111,9 +137,13 @@ class _WebViewPageState extends State<WebViewPage> {
                 PopupMenuButton(
                     color: Theme.of(context).appBarTheme.backgroundColor,
                     iconSize: 16,
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color(ColorHex.ACCENT_COLOR),
+                    ),
                     onSelected: (value) {
                       switch (value) {
-                        case 'Search':
+                        /*case 'Search':
                           Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
                               return BlocProvider(
@@ -130,7 +160,7 @@ class _WebViewPageState extends State<WebViewPage> {
                               MaterialPageRoute(
                                 builder: (context) => SettingsPage(),
                               ));
-                          break;
+                          break; */
 
                         case 'Logout':
                           _webViewController?.loadUrl(
@@ -143,7 +173,7 @@ class _WebViewPageState extends State<WebViewPage> {
                       }
                     },
                     itemBuilder: (ctx) => [
-                          PopupMenuItem(
+                          /* PopupMenuItem(
                             height: 30,
                             value: 'Search',
                             child: Text(
@@ -160,7 +190,7 @@ class _WebViewPageState extends State<WebViewPage> {
                               style: const TextStyle(fontSize: 12),
                             ),
                             onTap: () {},
-                          ),
+                          ), */
                           PopupMenuItem(
                             height: 30,
                             value: 'Settings',
@@ -185,9 +215,6 @@ class _WebViewPageState extends State<WebViewPage> {
               onWebViewCreated: (controller) {
                 _webViewController = controller;
               },
-              onScrollChanged: (controller, x, y) {
-                print('X pos: $x, Y pos: $y');
-              },
               onLoadStop: (controller, url) async {
                 widget.canGoBack = await controller.canGoBack();
                 widget.canGoForward = await controller.canGoForward();
@@ -200,6 +227,10 @@ class _WebViewPageState extends State<WebViewPage> {
                     }
                   },
                 );
+              },
+              onUpdateVisitedHistory: (controller, url, androidIsReload) async {
+                var prefs = await SharedPreferences.getInstance();
+                prefs.setString(PrefKeys.Last_VISITED_WEB_PAGE, url.toString());
               },
             ),
           );

@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:investtech_app/const/colors.dart';
 import 'package:investtech_app/const/pref_keys.dart';
 import 'package:investtech_app/ui/discalimer/disclaimer_page.dart';
+import 'package:path/path.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,8 +14,8 @@ class Slide extends StatelessWidget {
   final String description;
   final bool lastSlide;
 
-  Slide(this.backGroundColor, this.imageName, this.title, this.description,
-      this.lastSlide,
+  const Slide(this.backGroundColor, this.imageName, this.title,
+      this.description, this.lastSlide,
       {Key? key})
       : super(key: key);
 
@@ -41,11 +42,20 @@ class Slide extends StatelessWidget {
                         builder: (context) => const Disclaimer(true),
                       ));
                 },
+                style: TextButton.styleFrom(
+                  textStyle: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.normal),
+                ),
                 child: Text(
                   lastSlide
-                      ? AppLocalizations.of(context)!.done
-                      : AppLocalizations.of(context)!.skip,
-                  style: const TextStyle(color: Colors.white),
+                      ? AppLocalizations.of(context)!.done.toUpperCase()
+                      : AppLocalizations.of(context)!.skip.toUpperCase(),
+                  style: lastSlide
+                      ? const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )
+                      : const TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -63,19 +73,23 @@ class Slide extends StatelessWidget {
                   width: 100,
                   height: 100,
                 ),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     description,
-                    style: const TextStyle(color: Color(ColorHex.body_grey)),
+                    style: const TextStyle(
+                        color: Color(ColorHex.body_grey), fontSize: 15),
                   ),
                 ),
               ],

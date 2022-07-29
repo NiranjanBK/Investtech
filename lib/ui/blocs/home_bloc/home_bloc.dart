@@ -25,6 +25,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<HomeState> getHomePageData(GetHomePageEvent event) async {
     try {
       Response response = await ApiRepo().getHomePgae(event.marketCode);
+
       if (response.statusCode == 200) {
         var data = Home.fromJson(jsonDecode(jsonEncode(response.data)));
         return HomeLoadedState(data);

@@ -167,6 +167,10 @@ class _WebLoginPageState extends State<WebLoginPage> {
                                 color: Theme.of(context)
                                     .appBarTheme
                                     .backgroundColor,
+                                icon: const Icon(
+                                  Icons.more_vert,
+                                  color: Color(ColorHex.ACCENT_COLOR),
+                                ),
                                 onSelected: (value) {
                                   switch (value) {
                                     case 'Settings':
@@ -414,7 +418,8 @@ class _WebLoginPageState extends State<WebLoginPage> {
                   )
                 : WebViewPage(
                     '',
-                    'https://www.investtech.com/main/market.php?CountryID=$countryId',
+                    snapshot.data!.getString(PrefKeys.Last_VISITED_WEB_PAGE) ??
+                        'https://www.investtech.com/main/market.php?CountryID=$countryId',
                     uid!,
                     pwd!);
           }),

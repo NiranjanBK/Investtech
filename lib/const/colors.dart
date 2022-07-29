@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class ColorHex {
   static const int PRIMARY_COLOR = 0xFFFFFFFF;
   static const int PRIMARY_COLOR_DARK = 0xFFCCCCCC;
@@ -57,4 +59,36 @@ class ColorHex {
   static const int on_boarding_1 = 0xFF80cbc4;
   static const int on_boarding_2 = 0xFF42bcb0;
   static const int on_boarding_3 = 0xFF5c9ec7;
+
+  static const int APP_GREEN = 0xFF006400;
+  static const int APP_YELLOW = 0xFFe6e600;
+  static const int APP_RED = 0xFF8b0000;
+  static const int APP_BLACK = 0xFF000000;
+  static const int APP_WHITE = 0xFFffffff;
+
+  static const int APP_BRIGHT_GREEN = 0xFF24A73B;
+  static const int APP_BRIGHT_YELLOW = 0xFFE1E60B;
+  static const int APP_BRIGHT_RED = 0xFFBE0005;
+
+  static const int APP_GREEN_LIGHT = 0xFF008000;
+  static const int APP_RED_LIGHT = 0xFFcc1700;
+
+// for PieChart
+  static const int APP_GREEN_A90 = 0xFFE687E752;
+  static const int APP_YELLOW_A90 = 0xFFE6FFFB46;
+  static const int APP_RED_A90 = 0xFFE6E53D00;
+
+  Color getBoarderColor(int evalCode) {
+    if (evalCode == 1) {
+      return const Color(ColorHex.APP_GREEN_LIGHT);
+    } else if (evalCode == 2) {
+      return const Color(ColorHex.APP_GREEN);
+    } else if (evalCode == -1) {
+      return const Color(ColorHex.APP_RED_LIGHT);
+    } else if (evalCode == -2) {
+      return const Color(ColorHex.APP_RED);
+    } else {
+      return const Color(ColorHex.APP_YELLOW);
+    }
+  }
 }

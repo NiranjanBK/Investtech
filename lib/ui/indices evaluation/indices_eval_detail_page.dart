@@ -54,9 +54,12 @@ class _IndicesEvalDetailPageState extends State<IndicesEvalDetailPage> {
                           style: getSmallTextStyle(),
                         ),
                       ),
-                      IndicesEvalTableHead(
-                        indicesEvaluation: indices!,
-                        page: 'detail',
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: IndicesEvalTableHead(
+                          indicesEvaluation: indices!,
+                          page: 'detail',
+                        ),
                       ),
                       IndicesList(
                         indices!.content!,
@@ -77,12 +80,12 @@ class _IndicesEvalDetailPageState extends State<IndicesEvalDetailPage> {
                             .read<IndicesEvalBloc>()
                             .add((IndicesEvalBlocEvents.LOAD_INDICES));
                       },
-                      child: Text(AppLocalizations.of(context)!.refresh),
                       style: ButtonStyle(
                           foregroundColor: MaterialStateProperty.all<Color>(
                               const Color(ColorHex.ACCENT_COLOR)),
                           backgroundColor:
                               MaterialStateProperty.all<Color>(Colors.white)),
+                      child: Text(AppLocalizations.of(context)!.refresh),
                     ),
                   ],
                 );
